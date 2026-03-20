@@ -1,0 +1,57 @@
+.cartaPDF{
+  width:100%;
+  margin:40px auto;
+  max-width: 1000px;
+  border: 6px solid line;
+}
+
+/* modo impresión */
+@media print{
+  .cartaPDF{
+    width: 794px;
+    margin: 0;
+    box-shadow:none;
+    min-height: 1123PX;
+    border-radius: 0;
+    padding: 60px 85px 110px 85px;
+    page-break-inside: avoid;
+    scale: 3;
+  }
+}
+
+.grabado{
+  font-weight:700;
+  color:"#4a3720";
+
+  text-shadow:
+  0 2px 1px rgba(255,255,255,0.65),
+  0 -1px 2px rgba(0,0,0,0.45);
+}
+
+:root{
+  --bg:#f3f4f7;
+  --card:#ffffff;
+  --text:#1a1a1a;
+  --border:#dcdcdc;
+  --primary:#374151;
+}
+
+/* 🌙 modo oscuro */
+.dark{
+  --bg:#1b1b1b;
+  --card:#262626;
+  --text:#f1f1f1;
+  --border:#444;
+  --primary:#4b5563;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  margin:0;
+  font-family:Segoe UI, sans-serif;
+}
+
+*{
+  box-sizing:border-box;
+}

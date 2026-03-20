@@ -1,0 +1,45 @@
+.config-wrapper{
+  max-width:500px;
+  margin:40px auto;
+}
+
+.config-card{
+  background:var(--card);
+  padding:25px;
+  border-radius:10px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.1);
+}
+
+.config-card h2{
+  margin-top:0;
+}
+
+label{
+  display:block;
+  margin-top:15px;
+  margin-bottom:5px;
+  font-weight:600;
+}
+
+input{
+  width:100%;
+  padding:10px;
+  border-radius:6px;
+  border:1px solid var(--border);
+  background:transparent;
+  color:var(--text);
+}
+
+button{
+  margin-top:20px;
+  background:var(--primary);
+  color:white;
+  border:none;
+  padding:10px 16px;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+button:hover{
+  opacity:0.9;
+}
