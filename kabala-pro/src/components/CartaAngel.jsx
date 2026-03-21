@@ -738,18 +738,63 @@ position:"relative"
   }}
 /> 
 
+<div style={{
+  position:"absolute",
+  width:"180px",
+  height:"180px",
+  borderRadius:"50%",
+
+  background: modoPDF
+  ? `
+    radial-gradient(circle,
+      rgba(255,240,180,0.9) 0%,
+      rgba(255,220,150,0.6) 25%,
+      rgba(255,200,100,0.35) 45%,
+      rgba(255,180,80,0.15) 65%,
+      rgba(255,150,60,0.05) 80%,
+      rgba(255,120,40,0) 100%
+    )
+  `
+  : `
+    radial-gradient(circle,
+      rgba(255,215,120,0.5) 0%,
+      rgba(255,200,100,0.3) 35%,
+      rgba(255,180,80,0.15) 55%,
+      rgba(255,150,60,0.05) 70%,
+      rgba(255,120,40,0) 100%
+    )
+  `,
+
+  filter: modoPDF ? "none" : "blur(18px)",
+  opacity: 1,
+  zIndex:1
+}}/>
+
 <img
 src={`/signos/${carta.signo.toLowerCase()}.webp`}
 alt={carta.signo}
 style={{
 width:"140px",
-maskImage:"radial-gradient(circle, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)",
-WebkitMaskImage:"radial-gradient(circle, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)",
-filter:`
-  drop-shadow(0 0 12px rgba(255,215,120,0.7))
-  drop-shadow(0 0 25px rgba(255,215,120,0.5))
-  drop-shadow(0 0 45px rgba(255,215,120,0.3))
-`
+
+maskImage:"radial-gradient(circle, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)",
+WebkitMaskImage:"radial-gradient(circle, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%)",
+
+filter: modoPDF
+  ? `
+    drop-shadow(0 0 12px rgba(255,215,120,0.9))
+    drop-shadow(0 0 22px rgba(255,200,100,0.7))
+  `
+  : `
+    drop-shadow(0 0 18px rgba(255,215,120,0.9))
+    drop-shadow(0 0 35px rgba(255,215,120,0.6))
+    drop-shadow(0 0 60px rgba(255,215,120,0.4))
+  `,
+
+transform: modoPDF ? "scale(1.08)" : "scale(1)",
+
+position:"relative",
+zIndex:2,
+
 }}
 />
 
