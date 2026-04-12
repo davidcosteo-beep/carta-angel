@@ -1,6 +1,4 @@
-import pergamino from "../assets/pergamino.png";
 import florVida from "../assets/flor-vida.png";
-import texturaPapel from "../assets/texturaPapel.png";
 import { tablaMentor } from "../core/tablaMentor";
 import { tablaCartas } from "../core/tablaCartas";
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
@@ -80,7 +78,7 @@ const fontRegularBytes = await fetch("/fonts/Cardo-Regular.ttf")
 const fontBoldBytes = await fetch("/fonts/Cardo-Bold.ttf")
   .then(res => res.arrayBuffer());
 
-const cardoItalicBytes = await fetch("/fonts/Cardo-Italic.ttf")
+const cardoItalicBytes = await fetch("/fonts/UnifrakturCook-Bold.ttf")
   .then(res => res.arrayBuffer());
 
 const fontTitulo = await pdfDoc.embedFont(fontTituloBytes);
@@ -107,26 +105,63 @@ const letterSpacing = 3;
 let nombreWidth = 0;
 
 for (const char of nombreTexto) {
-  nombreWidth += fontTitulo.widthOfTextAtSize(char, fontSizeNombre) + letterSpacing;
+  nombreWidth += fontTituloDecorativo.widthOfTextAtSize(char, fontSizeNombre) + letterSpacing;
 }
 
 nombreWidth -= letterSpacing;
 
-const nombreX = inicioX + (anchoUtil - nombreWidth) / 2 + 32;
-const nombreY = inicioY + 35;
+const nombreX = inicioX + (anchoUtil - nombreWidth) / 2 + 45;
+const nombreY = inicioY + 45;
 
 // texto principal
 page.drawText(nombreTexto, {
   x: nombreX,
   y: nombreY,
   size: fontSizeNombre,
-  font: fontTitulo,
-  color: rgb(0.50, 0.36, 0.22),
+  font: fontTituloDecorativo,
+  color: rgb(0.42, 0.26, 0.14),
 });
+
+const fechaNacimiento = new Date(`${carta.fecha}T00:00`);
+
+const diasSemana = [
+  "domingo",
+  "lunes",
+  "martes",
+  "miércoles",
+  "jueves",
+  "viernes",
+  "sábado"
+];
+
+const diaSemana = diasSemana[fechaNacimiento.getDay()];
+
+const horaTexto = carta.hora
+  ? (() => {
+      const [hora, minuto] = carta.hora.split(":");
+      const h = parseInt(hora, 10);
+      const periodo = h >= 12 ? "p.m." : "a.m.";
+      const hora12 = h % 12 || 12;
+      return ` | Hora: ${hora12}:${minuto} ${periodo}`;
+    })()
+  : "";
+
+const textoFecha = `Nacimiento: ${carta.fecha} | Día: ${diaSemana}${horaTexto} | Signo: ${carta.signo}`;
+
+const fechaWidth = fontBold.widthOfTextAtSize(textoFecha, 12);
+
+page.drawText(textoFecha, {
+  x: inicioX + (anchoUtil - fechaWidth) / 2,
+  y: inicioY + 25,
+  size: 12,
+  font: fontBold,
+  color: rgb(0.15, 0.10, 0.05),
+});
+
 
 // BARRA DE COLOR
 
-const barraY = inicioY - 8;
+const barraY = inicioY - 10 ;
 const barraH = 25;
 
 const colorBase = carta.color || "#3B82F6";
@@ -239,54 +274,19 @@ page.drawRectangle({
   opacity: 0.35,
 });
 
-const text = "ANGEL DE LA GUARDA";
-const textWidth = fontBold.widthOfTextAtSize(text, 12);
+const text = "ANGEL    DE    LA    GUARDA";
+
+const textWidth = fontBold.widthOfTextAtSize(text, 15);
+const letterSpacingTitulo = 3.5;
 
 page.drawText(text, {
   x: inicioX + (anchoUtil - textWidth) / 2,
   y: inicioY - 1,
-  size: 12,
+  size: 15,
   font: fontTituloDecorativo,
+  characterSpacing:letterSpacingTitulo,
   color: rgb(1, 1, 1),
 });
-
-const fechaNacimiento = new Date(`${carta.fecha}T00:00`);
-
-const diasSemana = [
-  "domingo",
-  "lunes",
-  "martes",
-  "miércoles",
-  "jueves",
-  "viernes",
-  "sábado"
-];
-
-const diaSemana = diasSemana[fechaNacimiento.getDay()];
-
-const horaTexto = carta.hora
-  ? (() => {
-      const [hora, minuto] = carta.hora.split(":");
-      const h = parseInt(hora, 10);
-      const periodo = h >= 12 ? "PM" : "AM";
-      const hora12 = h % 12 || 12;
-      return ` | Hora: ${hora12}:${minuto} ${periodo}`;
-    })()
-  : "";
-
-const textoFecha = `Nacimiento: ${carta.fecha} | Día: ${diaSemana}${horaTexto} | Signo: ${carta.signo}`;
-
-const fechaWidth = fontBold.widthOfTextAtSize(textoFecha, 11);
-
-page.drawText(textoFecha, {
-  x: inicioX + (anchoUtil - fechaWidth) / 2,
-  y: inicioY + 20,
-  size: 11,
-  font: fontBold,
-  color: rgb(0.15, 0.10, 0.05),
-});
-
-
 
 const angelBytes = await fetch(`/assets/pdf/angeles/${carta.angel.toLowerCase()}.png`)
   .then(r => r.arrayBuffer());
@@ -795,32 +795,46 @@ page.drawRectangle({
   opacity: 0.35,
 });
 
-const titulo = "ANGEL MENTOR";
-const tituloWidth = fontBold.widthOfTextAtSize(titulo, 12);
+const titulo = "ANGEL    MENTOR";
+const fontSizeTitulo = 15;
+const letterSpacingTitulo = 3.5;
+
+let tituloWidth = 0;
+
+for (const char of titulo) {
+  tituloWidth += fontTituloDecorativo.widthOfTextAtSize(char, fontSizeTitulo) + letterSpacingTitulo;
+}
+
+tituloWidth -= letterSpacingTitulo;
+
+const tituloX = (600 - tituloWidth) / 2;
 
 page.drawText(titulo, {
-  x: ((600 - tituloWidth) / 2) + 0.5,
-  y: barraMentorY + 6.4,
-  size: 12,
+  x: tituloX + 1,
+  y: barraMentorY + 5.5,
+  size: fontSizeTitulo,
   font: fontTituloDecorativo,
+  characterSpacing: letterSpacingTitulo,
   color: rgb(0.20, 0.08, 0.03),
-  opacity: 0.35,
+  opacity: 0.28,
 });
 
 page.drawText(titulo, {
-  x: ((600 - tituloWidth) / 2) - 0.2,
-  y: barraMentorY + 7.4,
-  size: 12,
+  x: tituloX - 0.3,
+  y: barraMentorY + 7.2,
+  size: fontSizeTitulo,
   font: fontTituloDecorativo,
+  characterSpacing: letterSpacingTitulo,
   color: rgb(1, 0.95, 0.88),
-  opacity: 0.18,
+  opacity: 0.15,
 });
 
 page.drawText(titulo, {
-  x: (600 - tituloWidth) / 2,
-  y: barraMentorY + 7,
-  size: 12,
+  x: tituloX,
+  y: barraMentorY + 6.8,
+  size: fontSizeTitulo,
   font: fontTituloDecorativo,
+  characterSpacing: letterSpacingTitulo,
   color: rgb(1, 1, 1),
 });
 
@@ -1282,14 +1296,14 @@ page.drawRectangle({
   opacity: 0.35,
 });
 
-const titulo = "INFLUENCIAS ANGELICALES";
-const w = fontBold.widthOfTextAtSize(titulo, 12);
+const titulo = "INFLUENCIAS    ANGELICALES";
+const w = fontBold.widthOfTextAtSize(titulo, 15);
 
 // sombra principal
 page.drawText(titulo, {
   x: ((600 - w) / 2) + 1,
   y: barraGuiaY + 6,
-  size: 12,
+  size: 15,
   font: fontTituloDecorativo,
   color: rgb(0.15, 0.15, 0.15),
   opacity: 0.45,
@@ -1299,7 +1313,7 @@ page.drawText(titulo, {
 page.drawText(titulo, {
   x: ((600 - w) / 2) - 0.3,
   y: barraGuiaY + 7.6,
-  size: 12,
+  size: 15,
   font: fontTituloDecorativo,
   color: rgb(1, 0.96, 0.90),
   opacity: 0.20,
@@ -1309,7 +1323,7 @@ page.drawText(titulo, {
 page.drawText(titulo, {
   x: (600 - w) / 2,
   y: barraGuiaY + 7,
-  size: 12,
+  size: 15,
   font: fontTituloDecorativo,
   color: rgb(1, 1, 1),
   opacity: 1,
@@ -1580,13 +1594,13 @@ page.drawRectangle({
   opacity: 0.35,
 });
 
-const tituloEsencia = "ESENCIAS LOCIÓN ANGELICAL";
-const tituloEsenciaWidth = fontBold.widthOfTextAtSize(tituloEsencia, 12);
+const tituloEsencia = "ESENCIAS    LOCIÓN    ANGELICAL";
+const tituloEsenciaWidth = fontBold.widthOfTextAtSize(tituloEsencia, 15);
 
 page.drawText(tituloEsencia, {
   x: ((600 - tituloEsenciaWidth) / 2) + 0.5,
   y: barraEsenciaY + 6.4,
-  size: 12,
+  size: 15,
   font: fontTituloDecorativo,
   color: rgb(0.12, 0.08, 0.02),
   opacity: 0.35,
@@ -1595,7 +1609,7 @@ page.drawText(tituloEsencia, {
 page.drawText(tituloEsencia, {
   x: ((600 - tituloEsenciaWidth) / 2) - 0.2,
   y: barraEsenciaY + 7.4,
-  size: 12,
+  size: 15,
   font: fontTituloDecorativo,
   color: rgb(1, 0.95, 0.88),
   opacity: 0.18,
@@ -1604,7 +1618,7 @@ page.drawText(tituloEsencia, {
 page.drawText(tituloEsencia, {
   x: (600 - tituloEsenciaWidth) / 2,
   y: barraEsenciaY + 7,
-  size: 12,
+  size: 15,
   font: fontTituloDecorativo,
   color: rgb(1, 1, 1),
 });
@@ -1792,14 +1806,14 @@ page.drawRectangle({
 });
 
 // Título
-const tituloProposito = 'PROPOSITO DEL ÁNGEL DE LA GUARDA';
-const tituloWidth = fontBold.widthOfTextAtSize(tituloProposito, 11);
+const tituloProposito = 'PROPOSITO    DEL    ÁNGEL    DE    LA    GUARDA';
+const tituloWidth = fontBold.widthOfTextAtSize(tituloProposito, 15);
 
 page.drawText(tituloProposito, {
   x: propositoBoxX + (propositoBoxWidth - tituloWidth) / 2,
   y: propositoBoxY + 45,
-  size: 11,
-  font: fontTitulo,
+  size: 15,
+  font: fontTituloDecorativo,
   color: rgb(0.16, 0.10, 0.06),
 });
 
@@ -1830,10 +1844,10 @@ if (lineaActual) {
 }
 
 // Dibujar cada línea centrada
-let lineaY = propositoBoxY + 30;
+let lineaY = propositoBoxY + 18;
 
 lineas.forEach((linea) => {
-  const lineaWidth = cardoItalicFont.widthOfTextAtSize(linea, fraseSize);
+  const lineaWidth = fontBold.widthOfTextAtSize(linea, fraseSize);
   const lineaX = propositoBoxX + (propositoBoxWidth - lineaWidth) / 2;
 
   // sombra principal
@@ -1841,7 +1855,7 @@ lineas.forEach((linea) => {
     x: lineaX + 0.8,
     y: lineaY - 0.5,
     size: fraseSize,
-    font: cardoItalicFont,
+    font: fontBold,
     color: rgb(0.08, 0.04, 0.02),
     opacity: 0.35,
   });
@@ -1851,7 +1865,7 @@ lineas.forEach((linea) => {
     x: lineaX - 0.2,
     y: lineaY + 0.2,
     size: fraseSize,
-    font: cardoItalicFont,
+    font: fontBold,
     color: rgb(0.92, 0.85, 0.72),
     opacity: 0.10,
   });
@@ -1861,15 +1875,15 @@ lineas.forEach((linea) => {
     x: lineaX,
     y: lineaY,
     size: fraseSize,
-    font: cardoItalicFont,
+    font: fontBold,
     color: rgb(0.15, 0.08, 0.03),
   });
 
-  lineaY -= 10;
+  lineaY -= 14;
 });
 
 // Actualizar y
-y = propositoBoxY -4;
+y = propositoBoxY -15;
 
 if (
   nombreAngeologo &&
@@ -1885,29 +1899,30 @@ if (
     font: fontBold,
   });
 
-  y -= 15;
+  y -= 18;
 
 const nombreSize = 12;
-const nombreAncho = fontTitulo.widthOfTextAtSize(nombreAngeologo, nombreSize);
+const nombreAncho = cardoItalicFont.widthOfTextAtSize(nombreAngeologo, nombreSize);
 
 page.drawText(nombreAngeologo, {
   x: (page.getWidth() - nombreAncho) / 2,
   y,
   size: nombreSize,
-  font: fontTitulo,
+  font: cardoItalicFont,
   color: rgb(0.28, 0.18, 0.10),
 });
 
   y -= 16;
+const tituloAncho = font.widthOfTextAtSize(tituloAngeologo, 10);
 
-  const tituloAncho = font.widthOfTextAtSize(tituloAngeologo, 10);
+const tituloX = propositoBoxX + ((propositoBoxWidth - tituloAncho) / 2)- 30;
 
-  page.drawText(tituloAngeologo, {
-    x: (600 - tituloAncho) / 2,
-    y,
-    size: 10,
-    font: cardoItalicFont,
-  });
+page.drawText(tituloAngeologo, {
+  x: tituloX,
+  y,
+  size: 10,
+  font: fontTitulo,
+});
 
 } else {
 
@@ -1975,7 +1990,6 @@ const tituloAngeologo = localStorage.getItem("tituloAngeologo") || "Título del 
 const colorGuardian = carta.color;
 const colorMentor = datosMentor?.colorMentor;
 const colorGuia = datosMentor?.colorGuia;
-const colorDia = datosMentor?.colorDia;
 const nombreColorGuardian = tablaCartas[carta.numero]?.colorNombre;
 const mensajeAngel = tablaCartas[carta.numero]?.mensaje;
 
@@ -2011,7 +2025,6 @@ function hexToRGBA(hex, alpha = 0.45) {
 const auraGuardian1 = hexToRGBA(colorGuardian, 0.55);
 const auraGuardian2 = hexToRGBA(colorGuardian, 0.35);
 
-
 const tamañoNombre =
 carta.nombre.length > 35 ? "32px" :
 carta.nombre.length > 28 ? "36px" :
@@ -2031,20 +2044,12 @@ style={{
 
 backgroundColor:"#efe3c4",  
 
-backgroundImage:`
-radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,0.22) 100%),
-radial-gradient(circle at center,
-rgba(255,255,255,0.12) 0%,
-rgba(255,255,255,0.04) 40%,
-rgba(0,0,0,0.05) 70%),
-url(${pergamino}),
-url(${texturaPapel})
-`,
+backgroundImage: `url("/assets/pdf/fondo.jpg")`,
+backgroundSize: "100% 100%",
+backgroundPosition: "center",
+backgroundRepeat: "no-repeat",
 
-backgroundSize:"100%  100%",
-backgroundPosition:"center bottom",
-backgroundRepeat:"no-repeat",
-padding:"60px 85px 140px 85px",
+padding: "40px clamp(18px, 5vw, 85px) 100px clamp(18px, 5vw, 85px)",
 minHeight:"1150px",
 
 boxShadow:`
@@ -2056,7 +2061,7 @@ inset 0 -35px 60px rgba(80,60,30,0.28)
 borderRadius:"18px",
 
 width:"100%",
-maxWidth:"900px",
+maxWidth:"1100px",
 overflow:"hidden",
 display:"block",
 
@@ -2076,19 +2081,18 @@ letterSpacing:"0.2px"
 
 <div style={{
 
-fontFamily:"Almendra Display, serif",
+fontFamily:"Cinzel Decorative, serif",
 fontSize:tamañoNombre,
 fontWeight:"700",
 letterSpacing:"3px",
 textAlign:"center",
 
-color:"#3a1f12",
+color:"#5b341c",
 
 textShadow:`
-0 0 2px rgba(255,210,120,0.65),
-0 1px 0 rgba(255,255,255,0.5),
-0 3px 6px rgba(0,0,0,0.35),
-0 0 18px rgba(255,210,120,0.45)
+0 1px 0 rgba(255,255,255,0.35),
+0 2px 3px rgba(0,0,0,0.18),
+0 0 6px rgba(255,220,140,0.12)
 `,
 
 background:"radial-gradient(circle at top, rgba(255,220,140,0.35) 0%, rgba(255,220,140,0.15) 35%, rgba(255,220,140,0) 70%)",
@@ -2096,7 +2100,8 @@ background:"radial-gradient(circle at top, rgba(255,220,140,0.35) 0%, rgba(255,2
 padding:"10px 20px",
 borderRadius:"10px",
 
-marginTop:"90px",
+
+marginTop:"130px",
 marginBottom:"4px",
 lineHeight:"1.25"
 
@@ -2105,51 +2110,91 @@ lineHeight:"1.25"
 </div>
 
 <div
-style={{
-background:"rgba(255,255,255,0.10)",
-border:"1px solid rgba(80,60,30,0.2)",
-fontFamily:"IM Fell English, serif",
-letterSpacing:"1px",
-padding:"4px 10px",
-textAlign:"center",
-borderRadius:"8px",
-fontSize:"20px"
-}}
+  style={{
+    background:"rgba(255,255,255,0.10)",
+    border:"1px solid rgba(80,60,30,0.2)",
+    fontFamily:"serif",
+    letterSpacing:"1px",
+    padding:"4px 10px",
+    width: "calc(100% - 80px)",
+    margin:"0 auto",
+    textAlign:"center",
+    borderRadius:"8px",
+    fontSize:"20px"
+  }}
 >
-Nacimiento: {carta.fecha} | Día: {carta.diaNacimiento} | Hora: {carta.hora} | Signo: {carta.signo}
+  {(() => {
+    const horaTexto = carta.hora
+      ? (() => {
+          const [hora, minuto] = carta.hora.split(":");
+          const h = parseInt(hora, 10);
+          const periodo = h >= 12 ? "PM" : "AM";
+          const hora12 = h % 12 || 12;
+
+          return ` | Hora: ${hora12}:${minuto} ${periodo}`;
+        })()
+      : "";
+
+    return `Nacimiento: ${carta.fecha} | Día: ${carta.diaNacimiento}${horaTexto} | Signo: ${carta.signo}`;
+  })()}
 </div>
 
 </div>
-
 
 {/* ANGEL DE LA GUARDA */}
 
 <div style={{
-borderRadius:"8px",
-background:"rgba(255,255,255,0.10)",
-border:"1px solid rgba(80,60,30,0.2)",
-marginBottom:"18px"
+  borderRadius:"8px",
+  background:"rgba(255,255,255,0.10)",
+  border:"1px solid rgba(80,60,30,0.2)",
+  marginBottom:"18px",
+  width: "calc(100% - 80px)",
+  margin:"0 auto 18px auto"
 }}>
 
-<div style={{
-background:`linear-gradient(90deg, ${colorGuardian}, #111827)`,
-color: colorTexto(colorGuardian),
-padding:"8px",
-fontWeight:"600",
-fontFamily:"IM Fell English, serif",
-textAlign:"center",
-letterSpacing:"3px"
-}}>
-ANGEL DE LA GUARDA
-</div>
+  <div style={{
+    background: `linear-gradient(
+  90deg,
+  ${colorGuardian}99 0%,
+  ${colorGuardian}CC 15%,
+  ${colorGuardian} 28%,
+  #081a4d 50%,
+  ${colorGuardian} 72%,
+  ${colorGuardian}CC 85%,
+  ${colorGuardian}99 100%
+)`,
+    color: colorTexto(colorGuardian),
+    padding:"8px",
+    fontSize:"24px",
+    fontWeight:"700",
+    fontFamily:"Cinzel Decorative, serif",
+    textAlign:"center",
+    letterSpacing:"3px",
+    wordSpacing:"10px",
+    textTransform:"uppercase",
+    width:"100%",
+    margin:"0 auto",
+    textShadow:`
+    0 1px 0 rgba(255,255,255,0.25),
+    0 2px 4px rgba(0,0,0,0.35)
+    `,
+    borderTop:"1px solid rgba(255,255,255,0.22)",
+    borderBottom:"1px solid rgba(0,0,0,0.28)",
+    boxShadow:`
+      inset 0 2px 0 rgba(255,255,255,0.18),
+      inset 0 -2px 0 rgba(0,0,0,0.25)
+      0 2px 6px rgba(0,0,0,0.15)
+    `
+  }}>
+    ANGEL DE LA GUARDA
+  </div>
 
-
-<div style={{
-display:"grid",
-gridTemplateColumns:"220px 1fr",
-gap:"25px",
-padding:"15px"
-}}>
+  <div style={{
+    display:"grid",
+    gridTemplateColumns:"220px 1fr",
+    gap:"25px",
+    padding:"15px"
+  }}>
 
 
 {/* IMAGEN */}
@@ -2264,68 +2309,70 @@ textShadow:`
 }}
 >
 
-<p style={{margin:"1px 0"}}>
-<span className="grabado">Número:</span> {carta.numero}
+<p style={{margin:"1px 0",color:"#7a624d"}}>
+<span className="grabado" style={{color:"#3a2414",fontWeight:"700"}}>Número:</span> {carta.numero}
 </p>
 
-<p style={{margin:"1px 0"}}>
-<span className="grabado">Ángel:</span> {carta.angel}
+<p style={{margin:"1px 0",color:"#7a624d"}}>
+<span className="grabado" style={{color:"#3a2414",fontWeight:"700"}}>Ángel:</span> {carta.angel}
 </p>
 
-<p style={{margin:"1px 0"}}>
-<span className="grabado">Color:</span> {nombreColorGuardian}
+<p style={{margin:"1px 0",color:"#7a624d"}}>
+<span className="grabado" style={{color:"#3a2414",fontWeight:"700"}}>Color:</span> {nombreColorGuardian}
 </p>
 
-<p style={{margin:"1px 0"}}>
-<span className="grabado">Planeta:</span> {carta.planeta}
+<p style={{margin:"1px 0",color:"#7a624d"}}>
+<span className="grabado" style={{color:"#3a2414",fontWeight:"700"}}>Planeta:</span> {carta.planeta}
 </p>
 
-<p style={{margin:"1px 0"}}>
-<span className="grabado">Talismán:</span> {carta.talisman}
+<p style={{margin:"1px 0",color:"#7a624d"}}>
+<span className="grabado" style={{color:"#3a2414",fontWeight:"700"}}>Talismán:</span> {carta.talisman}
 </p>
 
-<p style={{margin:"1px 0"}}>
-<span className="grabado">Aroma:</span> {carta.aroma}
+<p style={{margin:"1px 0",color:"#7a624d"}}>
+<span className="grabado" style={{color:"#3a2414",fontWeight:"700"}}>Aroma:</span> {carta.aroma}
 </p>
 
-<p style={{margin:"1px 0"}}>
-<span className="grabado">Atributo:</span> {carta.atributo}
+<p style={{margin:"1px 0",color:"#7a624d"}}>
+<span className="grabado" style={{color:"#3a2414",fontWeight:"700"}}>Atributo:</span> {carta.atributo}
 </p>
 
-<p style={{margin:"1px 0"}}>
-  <span className="grabado">Ofrenda:</span> {carta.ofrenda}
-</p>
-
-<p style={{
-  margin:"1px 0",
-  gridColumn:"1 / span 2"
-}}>
-  <span className="grabado">Coro Angelical:</span> {carta.coroAngelical}
+<p style={{margin:"1px 0",color:"#7a624d"}}>
+  <span className="grabado" style={{color:"#3a2414",fontWeight:"700"}}>Ofrenda:</span> {carta.ofrenda}
 </p>
 
 <p style={{
   margin:"1px 0",
-  gridColumn:"1 / span 2"
+  gridColumn:"1 / span 2",color:"#7a624d"
 }}>
-  <span className="grabado">Hora Canalización:</span> {carta.horaCanalizacion}
+  <span className="grabado" style={{color:"#3a2414",fontWeight:"700"}}>Coro Angelical:</span> {carta.coroAngelical}
+</p>
+
+<p style={{
+  margin:"1px 0",
+  gridColumn:"1 / span 2",color:"#7a624d"
+}}>
+  <span className="grabado" style={{color:"#3a2414",fontWeight:"700"}}>Hora Canalización:</span> {carta.horaCanalizacion}
 </p>
 
 <p style={{
 gridColumn:"1 / span 2",
 margin:"4px 0",
 fontSize:"16px",
-lineHeight:"1.35"
+lineHeight:"1.35",
+color:"#7a624d"
 }}>
-<span className="grabado">Se canaliza para:</span> {carta.seCanalizaPara}
+<span className="grabado" style={{color:"#3a2414",fontWeight:"700"}}>Se canaliza para:</span> {carta.seCanalizaPara}
 </p>
 
 <p style={{
 gridColumn:"1 / span 2",
 margin:"4px 0",
 fontSize:"16px",
-lineHeight:"1.35"
+lineHeight:"1.35",
+color:"#7a624d"
 }}>
-<span className="grabado">Don del ser de luz:</span> {carta.donSerDeLuz}
+<span className="grabado" style={{color:"#3a2414",fontWeight:"700"}}>Don del ser de luz:</span> {carta.donSerDeLuz}
 </p>
 
 </div>
@@ -2334,34 +2381,96 @@ lineHeight:"1.35"
 
 </div>
 
-<div style={{
-height:"2px",
-background:`linear-gradient(90deg, transparent, ${colorGuardian}, transparent)`,
-boxShadow:`0 0 8px ${colorGuardian}66`,
-margin:"28px 0"
-}}></div>
+<div
+  style={{
+    position:"relative",
+    display:"flex",
+    alignItems:"center",
+    justifyContent:"center",
+    margin:"28px 0"
+  }}
+>
+  <div
+    style={{
+      width:"100%",
+      height:"2px",
+      background:`linear-gradient(
+        90deg,
+        transparent 0%,
+        ${colorGuardian} 20%,
+        ${colorGuardian} 80%,
+        transparent 100%
+      )`,
+      boxShadow:`0 0 8px ${colorGuardian}66`
+    }}
+  />
+
+  <div
+    style={{
+      position:"absolute",
+      width:"12px",
+      height:"12px",
+      borderRadius:"50%",
+      background:colorGuardian,
+      boxShadow:`
+        0 0 0 2px rgba(0,0,0,0.18),
+        0 0 8px ${colorGuardian}88,
+        inset 0 1px 2px rgba(255,255,255,0.4)
+      `
+    }}
+  />
+</div>
 
 {/* ANGEL MENTOR */}
 
-<div style={{border:"1px solid #ddd",marginBottom:"18px"}}>
-
 <div style={{
-background:`linear-gradient(90deg, ${colorMentor}, #111827)`,
-color: colorTexto(colorGuardian),
-padding:"8px",
-fontWeight:"600",
-fontFamily:"IM Fell English, serif",
-textAlign:"center",
-letterSpacing:"3px"
+  borderRadius:"8px",
+  background:"rgba(255,255,255,0.10)",
+  border:"1px solid rgba(80,60,30,0.2)",
+  marginBottom:"18px",
+  width:"calc(100% - 80px)",
+  margin:"0 auto 18px auto"
 }}>
-ANGEL MENTOR
-</div>
+
+  <div style={{
+    background: `linear-gradient(
+  90deg,
+  ${colorMentor}99 0%,
+  ${colorMentor}CC 15%,
+  ${colorMentor} 28%,
+  #2e1065 50%,
+  ${colorMentor} 72%,
+  ${colorMentor}CC 85%,
+  ${colorMentor}99 100%
+)`,
+    color: colorTexto(colorMentor),
+    padding:"8px",
+    fontSize:"24px",
+    fontWeight:"700",
+    fontFamily:"Cinzel Decorative, serif",
+    textAlign:"center",
+    letterSpacing:"3px",
+    wordSpacing:"10px",
+    width:"100%",
+    margin:"0 auto",
+    textShadow:`
+    0 1px 0 rgba(255,255,255,0.25),
+    0 2px 4px rgba(0,0,0,0.35)
+    `,
+    borderTop:"1px solid rgba(255,255,255,0.22)",
+    borderBottom:"1px solid rgba(0,0,0,0.28)",
+    boxShadow:`
+      inset 0 2px 0 rgba(255,255,255,0.18),
+      inset 0 -2px 0 rgba(0,0,0,0.25)
+      0 2px 6px rgba(0,0,0,0.15)
+    `
+  }}>
+    ANGEL MENTOR
+  </div>
 
 <div style={{
-padding:"18px 12px 18px 26px",
+padding:"14px 8px 14px 18px",
 display:"grid",
-background:"rgba(255,248,220,0.18)",
-border:"1px solid rgba(80,60,30,0.2)",
 gridTemplateColumns:"1fr 260px",
 gap:"24px",
 alignItems:"center"
@@ -2370,20 +2479,15 @@ alignItems:"center"
 
 <div style={{
 display:"grid",
-gridTemplateColumns:"1fr 1fr",
-gap:"6px 22px",
-
+gridTemplateColumns:"0.95fr 1.05fr",
+gap:"8px 34px",
 fontSize:"16px",
 fontFamily:"IM Fell English, serif",
 letterSpacing:"0.5px",
-
 lineHeight:"1.25",
-paddingLeft:"10px",
-
+paddingLeft:"4px",
 color:"#3d2b1f",
-
 mixBlendMode:"multiply",
-
 textShadow:`
 0 1px 0 #f7edd6,
 0 -1px 0 #8a6f45,
@@ -2391,22 +2495,24 @@ textShadow:`
 `
 }}>
 
-<p style={{margin:"2px 0"}}><b style={{color:"#4a3720"}}>Mentor:</b> {carta.mentor}</p>
-<p style={{margin:"2px 0"}}><b style={{color:"#4a3720"}}>Color:</b> {nombreColorMentor}</p>
-<p style={{margin:"2px 0"}}><b style={{color:"#4a3720"}}>Código Sagrado:</b> {carta.mentorCodigo}</p>
+<p style={{margin:"2px 0",color:"#7a624d"}}><b style={{color:"#3a2414",fontWeight:"700"}}>Mentor:</b> {carta.mentor}</p>
+<p style={{margin:"2px 0",color:"#7a624d"}}><b style={{color:"#3a2414",fontWeight:"700"}}>Color:</b> {nombreColorMentor}</p>
 
-<p style={{margin:"2px 0"}}><b style={{color:"#4a3720"}}>Planeta:</b> {carta.planetaMentor}</p>
-<p style={{margin:"2px 0"}}><b style={{color:"#4a3720"}}>Atributo:</b> {carta.atributoMentor}</p>
+<p style={{margin:"2px 0",color:"#7a624d"}}><b style={{color:"#3a2414",fontWeight:"700"}}>Código Sagrado:</b> {carta.mentorCodigo}</p>
+<p style={{margin:"2px 0",color:"#7a624d"}}><b style={{color:"#3a2414",fontWeight:"700"}}>Planeta:</b> {carta.planetaMentor}</p>
 
-<p style={{margin:"2px 0"}}><b style={{color:"#4a3720"}}>Aroma:</b> {carta.aromaMentor}</p>
-<p style={{margin:"2px 0"}}><b style={{color:"#4a3720"}}>Gracia:</b> {carta.graciaMentor}</p>
+<p style={{margin:"2px 0",color:"#7a624d"}}><b style={{color:"#3a2414",fontWeight:"700"}}>Atributo:</b> {carta.atributoMentor}</p>
+<p style={{margin:"2px 0",color:"#7a624d"}}><b style={{color:"#3a2414",fontWeight:"700"}}>Aroma:</b> {carta.aromaMentor}</p>
 
+<p style={{margin:"2px 0",color:"#7a624d"}}><b style={{color:"#3a2414",fontWeight:"700"}}>Gracia:</b> {carta.graciaMentor}</p>
+<p style={{margin:"2px 0",color:"#7a624d"}}><b style={{color:"#3a2414",fontWeight:"700"}}>Gemas:</b> {carta.gemasMentor}</p>
 
-<p style={{margin:"2px 0"}}><b style={{color:"#4a3720"}}>Gemas:</b> {carta.gemasMentor}</p>
-<p style={{margin:"2px 0"}}><b style={{color:"#4a3720"}}>Se canaliza para:</b> {carta.canalizacionMentor}</p>
+<p style={{gridColumn:"1 / span 2", margin:"2px 0",color:"#7a624d"}}>
+  <b style={{color:"#3a2414",fontWeight:"700"}}>Se canaliza para:</b> {carta.canalizacionMentor}
+</p>
 
-<p style={{gridColumn:"1 / span 2", margin:"2px 0"}}>
-<b style={{color:"#4a3720"}}>Don:</b> {carta.donMentor}
+<p style={{gridColumn:"1 / span 2", margin:"2px 0",color:"#7a624d"}}>
+  <b style={{color:"#3a2414",fontWeight:"700"}}>Don:</b> {carta.donMentor}
 </p>
 
 </div>
@@ -2458,7 +2564,7 @@ zIndex:0
   style={{
     position:"relative",
     zIndex:1,
-
+    marginTop:"-20px",
     width:"260px",
     height:"260px",
     maxWidth:"260px",
@@ -2492,104 +2598,238 @@ zIndex:0
 
 </div>
 
-<div style={{
-height:"2px",
-background:`linear-gradient(90deg, transparent, ${colorMentor}, transparent)`,
-boxShadow:`0 0 8px ${colorMentor}66`,
-margin:"28px 0"
-}}></div>
+<div
+  style={{
+    position:"relative",
+    display:"flex",
+    alignItems:"center",
+    justifyContent:"center",
+    margin:"28px 0"
+  }}
+>
+  <div
+    style={{
+      width:"100%",
+      height:"2px",
+      background:`linear-gradient(
+        90deg,
+        transparent 0%,
+        ${colorMentor} 20%,
+        ${colorMentor} 80%,
+        transparent 100%
+      )`,
+      boxShadow:`0 0 8px ${colorMentor}66`
+    }}
+  />
 
+  <div
+    style={{
+      position:"absolute",
+      width:"16px",
+      height:"16px",
+      borderRadius:"50%",
+      background:colorMentor,
+      boxShadow:`
+        0 0 0 2px rgba(0,0,0,0.18),
+        0 0 12px ${colorMentor}88,
+        inset 0 2px 3px rgba(255,255,255,0.45)
+      `
+    }}
+  />
+</div>
 
 {/* INFLUENCIAS ANGELICALES */}
 
 <div style={{
-borderRadius:"8px",
-background:"rgba(255,255,255,0.10)",
-border:"1px solid rgba(80,60,30,0.2)",
-marginBottom:"18px"
+  borderRadius:"8px",
+  background:"rgba(255,255,255,0.10)",
+  border:"1px solid rgba(80,60,30,0.2)",
+  marginBottom:"18px",
+  width:"calc(100% - 80px)",
+  margin:"0 auto 18px auto"
 }}>
 
+  <div style={{
+    background: `linear-gradient(
+  90deg,
+  ${colorGuia}99 0%,
+  ${colorGuia}CC 15%,
+  ${colorGuia} 28%,
+  #0f172a 50%,
+  ${colorGuia} 72%,
+  ${colorGuia}CC 85%,
+  ${colorGuia}99 100%
+)`,
+    color: colorTexto(colorGuia),
+    padding:"8px",
+    fontSize:"24px",
+    fontWeight:"700",
+    fontFamily:"Cinzel Decorative, serif",
+    textAlign:"center",
+    letterSpacing:"3px",
+    wordSpacing:"10px",
+    width:"100%",
+    margin:"0 auto",
+    textShadow:`
+    0 1px 0 rgba(255,255,255,0.25),
+    0 2px 4px rgba(0,0,0,0.35)
+    `,
+    borderTop:"1px solid rgba(255,255,255,0.22)",
+    borderBottom:"1px solid rgba(0,0,0,0.28)",
+    boxShadow:`
+      inset 0 2px 0 rgba(255,255,255,0.18),
+      inset 0 -2px 0 rgba(0,0,0,0.25)
+      0 2px 6px rgba(0,0,0,0.15)
+    `
+  }}>
+    INFLUENCIAS ANGELICALES
+  </div>
+
 <div style={{
-background:`linear-gradient(90deg, ${colorGuia}, #111827)`,
-color: colorTexto(colorDia),
-padding:"8px",
-fontWeight:"600",
-fontFamily:"IM Fell English, serif",
-textAlign:"center",
-letterSpacing:"3px"
+  padding:"18px",
+  display:"grid",
+  gridTemplateColumns:"1fr 1fr 1fr 1fr",
+  gap:"12px 18px",
+  fontSize:"15px",
+  fontFamily:"IM Fell English, serif",
+  letterSpacing:"0.4px",
+  lineHeight:"1.2",
+  color:"#6f5742",
+  mixBlendMode:"multiply",
+  textShadow:`
+    0 1px 0 #f7edd6,
+    0 -1px 0 #8a6f45,
+    0 0 2px rgba(0,0,0,0.15)
+  `
 }}>
-INFLUENCIAS ANGELICALES
+
+  <div>
+    <p style={{margin:"2px 0",color:"#7a624d"}}>
+      <b style={{color:"#3a2414",fontWeight:"700"}}>Ángel guía:</b> {carta.angelGuia}
+    </p>
+    <p style={{margin:"2px 0",color:"#7a624d"}}>
+      <b style={{color:"#3a2414",fontWeight:"700"}}>Color:</b> {nombreColorGuia}
+    </p>
+  </div>
+
+  <div>
+    <p style={{margin:"2px 0",color:"#7a624d"}}>
+      <b style={{color:"#3a2414",fontWeight:"700"}}>Ángel mes:</b> {carta.angelMes}
+    </p>
+    <p style={{margin:"2px 0",color:"#7a624d"}}>
+      <b style={{color:"#3a2414",fontWeight:"700"}}>Ángel signo:</b> {carta.angelSigno}
+    </p>
+  </div>
+
+  <div>
+    <p style={{margin:"2px 0",color:"#7a624d"}}>
+      <b style={{color:"#3a2414",fontWeight:"700"}}>Ángel día:</b> {carta.angelDia}
+    </p>
+    <p style={{margin:"2px 0",color:"#7a624d"}}>
+      <b style={{color:"#3a2414",fontWeight:"700"}}>Color:</b> {nombreColorDia}
+    </p>
+  </div>
+
+  <div>
+    <p style={{margin:"2px 0",color:"#7a624d"}}>
+      <b style={{color:"#3a2414",fontWeight:"700"}}>Ángel hora:</b> {carta.angelHora}
+    </p>
+    <p style={{margin:"2px 0",color:"#7a624d"}}>
+      <b style={{color:"#3a2414",fontWeight:"700"}}>Ángel año:</b> {carta.angelAnio}
+    </p>
+  </div>
+
+  <div style={{gridColumn:"1 / span 4", marginTop:"4px"}}>
+    <p style={{margin:"2px 0",color:"#7a624d"}}>
+      <b style={{color:"#3a2414",fontWeight:"700"}}>Significado:</b> {carta.significado}
+    </p>
+  </div>
+
 </div>
 
-<div style={{
-padding:"18px",
-display:"grid",
-gridTemplateColumns:"1fr 1fr 1fr",
-gap:"15px",
-
-fontSize:"16px",
-fontFamily:"IM Fell English, serif",
-letterSpacing:"0.5px",
-lineHeight:"1.25",
-
-color:"#3d2b1f",
-mixBlendMode:"multiply",
-
-textShadow:`
-0 1px 0 #f7edd6,
-0 -1px 0 #8a6f45,
-0 0 2px rgba(0,0,0,0.15)
-`
-}}>
-
-<div>
-<p style={{margin:"2px 0"}}><b>Ángel guía:</b> {carta.angelGuia}</p>
-<p style={{margin:"2px 0"}}><b>Color:</b> {nombreColorGuia}</p>
-<p style={{margin:"2px 0"}}><b>Significado:</b> {carta.significado}</p>
 </div>
 
-<div>
-<p style={{margin:"2px 0"}}><b>Ángel por mes:</b> {carta.angelMes}</p>
-<p style={{margin:"2px 0"}}><b>Ángel por signo:</b> {carta.angelSigno}</p>
-</div>
+<div
+  style={{
+    position:"relative",
+    display:"flex",
+    alignItems:"center",
+    justifyContent:"center",
+    margin:"28px 0"
+  }}
+>
+  <div
+    style={{
+      width:"100%",
+      height:"2px",
+      background:`linear-gradient(
+        90deg,
+        transparent 0%,
+        ${colorGuia} 20%,
+        ${colorGuia} 80%,
+        transparent 100%
+      )`,
+      boxShadow:`0 0 8px ${colorGuia}66`
+    }}
+  />
 
-<div>
-<p style={{margin:"2px 0"}}><b>Ángel por día:</b> {carta.angelDia}</p>
-<p style={{margin:"2px 0"}}><b>Color:</b> {nombreColorDia}</p>
-<p style={{margin:"2px 0"}}><b>Ángel por hora:</b> {carta.angelHora}</p>
-<p style={{margin:"2px 0"}}><b>Ángel por año:</b> {carta.angelAnio}</p>
+  <div
+    style={{
+      position:"absolute",
+      width:"16px",
+      height:"16px",
+      borderRadius:"50%",
+      background:colorGuia,
+      boxShadow:`
+        0 0 0 2px rgba(0,0,0,0.18),
+        0 0 12px ${colorGuia}88,
+        inset 0 2px 3px rgba(255,255,255,0.45)
+      `
+    }}
+  />
 </div>
-
-</div>
-
-</div>
-
-<div style={{
-height:"2px",
-background:`linear-gradient(90deg, transparent, ${colorGuia}, transparent)`,
-boxShadow:`0 0 8px ${colorGuia}66`,
-margin:"28px 0"
-}}></div>
 
 {/* ESENCIAS */}
 
 <div style={{
-borderRadius:"8px",
-background:"rgba(255,255,255,0.10)",
-border:"1px solid rgba(80,60,30,0.2)",
+  borderRadius:"8px",
+  background:"rgba(255,255,255,0.10)",
+  border:"1px solid rgba(80,60,30,0.2)",
+  width:"calc(100% - 80px)",
+  margin:"0 auto 18px auto"
 }}>
 
-<div style={{
-background:`linear-gradient(90deg, ${colorDia}, #111827)`,
-color:"white",
-padding:"8px",
-fontWeight:"600",
-fontFamily:"IM Fell English, serif",
-textAlign:"center",
-letterSpacing:"3px"
+  <div style={{
+  background: `linear-gradient(
+    90deg,
+    ${colorGuardian}99 0%,
+    ${colorGuardian}CC 15%,
+    ${colorGuardian} 28%,
+    #0f172a 50%,
+    ${colorGuardian} 72%,
+    ${colorGuardian}CC 85%,
+    ${colorGuardian}99 100%
+  )`,
+  color:colorTexto(colorGuardian),
+  padding:"8px",
+  fontSize:"24px",
+  fontWeight:"700",
+  fontFamily:"Cinzel Decorative, serif",
+  textAlign:"center",
+  letterSpacing:"3px",
+  wordSpacing:"10px",
+  width:"100%",
+  margin:"0 auto",
+  borderTop:"1px solid rgba(255,255,255,0.22)",
+  borderBottom:"1px solid rgba(0,0,0,0.28)",
+  boxShadow:`
+    inset 0 2px 0 rgba(255,255,255,0.18),
+    inset 0 -2px 0 rgba(0,0,0,0.25)
+    0 2px 6px rgba(0,0,0,0.15)
+  `
 }}>
-ESENCIAS LOCION ANGELICAL
-</div>
+    ESENCIAS LOCION ANGELICAL
+  </div>
 
 <div style={{
 display:"grid",
@@ -2597,7 +2837,6 @@ gridTemplateColumns:"200px 1fr",
 gap:"20px",
 padding:"18px"
 }}>
-
 
 <div style={{
 display:"flex",
@@ -2727,22 +2966,74 @@ textShadow:`
 `
 }}>
 
-<p style={{margin:"2px 0"}}><b>Esencia por signo:</b> {carta.esenciaSigno}</p>
-<p style={{margin:"2px 0"}}><b>Esencia por mes:</b> {carta.esenciaMes}</p>
+<p style={{margin:"2px 0", color:"#6f5742"}}>
+  <b style={{color:"#3a2414",fontWeight:"700"}}>Esencia por signo:</b> {carta.esenciaSigno}
+</p>
 
-<p style={{margin:"2px 0"}}><b>Esencia por día:</b> {carta.esenciaDia}</p>
-<p style={{margin:"2px 0"}}><b>Esencia mentor:</b> {carta.esenciaMentor}</p>
+<p style={{margin:"2px 0", color:"#6f5742"}}>
+  <b style={{color:"#3a2414",fontWeight:"700"}}>Esencia por mes:</b> {carta.esenciaMes}
+</p>
 
-<p style={{margin:"2px 0"}}><b>Esencia ángel guarda:</b> {carta.esenciaAngelGuarda}</p>
+<p style={{margin:"2px 0", color:"#6f5742"}}>
+  <b style={{color:"#3a2414",fontWeight:"700"}}>Esencia por día:</b> {carta.esenciaDia}
+</p>
 
-<p style={{gridColumn:"1 / span 2", margin:"2px 0"}}>
-<b>Sirve para:</b> {carta.sirvePara}
+<p style={{margin:"2px 0", color:"#6f5742"}}>
+  <b style={{color:"#3a2414",fontWeight:"700"}}>Esencia mentor:</b> {carta.esenciaMentor}
+</p>
+
+<p style={{gridColumn:"1 / span 2", margin:"2px 0", color:"#6f5742"}}>
+  <b style={{color:"#3a2414",fontWeight:"700"}}>Esencia ángel guarda:</b> {carta.esenciaAngelGuarda}
+</p>
+
+<p style={{gridColumn:"1 / span 2", margin:"2px 0", color:"#6f5742"}}>
+  <b style={{color:"#3a2414",fontWeight:"700"}}>Sirve para:</b> {carta.sirvePara}
 </p>
 
 </div>
 
 </div>
 
+</div>
+
+<div
+  style={{
+    position:"relative",
+    display:"flex",
+    alignItems:"center",
+    justifyContent:"center",
+    margin:"28px 0"
+  }}
+>
+  <div
+    style={{
+      width:"100%",
+      height:"2px",
+      background:`linear-gradient(
+        90deg,
+        transparent 0%,
+        ${colorGuardian} 20%,
+        ${colorGuardian} 80%,
+        transparent 100%
+      )`,
+      boxShadow:`0 0 8px ${colorGuardian}66`
+    }}
+  />
+
+  <div
+    style={{
+      position:"absolute",
+      width:"16px",
+      height:"16px",
+      borderRadius:"50%",
+      background:colorGuardian,
+      boxShadow:`
+        0 0 0 2px rgba(0,0,0,0.18),
+        0 0 12px ${colorGuardian}88,
+        inset 0 2px 3px rgba(255,255,255,0.45)
+      `
+    }}
+  />
 </div>
 
 <div style={{textAlign:"center", marginTop:"25px"}}>
@@ -2761,7 +3052,7 @@ background:"rgba(255,255,255,0.10)",
 
 borderRadius:"8px",
 
-fontFamily:"IM Fell English, serif",
+fontFamily:"Cinzel Decorative, serif",
 fontSize:"20px",
 
 textAlign:"center",
@@ -2779,22 +3070,29 @@ justifyContent:"center"
 }}>
 
 <div style={{
-fontSize:"14px",
+fontSize:"24px",
+padding:"8px",
+fontFamily:"Cinzel Decorative, serif",
+textAlign:"center",
 letterSpacing:"3px",
-marginBottom:"6px",
-color:"#2a1a0f"
+wordSpacing:"10px",
+marginBottom:"0 auto",
+color:"#2a1a0f",
+textShadow:`
+    0 1px 0 rgba(255,255,255,0.25),
+    0 2px 4px rgba(0,0,0,0.35)
+    `,    
 }}>
 PROPOSITO DEL ÁNGEL DE LA GUARDA
 </div>
 
 <div style={{
-fontFamily:"Almendra Display, serif",
-fontSize:"26px",
-fontStyle:"italic",
-fontWeight:"600",
+fontFamily:"serif",
+fontSize:"30px",
+fontWeight:"700",
 lineHeight:"1.5",
-letterSpacing:"0.3",
-color:"#2a1a0f"
+letterSpacing:"3px",
+color:"#2a1a0f",
 
 }}>
 “{mensajeAngel}”
@@ -2811,47 +3109,34 @@ color:"#2a1a0f"
 </div>
 
 <div style={{
-
 marginTop:"-135px",
 paddingTop:"10px",
 maxWidth:"794px",
 marginLeft:"auto",
 marginRight:"auto",
 width:"70%",
-
 borderTop:`1px solid rgba(120,90,400,0.35)`,
 borderRadius:"8px",
-
 textAlign:"center",
-
-fontFamily:"IM Fell English, serif",
 fontSize:"15px",
 letterSpacing:"1px",
-
 opacity:"0.9"
-
 }}>
 
 <div
 className="firmaAngelologo"
 style={{
-
 textAlign:"center",
-
 marginTop:"1px",
+font:"fontTitulo",
 paddingTop:"10px",
 paddingBottom:"12px",
-
 borderTop:"1px solid rgba(120,90,40,0.35)",
-
 background:"rgba(255,248,230,0.10)",
-
 borderRadius:"8px",
-
 width:"70%",
 marginLeft:"auto",
 marginRight:"auto"
-
 }}
 >
 
@@ -2876,7 +3161,7 @@ marginRight:"auto"
     <div style={{
       fontSize:"16px",
       letterSpacing:"0.5px",
-
+      font:"fontTitulo",
     }}>
       {nombreAngeologo}
     </div>
