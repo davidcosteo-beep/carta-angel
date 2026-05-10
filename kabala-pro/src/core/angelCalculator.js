@@ -1,23 +1,36 @@
+import { tablaCartas } from "./tablaCartas";
+
 export function calcularNumeroAngel(fechaNacimiento) {
-  const fecha = new Date(fechaNacimiento);
-  const year = fecha.getFullYear();
 
-  const inicioCiclo = new Date(year, 2, 21); // 21 marzo
-  const inicioAnio = new Date(year, 0, 1);
-  const inicioAnioSiguiente = new Date(year + 1, 0, 1);
+  const [, month, day] = fechaNacimiento
+    .split("-")
+    .map(Number);
 
-  const diasEnAnio =
-    (inicioAnioSiguiente - inicioAnio) / (1000 * 60 * 60 * 24);
+  const fecha = `${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 
-  let diferencia =
-    (fecha - inicioCiclo) / (1000 * 60 * 60 * 24);
+  for (const [numero, carta] of Object.entries(tablaCartas)) {
 
-  let diaRelativo =
-    ((diferencia + diasEnAnio) % diasEnAnio) + 1;
+    const { desde, hasta } = carta;
 
-  let numero = Math.ceil(diaRelativo / 5);
+    // rango normal
+    if (desde <= hasta) {
 
-  numero = Math.max(1, Math.min(72, numero));
+      if (fecha >= desde && fecha <= hasta) {
+        return Number(numero);
+      }
 
-  return numero;
+    }
+
+    // rango cruzando año
+    else {
+
+      if (fecha >= desde || fecha <= hasta) {
+        return Number(numero);
+      }
+
+    }
+
+  }
+
+  return null;
 }

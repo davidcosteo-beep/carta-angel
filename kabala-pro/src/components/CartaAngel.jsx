@@ -16,7 +16,7 @@ const anchoUtil = 464;
 
 const imagenPrincipalX = inicioX + 5;
 const col1X = inicioX + 130;
-const col2X = inicioX + 280;
+const col2X = inicioX + 300;
 const labelOffset = 80;
 const lineHeight = 14;  
 
@@ -25,25 +25,27 @@ function wrapText(text, maxWidth, font, size) {
 
   if (text === null || text === undefined) return [];
 
-  text = String(text); // convierte todo a string
+  text = String(text);
 
   const words = text.split(" ");
   let lines = [];
   let currentLine = "";
 
   words.forEach(word => {
+
     const testLine = currentLine + word + " ";
     const width = font.widthOfTextAtSize(testLine, size);
 
     if (width < maxWidth) {
       currentLine = testLine;
     } else {
-      lines.push(currentLine);
+      lines.push(currentLine.trim());
       currentLine = word + " ";
     }
+
   });
 
-  if (currentLine) lines.push(currentLine);
+  if (currentLine) lines.push(currentLine.trim());
 
   return lines;
 }
@@ -279,13 +281,35 @@ const text = "ANGEL    DE    LA    GUARDA";
 const textWidth = fontBold.widthOfTextAtSize(text, 15);
 const letterSpacingTitulo = 3.5;
 
+// 🔹 Color real de la barra
+const colorBarraGuarda = {
+  red: rBase,
+  green: gBase,
+  blue: bBase
+};
+
+// 🔹 Detectar luminosidad
+const luminosidadGuarda =
+  (colorBarraGuarda.red * 0.299) +
+  (colorBarraGuarda.green * 0.587) +
+  (colorBarraGuarda.blue * 0.114);
+
+const fondoClaroGuarda =
+  luminosidadGuarda > 0.68;
+
+// 🔹 Color inteligente
+const colorTextoGuarda = fondoClaroGuarda
+  ? rgb(0.18, 0.18, 0.18)
+  : rgb(1, 1, 1);
+
+// 🔹 Dibujar título
 page.drawText(text, {
   x: inicioX + (anchoUtil - textWidth) / 2,
   y: inicioY - 1,
   size: 15,
   font: fontTituloDecorativo,
-  characterSpacing:letterSpacingTitulo,
-  color: rgb(1, 1, 1),
+  characterSpacing: letterSpacingTitulo,
+  color: colorTextoGuarda,
 });
 
 const angelBytes = await fetch(`/assets/pdf/angeles/${carta.angel.toLowerCase()}.png`)
@@ -328,11 +352,11 @@ let y = 685;
 const drawLine2Cols = (label1, value1, label2, value2) => {
 
   const lines1 = value1
-    ? wrapText(value1, 95, font, 11)
+    ? wrapText(value1, 95, font, 12)
     : [];
 
   const lines2 = value2
-    ? wrapText(value2, 95, font, 11)
+    ? wrapText(value2, 95, font, 12)
     : [];
 
   const maxLines = Math.max(lines1.length, lines2.length);
@@ -347,7 +371,7 @@ const drawLine2Cols = (label1, value1, label2, value2) => {
   page.drawText(label1 + ":", {
   x: col1X + 0.5,
   y: y - 0.4,
-  size: 11,
+  size: 12,
   font: fontBold,
   color: colorSombra,
   opacity: 0.28,
@@ -356,7 +380,7 @@ const drawLine2Cols = (label1, value1, label2, value2) => {
   page.drawText(label1 + ":", {
   x: col1X - 0.2,
   y: y + 0.2,
-  size: 11,
+  size: 12,
   font: fontBold,
   color: colorLuz,
   opacity: 0.15,
@@ -365,7 +389,7 @@ const drawLine2Cols = (label1, value1, label2, value2) => {
 page.drawText(label1 + ":", {
   x: col1X,
   y,
-  size: 11,
+  size: 12,
   font: fontBold,
   color: colorTextoPrincipal,
 });
@@ -376,7 +400,7 @@ page.drawText(label1 + ":", {
   page.drawText(lines1[i], {
   x: col1X + labelOffset + 0.4,
   y: y - 0.3,
-  size: 11,
+  size: 12,
   font,
   color: colorSombra,
   opacity: 0.15,
@@ -385,7 +409,7 @@ page.drawText(label1 + ":", {
 page.drawText(lines1[i], {
   x: col1X + labelOffset,
   y,
-  size: 11,
+  size: 12,
   font,
   color: colorTextoPrincipal,
 });
@@ -397,7 +421,7 @@ page.drawText(lines1[i], {
   page.drawText(label2 + ":", {
     x: col2X + 0.5,
     y: y - 0.4,
-    size: 11,
+    size: 12,
     font: fontBold,
     color: colorSombra,
     opacity: 0.28,
@@ -406,7 +430,7 @@ page.drawText(lines1[i], {
   page.drawText(label2 + ":", {
     x: col2X - 0.2,
     y: y + 0.2,
-    size: 11,
+    size: 12,
     font: fontBold,
     color: colorLuz,
     opacity: 0.15,
@@ -415,7 +439,7 @@ page.drawText(lines1[i], {
   page.drawText(label2 + ":", {
     x: col2X,
     y,
-    size: 11,
+    size: 12,
     font: fontBold,
     color: colorTextoPrincipal,
   });
@@ -425,7 +449,7 @@ if (lines2[i]) {
   page.drawText(lines2[i], {
     x: col2X + 58 + 0.4,
     y: y - 0.3,
-    size: 11,
+    size: 12,
     font,
     color: colorSombra,
     opacity: 0.15,
@@ -434,7 +458,7 @@ if (lines2[i]) {
   page.drawText(lines2[i], {
     x: col2X + 58,
     y,
-    size: 11,
+    size: 12,
     font,
     color: colorTextoPrincipal,
   });
@@ -482,21 +506,68 @@ y += 50;
 
 drawLine2Cols("Número", carta.numero, "Ángel", carta.angel);
 drawLine2Cols("Color", nombreColorGuardian, "Planeta", carta.planeta);
-drawLine2Cols("Coro angelical", carta.coroAngelical, "Aroma", carta.aroma);
-drawLine2Cols("Talismán", carta.talisman, "Atributo", carta.atributo);
-drawLine2Cols("Ofrenda", carta.ofrenda, "", "");
-
+drawLine2Cols("Talismán", carta.talisman, "Coro", carta.coroAngelical);
 
 y -= 1;
+
+page.drawText("Aroma:", {
+  x: col1X,
+  y,
+  size: 12,
+  font: fontBold,
+});
+
+page.drawText(String(carta.aroma || ""), {
+  x: col1X + 50,
+  y,
+  size: 12,
+  font,
+});
+
+y -=16;
+
+page.drawText("Atributo:", {
+  x: col1X,
+  y,
+  size: 12,
+  font: fontBold,
+});
+
+page.drawText(String(carta.atributo || ""), {
+  x: col1X +55,
+  y,
+  size: 12,
+  font,
+});
+
+y -= 16;
+
+
+page.drawText("Ofrenda:", {
+  x: col1X,
+  y,
+  size: 12,
+  font: fontBold,
+});
+
+page.drawText(String(carta.ofrenda || ""), {
+  x: col1X + 58,
+  y,
+  size: 12,
+  font,
+});
+
+y -= 15;
 
 // TÍTULO
 
 page.drawText("Se canaliza para:", {
   x: col1X,
   y,
-  size: 11,
+  size: 12,
   font:fontBold,
 });
+
 
 y -= 15;
 
@@ -564,7 +635,7 @@ y = drawJustifiedText(
   y,
   320,
   font,
-  11,
+  12,
   14
 );
 
@@ -573,19 +644,17 @@ y -= 6;
 page.drawText("Don del ser de luz:", {
   x: col1X,
   y,
-  size: 11,
+  size: 12,
   font: fontBold,
 });
 
-y -= 15;
-
 y = drawJustifiedText(
   carta.donSerDeLuz,
-  col1X,
+  col1X + 105,
   y,
   320,
   font,
-  11,
+  12,
   14
 );
 
@@ -652,7 +721,7 @@ if(y <120) {
   y=120;
 }
 
-// 🔍 BUSCAR MENTOR
+// BUSCAR MENTOR
 const normalizar = (t) =>
   t?.toLowerCase().trim().replace(/\s+/g, "");
 
@@ -674,8 +743,8 @@ const mentorData = Object.values(tablaMentor).find(
 
     let y = yStart;
 
-  const col1X = 80;
-  const col2X = 255;
+  const col1X = 70;
+  const col2X = 300;
   const imgX = 380;
   const lineHeight = 15;
 
@@ -798,44 +867,76 @@ page.drawRectangle({
 const titulo = "ANGEL    MENTOR";
 const fontSizeTitulo = 15;
 const letterSpacingTitulo = 3.5;
+const fondoClaroMentor = luminosidadMentor > 0.68;
 
+// 🔹 Colores inteligentes
+const colorTextoMentor = fondoClaroMentor
+  ? rgb(0.18, 0.18, 0.18)
+  : rgb(1, 1, 1);
+
+const colorSombraMentor = fondoClaroMentor
+  ? rgb(0, 0, 0)
+  : rgb(0.20, 0.08, 0.03);
+
+const opacitySombraMentor = fondoClaroMentor
+  ? 0.18
+  : 0.28;
+
+const colorBrilloMentor = fondoClaroMentor
+  ? rgb(1, 1, 1)
+  : rgb(1, 0.95, 0.88);
+
+const opacityBrilloMentor = fondoClaroMentor
+  ? 0.05
+  : 0.15;
+
+// 🔹 Calcular ancho real del título
 let tituloWidth = 0;
 
 for (const char of titulo) {
-  tituloWidth += fontTituloDecorativo.widthOfTextAtSize(char, fontSizeTitulo) + letterSpacingTitulo;
+
+  tituloWidth +=
+    fontTituloDecorativo.widthOfTextAtSize(
+      char,
+      fontSizeTitulo
+    ) + letterSpacingTitulo;
+
 }
 
 tituloWidth -= letterSpacingTitulo;
 
 const tituloX = (600 - tituloWidth) / 2;
 
+// 🔹 Sombra
 page.drawText(titulo, {
   x: tituloX + 1,
   y: barraMentorY + 5.5,
   size: fontSizeTitulo,
   font: fontTituloDecorativo,
   characterSpacing: letterSpacingTitulo,
-  color: rgb(0.20, 0.08, 0.03),
-  opacity: 0.28,
+  color: colorSombraMentor,
+  opacity: opacitySombraMentor,
 });
 
+// 🔹 Brillo
 page.drawText(titulo, {
   x: tituloX - 0.3,
   y: barraMentorY + 7.2,
   size: fontSizeTitulo,
   font: fontTituloDecorativo,
   characterSpacing: letterSpacingTitulo,
-  color: rgb(1, 0.95, 0.88),
-  opacity: 0.15,
+  color: colorBrilloMentor,
+  opacity: opacityBrilloMentor,
 });
 
+// 🔹 Texto principal
 page.drawText(titulo, {
   x: tituloX,
   y: barraMentorY + 6.8,
   size: fontSizeTitulo,
   font: fontTituloDecorativo,
   characterSpacing: letterSpacingTitulo,
-  color: rgb(1, 1, 1),
+  color: colorTextoMentor,
 });
 
 y -= 20;
@@ -845,7 +946,7 @@ y -= 20;
         page.drawText(`${l1}:`, {
   x: col1X + 0.5,
   y: y - 0.4,
-  size: 11,
+  size: 12,
   font: fontBold,
   color: colorSombra,
   opacity: 0.28,
@@ -854,7 +955,7 @@ y -= 20;
 page.drawText(`${l1}:`, {
   x: col1X - 0.2,
   y: y + 0.2,
-  size: 11,
+  size: 12,
   font: fontBold,
   color: colorLuz,
   opacity: 0.15,
@@ -863,7 +964,7 @@ page.drawText(`${l1}:`, {
 page.drawText(`${l1}:`, {
   x: col1X,
   y,
-  size: 11,
+  size: 12,
   font: fontBold,
   color: colorTextoPrincipal,
 });
@@ -871,7 +972,7 @@ page.drawText(`${l1}:`, {
 page.drawText(String(v1), {
   x: col1X + 70 + 0.4,
   y: y - 0.3,
-  size: 11,
+  size: 12,
   font,
   color: colorSombra,
   opacity: 0.15,
@@ -880,7 +981,7 @@ page.drawText(String(v1), {
 page.drawText(String(v1), {
   x: col1X + 70,
   y,
-  size: 11,
+  size: 12,
   font,
   color: colorTextoPrincipal,
 });
@@ -890,7 +991,7 @@ page.drawText(String(v1), {
         page.drawText(`${l2}:`, {
   x: col2X + 0.5,
   y: y - 0.4,
-  size: 11,
+  size: 12,
   font: fontBold,
   color: colorSombra,
   opacity: 0.28,
@@ -899,7 +1000,7 @@ page.drawText(String(v1), {
 page.drawText(`${l2}:`, {
   x: col2X - 0.2,
   y: y + 0.2,
-  size: 11,
+  size: 12,
   font: fontBold,
   color: colorLuz,
   opacity: 0.15,
@@ -908,24 +1009,24 @@ page.drawText(`${l2}:`, {
 page.drawText(`${l2}:`, {
   x: col2X,
   y,
-  size: 11,
+  size: 12,
   font: fontBold,
   color: colorTextoPrincipal,
 });
 
 page.drawText(String(v2), {
-  x: col2X + 70 + 0.4,
+  x: col2X + 66 + 0.4,
   y: y - 0.3,
-  size: 11,
+  size: 12,
   font,
   color: colorSombra,
   opacity: 0.15,
 });
 
 page.drawText(String(v2), {
-  x: col2X + 70,
+  x: col2X + 66,
   y,
-  size: 11,
+  size: 12,
   font,
   color: colorTextoPrincipal,
 });
@@ -940,16 +1041,16 @@ page.drawText(String(v2), {
     y -=3;
     drawLine("Atributo", mentorData.atributo, "Aroma", mentorData.aroma);
     y -=3;
-    drawLine("Gracia", mentorData.gracia, );
+    drawLine("Don", mentorData.don, );
     y -=3;
     drawLine("Gemas", mentorData.gemas);
 
-    const yTextoMentor = y - 8;
+    const yTextoMentor = y - 6;
 
 page.drawText("Se Canaliza para:", {
   x: col1X + 0.5,
   y: yTextoMentor - 0.4,
-  size: 11,
+  size: 12,
   font: fontBold,
   color: colorSombra,
   opacity: 0.28,
@@ -958,7 +1059,7 @@ page.drawText("Se Canaliza para:", {
 page.drawText("Se Canaliza para:", {
   x: col1X - 0.2,
   y: yTextoMentor + 0.2,
-  size: 11,
+  size: 12,
   font: fontBold,
   color: colorLuz,
   opacity: 0.15,
@@ -967,7 +1068,7 @@ page.drawText("Se Canaliza para:", {
 page.drawText("Se Canaliza para:", {
   x: col1X,
   y: yTextoMentor,
-  size: 11,
+  size: 12,
   font: fontBold,
   color: colorTextoPrincipal,
 });
@@ -1005,14 +1106,14 @@ const lineasCanaliza = splitTextIntoLines(
   textoCanaliza,
   230,
   font,
-  11
+  12
 );
 
 lineasCanaliza.forEach((linea, index) => {
   page.drawText(linea, {
     x: col1X + 108 + 0.4,
     y: yCanaliza - (index * 14) - 0.3,
-    size: 11,
+    size: 12,
     font,
     color: colorSombra,
     opacity: 0.15,
@@ -1021,7 +1122,7 @@ lineasCanaliza.forEach((linea, index) => {
   page.drawText(linea, {
     x: col1X + 108,
     y: yCanaliza - (index * 14),
-    size: 11,
+    size: 12,
     font,
     color: colorTextoPrincipal,
   });
@@ -1029,45 +1130,45 @@ lineasCanaliza.forEach((linea, index) => {
 
 yDetalle = yTextoMentor - ((lineasCanaliza.length - 1) * 14) - 22;
 
-page.drawText("Don:", {
+page.drawText("Gracia:", {
   x: col1X + 0.5,
   y: yDetalle - 0.4,
-  size: 11,
+  size: 12,
   font: fontBold,
   color: colorSombra,
   opacity: 0.28,
 });
 
-page.drawText("Don:", {
+page.drawText("Gracia:", {
   x: col1X - 0.2,
   y: yDetalle + 0.2,
-  size: 11,
+  size: 12,
   font: fontBold,
   color: colorLuz,
   opacity: 0.15,
 });
 
-page.drawText("Don:", {
+page.drawText("Gracia:", {
   x: col1X,
   y: yDetalle,
-  size: 11,
+  size: 12,
   font: fontBold,
   color: colorTextoPrincipal,
 });
 
-page.drawText(String(mentorData.don), {
+page.drawText(String(mentorData.gracia), {
   x: col1X + 42 + 0.4,
   y: yDetalle - 0.3,
-  size: 11,
+  size: 12,
   font,
   color: colorSombra,
   opacity: 0.15,
 });
 
-page.drawText(String(mentorData.don), {
+page.drawText(String(mentorData.gracia), {
   x: col1X + 42,
   y: yDetalle,
-  size: 11,
+  size: 12,
   font,
   color: colorTextoPrincipal,
 });
@@ -1176,14 +1277,10 @@ async function dibujarInfluencias({
 
   let y = yStart;
 
-  const col1X = 70;
-  const col2X = 180;
-  const col3X = 300;
-  const col4X = 410;
 
-  const lineHeight = 14;
+const lineHeight = 18;
 
- const colorGuia = carta.colorGuia || "#2563EB";
+const colorGuia = carta.colorGuia || "#2563EB";
 
 const hexGuia = colorGuia.replace("#", "");
 
@@ -1298,116 +1395,190 @@ page.drawRectangle({
 
 const titulo = "INFLUENCIAS    ANGELICALES";
 const w = fontBold.widthOfTextAtSize(titulo, 15);
+const colorBarraInfluencias = {
+  red: rGuia,
+  green: gGuia,
+  blue: bGuia
+};
 
-// sombra principal
+// 🔹 Color de fondo de la barra
+const barraColor = colorBarraInfluencias;
+
+// 🔹 Detectar luminosidad del fondo
+const luminosidad =
+  (barraColor.red * 0.299) +
+  (barraColor.green * 0.587) +
+  (barraColor.blue * 0.114);
+
+// 🔹 Fondo claro u oscuro
+const fondoClaro = luminosidad > 0.68;
+
+// 🔹 Colores inteligentes
+const colorTexto = fondoClaro
+  ? rgb(0.18, 0.18, 0.18)
+  : rgb(1, 1, 1);
+
+const colorSombra = fondoClaro
+  ? rgb(0, 0, 0)
+  : rgb(0.15, 0.15, 0.15);
+
+const opacitySombra = fondoClaro ? 0.18 : 0.45;
+
+const colorBrillo = fondoClaro
+  ? rgb(1, 1, 1)
+  : rgb(1, 0.96, 0.90);
+
+const opacityBrillo = fondoClaro ? 0.05 : 0.20;
+
+// 🔹 Sombra
 page.drawText(titulo, {
   x: ((600 - w) / 2) + 1,
   y: barraGuiaY + 6,
   size: 15,
   font: fontTituloDecorativo,
-  color: rgb(0.15, 0.15, 0.15),
-  opacity: 0.45,
+  color: colorSombra,
+  opacity: opacitySombra,
 });
 
-// pequeño brillo superior
+// 🔹 Brillo
 page.drawText(titulo, {
   x: ((600 - w) / 2) - 0.3,
   y: barraGuiaY + 7.6,
   size: 15,
   font: fontTituloDecorativo,
-  color: rgb(1, 0.96, 0.90),
-  opacity: 0.20,
+  color: colorBrillo,
+  opacity: opacityBrillo,
 });
 
-// texto principal
+// 🔹 Texto principal
 page.drawText(titulo, {
   x: (600 - w) / 2,
   y: barraGuiaY + 7,
   size: 15,
   font: fontTituloDecorativo,
-  color: rgb(1, 1, 1),
+  color: colorTexto,
   opacity: 1,
 });
 
 y -= 20;
 
-  // 🔹 COLUMNA 1
-  const col1 = [
-    ["Ángel guía", carta.angelGuia],
-    ["Color", mentorData.colorNombreGuia],
-  ];
+ const drawLine3Cols = (
+  label1, value1,
+  label2, value2,
+  label3, value3
+) => {
 
-  // 🔹 COLUMNA 2
-  const col2 = [
-    ["Ángel mes", carta.angelMes],
-    ["Ángel signo", carta.angelSigno],
-  ];
+  const col1X = 40;
+  const col2X = 220;
+  const col3X = 420;
 
-  // 🔹 COLUMNA 3
-  const col3 = [
-    ["Ángel día", carta.angelDia],
-    ["Color", mentorData.colorNombreDia],
-  ];
+  const fontSize = 12;
 
-   // 🔹 COLUMNA 4
-  const col4 = [
-    ["Ángel hora", carta.angelHora],
-    ["Ángel año", carta.angelAnio],
-  ];
+  // 🔹 Dibujar labels
+  page.drawText(`${label1}:`, {
+    x: col1X + 30,
+    y,
+    size: fontSize,
+    font: fontBold,
+  });
 
-  const drawColumn = (col, x) => {
-    let yCol = y;
+  page.drawText(`${label2}:`, {
+    x: col2X - 20,
+    y,
+    size: fontSize,
+    font: fontBold,
+  });
 
-    col.forEach(([label, value]) => {
-      if (value) {
-        page.drawText(`${label}:`, {
-  x,
-  y: yCol,
-  size: 11,
-  font: fontBold,
-});
+  page.drawText(`${label3}:`, {
+    x: col3X - 90,
+    y,
+    size: fontSize,
+    font: fontBold,
+  });
 
-page.drawText(String(value), {
-  x: x + 65,
-  y: yCol,
-  size: 11,
-  font,
-});
+  // 🔹 Textos con salto automático
+  const lines1 = wrapText(String(value1 || ""), 80, font, fontSize);
+  const lines2 = wrapText(String(value2 || ""), 55, font, fontSize);
+  const lines3 = wrapText(String(value3 || ""), 130, font, fontSize);
 
-        yCol -= lineHeight;
-      }
+  // 🔹 Columna 1
+  lines1.forEach((line, index) => {
+
+    page.drawText(line, {
+      x: col1X + 110,
+      y: y - (index * lineHeight),
+      size: fontSize,
+      font,
     });
 
-    return yCol;
-  };
+  });
 
-const y1 = drawColumn(col1, col1X);
-const y2 = drawColumn(col2, col2X);
-const y3 = drawColumn(col3, col3X);
-const y4 = drawColumn(col4, col4X);
+  // 🔹 Columna 2
+  lines2.forEach((line, index) => {
 
-// tomar el más bajo
-let newY = Math.min(y1, y2, y3, y4);
+    page.drawText(line, {
+      x: col2X + 45,
+      y: y - (index * lineHeight),
+      size: fontSize,
+      font,
+    });
 
-newY -= 6;
+  });
 
-page.drawText("Significado:", {
-  x: col1X,
-  y: newY,
-  size: 11,
-  font: fontBold,
-});
+  // 🔹 Columna 3
+  lines3.forEach((line, index) => {
 
-page.drawText(String(carta.significado || ""), {
-  x: col1X + 72,
-  y: newY,
-  size: 11,
-  font,
-});
+    page.drawText(line, {
+      x: col3X - 20,
+      y: y - (index * lineHeight),
+      size: fontSize,
+      font,
+    });
 
-newY -= 10;
+  });
 
-const separadorInfY = newY - 2;
+  // 🔹 Detectar cuántas líneas ocupó la fila
+  const maxLines = Math.max(
+    lines1.length,
+    lines2.length,
+    lines3.length
+  );
+
+  // 🔹 Bajar dinámicamente
+  y -= (maxLines * lineHeight) + 4;
+};
+
+// 🔹 FILA 1
+drawLine3Cols(
+  "Ángel Guía",
+  carta.angelGuia,
+  "Color",
+  mentorData.colorNombreGuia,
+  "Significado",
+  carta.significado
+);
+
+// 🔹 FILA 2
+drawLine3Cols(
+  "Ángel Día",
+  carta.angelDia,
+  "Color",
+  mentorData.colorNombreDia,
+  "Ángel Mes",
+  carta.angelMes
+);
+
+// 🔹 FILA 3
+drawLine3Cols(
+  "Ángel Signo",
+  carta.angelSigno,
+  "Ángel Año",
+  carta.angelAnio,
+  "Ángel Hora",
+  carta.angelHora
+);
+
+const separadorInfY = y;
 
 page.drawLine({
   start: { x: inicioX + 70, y: separadorInfY },
@@ -1449,9 +1620,9 @@ page.drawCircle({
   opacity: 0.85,
 });
 
-newY -= 3;
+y -= 3;
 
-return newY - 10;
+return y - 10;
 
 }
 
@@ -1479,7 +1650,7 @@ async function dibujarSigno({
 
   const imgX = 80;  
 
-  const lineHeight = 14;
+  const lineHeight = 18;
 
   // BARRA
   const colorEsencia = carta.color || "#3B82F6";
@@ -1493,7 +1664,10 @@ const bEsencia = parseInt(hexEsencia.substring(4, 6), 16) / 255;
 const barraEsenciaY = y;
 
 // degradado horizontal dinámico
-const luminosidadEsencia = (rEsencia + gEsencia + bEsencia) / 3;
+const luminosidadEsencia =
+  (rEsencia * 0.299) +
+  (gEsencia * 0.587) +
+  (bEsencia * 0.114);
 
 const brilloExtraEsencia = luminosidadEsencia > 0.7 ? 0.08 : 0.10;
 const sombraCentroEsencia =
@@ -1595,32 +1769,59 @@ page.drawRectangle({
 });
 
 const tituloEsencia = "ESENCIAS    LOCIÓN    ANGELICAL";
-const tituloEsenciaWidth = fontBold.widthOfTextAtSize(tituloEsencia, 15);
+const tituloEsenciaWidth =
+  fontBold.widthOfTextAtSize(tituloEsencia, 15);
 
+// 🔹 Detectar fondo claro
+const fondoClaroEsencia =
+  luminosidadEsencia > 0.68;
+
+// 🔹 Colores inteligentes
+const colorTextoEsencia = fondoClaroEsencia
+  ? rgb(0.18, 0.18, 0.18)
+  : rgb(1, 1, 1);
+
+const colorSombraEsencia = fondoClaroEsencia
+  ? rgb(0, 0, 0)
+  : rgb(0.12, 0.08, 0.02);
+
+const opacitySombraEsencia =
+  fondoClaroEsencia ? 0.18 : 0.35;
+
+const colorBrilloEsencia = fondoClaroEsencia
+  ? rgb(1, 1, 1)
+  : rgb(1, 0.95, 0.88);
+
+const opacityBrilloEsencia =
+  fondoClaroEsencia ? 0.05 : 0.18;
+
+// 🔹 Sombra
 page.drawText(tituloEsencia, {
   x: ((600 - tituloEsenciaWidth) / 2) + 0.5,
   y: barraEsenciaY + 6.4,
   size: 15,
   font: fontTituloDecorativo,
-  color: rgb(0.12, 0.08, 0.02),
-  opacity: 0.35,
+  color: colorSombraEsencia,
+  opacity: opacitySombraEsencia,
 });
 
+// 🔹 Brillo
 page.drawText(tituloEsencia, {
   x: ((600 - tituloEsenciaWidth) / 2) - 0.2,
   y: barraEsenciaY + 7.4,
   size: 15,
   font: fontTituloDecorativo,
-  color: rgb(1, 0.95, 0.88),
-  opacity: 0.18,
+  color: colorBrilloEsencia,
+  opacity: opacityBrilloEsencia,
 });
 
+// 🔹 Texto principal
 page.drawText(tituloEsencia, {
   x: (600 - tituloEsenciaWidth) / 2,
   y: barraEsenciaY + 7,
   size: 15,
   font: fontTituloDecorativo,
-  color: rgb(1, 1, 1),
+  color: colorTextoEsencia,
 });
 
 y -= 20;
@@ -1680,14 +1881,14 @@ y -= 20;
     page.drawText(`${l1}:`, {
       x: esenciacol1X,
       y,
-      size: 11,
+      size: 12,
       font: fontBold,
     });
 
     page.drawText(String(v1), {
       x: esenciacol1X + 85,
       y,
-      size: 11,
+      size: 12,
       font,
     });
   }
@@ -1696,14 +1897,14 @@ y -= 20;
     page.drawText(`${l2}:`, {
       x: esenciacol2X,
       y,
-      size: 11,
+      size: 12,
       font: fontBold,
     });
 
     page.drawText(String(v2), {
       x: esenciacol2X + 95,
       y,
-      size: 11,
+      size: 12,
       font,
     });
   }
@@ -1715,14 +1916,14 @@ y -= 20;
   drawLine("Esencia día", carta.esenciaDia, "Esencia mentor", carta.esenciaMentor);
   drawLine("Ángel guarda", carta.esenciaAngelGuarda, "", "");
 
-  y -= 5;
+  y -= 2;
 
   const colorTextoPrincipal = rgb(0.18, 0.09, 0.03);
 
   page.drawText("Sirve para:", {
   x: esenciacol1X,
   y,
-  size: 11,
+  size: 12,
   font: fontBold,
   color: colorTextoPrincipal,
 });
@@ -1730,12 +1931,10 @@ y -= 20;
 page.drawText(String(carta.sirvePara || ""), {
   x: esenciacol1X + 83,
   y,
-  size: 11,
+  size: 12,
   font,
   color: colorTextoPrincipal,
 });
-
-y -= 10;
 
 return y;
 }
@@ -1807,20 +2006,20 @@ page.drawRectangle({
 
 // Título
 const tituloProposito = 'PROPOSITO    DEL    ÁNGEL    DE    LA    GUARDA';
-const tituloWidth = fontBold.widthOfTextAtSize(tituloProposito, 15);
+const tituloWidth = fontBold.widthOfTextAtSize(tituloProposito, 13);
 
 page.drawText(tituloProposito, {
   x: propositoBoxX + (propositoBoxWidth - tituloWidth) / 2,
   y: propositoBoxY + 45,
-  size: 15,
+  size: 13,
   font: fontTituloDecorativo,
-  color: rgb(0.16, 0.10, 0.06),
+  color: rgb(0.32, 0.24, 0.18),
 });
 
 // Frase
 const fraseTexto = `“${mensajeAngel}”`;
-const fraseSize = 15;
-const fraseMaxWidth = propositoBoxWidth - 80;
+const fraseSize = 13;
+const fraseMaxWidth = propositoBoxWidth - 70;
 
 // Separar manualmente en palabras
 const palabras = fraseTexto.split(' ');
@@ -1856,7 +2055,7 @@ lineas.forEach((linea) => {
     y: lineaY - 0.5,
     size: fraseSize,
     font: fontBold,
-    color: rgb(0.08, 0.04, 0.02),
+    color: rgb(0.25, 0.18, 0.12),
     opacity: 0.35,
   });
 
@@ -1866,7 +2065,7 @@ lineas.forEach((linea) => {
     y: lineaY + 0.2,
     size: fraseSize,
     font: fontBold,
-    color: rgb(0.92, 0.85, 0.72),
+    color: rgb(0.95, 0.90, 0.80),
     opacity: 0.10,
   });
 
@@ -1876,14 +2075,14 @@ lineas.forEach((linea) => {
     y: lineaY,
     size: fraseSize,
     font: fontBold,
-    color: rgb(0.15, 0.08, 0.03),
+    color: rgb(0.30, 0.22, 0.16),
   });
 
   lineaY -= 14;
 });
 
 // Actualizar y
-y = propositoBoxY -15;
+y = propositoBoxY -8;
 
 if (
   nombreAngeologo &&
@@ -1895,7 +2094,7 @@ if (
   page.drawText("Angeólogo", {
     x: 260,
     y,
-    size: 11,
+    size: 12,
     font: fontBold,
   });
 
@@ -1931,8 +2130,6 @@ page.drawText(tituloAngeologo, {
       .then(r => r.arrayBuffer());
 
     const florImg = await pdfDoc.embedPng(florBytes);
-
-    y -=10;
 
     page.drawImage(florImg, {
   x: inicioX + (anchoUtil / 2) - 32,
@@ -2288,10 +2485,10 @@ maskImage:"radial-gradient(ellipse, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%)",
 style={{
 display:"grid",
 gridTemplateColumns:"1fr 1fr",
-gap:"4px 28px",
-fontSize:"17px",
+gap:"6px 28px",
+fontSize:"19px",
 fontFamily:"IM Fell English, serif",
-lineHeight:"1.3",
+lineHeight:"1.45",
 textAlign:"justify",
 letterSpacing:"0.5px",
 
@@ -2330,22 +2527,28 @@ textShadow:`
 </p>
 
 <p style={{margin:"1px 0",color:"#7a624d"}}>
-<span className="grabado" style={{color:"#3a2414",fontWeight:"700"}}>Aroma:</span> {carta.aroma}
-</p>
-
-<p style={{margin:"1px 0",color:"#7a624d"}}>
-<span className="grabado" style={{color:"#3a2414",fontWeight:"700"}}>Atributo:</span> {carta.atributo}
-</p>
-
-<p style={{margin:"1px 0",color:"#7a624d"}}>
-  <span className="grabado" style={{color:"#3a2414",fontWeight:"700"}}>Ofrenda:</span> {carta.ofrenda}
+  <span className="grabado" style={{color:"#3a2414",fontWeight:"700"}}>Coro:</span> {carta.coroAngelical}
 </p>
 
 <p style={{
   margin:"1px 0",
   gridColumn:"1 / span 2",color:"#7a624d"
 }}>
-  <span className="grabado" style={{color:"#3a2414",fontWeight:"700"}}>Coro Angelical:</span> {carta.coroAngelical}
+  <span className="grabado" style={{color:"#3a2414",fontWeight:"700"}}>Aroma:</span> {carta.aroma}
+</p>
+
+<p style={{
+  margin:"1px 0",
+  gridColumn:"1 / span 2",color:"#7a624d"
+}}>
+  <span className="grabado" style={{color:"#3a2414",fontWeight:"700"}}>Atributo:</span> {carta.atributo}
+</p>
+
+<p style={{
+  margin:"1px 0",
+  gridColumn:"1 / span 2",color:"#7a624d"
+}}>
+  <span className="grabado" style={{color:"#3a2414",fontWeight:"700"}}>Ofrenda:</span>  {carta.ofrenda}
 </p>
 
 <p style={{
@@ -2357,9 +2560,9 @@ textShadow:`
 
 <p style={{
 gridColumn:"1 / span 2",
-margin:"4px 0",
-fontSize:"16px",
-lineHeight:"1.35",
+margin:"6px 0",
+fontSize:"18px",
+lineHeight:"1.5",
 color:"#7a624d"
 }}>
 <span className="grabado" style={{color:"#3a2414",fontWeight:"700"}}>Se canaliza para:</span> {carta.seCanalizaPara}
@@ -2367,9 +2570,9 @@ color:"#7a624d"
 
 <p style={{
 gridColumn:"1 / span 2",
-margin:"4px 0",
-fontSize:"16px",
-lineHeight:"1.35",
+margin:"6px 0",
+fontSize:"18px",
+lineHeight:"1.5",
 color:"#7a624d"
 }}>
 <span className="grabado" style={{color:"#3a2414",fontWeight:"700"}}>Don del ser de luz:</span> {carta.donSerDeLuz}
@@ -2480,11 +2683,11 @@ alignItems:"center"
 <div style={{
 display:"grid",
 gridTemplateColumns:"0.95fr 1.05fr",
-gap:"8px 34px",
-fontSize:"16px",
+gap:"10px 34px",
+fontSize:"18px",
 fontFamily:"IM Fell English, serif",
 letterSpacing:"0.5px",
-lineHeight:"1.25",
+lineHeight:"1.4",
 paddingLeft:"4px",
 color:"#3d2b1f",
 mixBlendMode:"multiply",
@@ -2504,15 +2707,15 @@ textShadow:`
 <p style={{margin:"2px 0",color:"#7a624d"}}><b style={{color:"#3a2414",fontWeight:"700"}}>Atributo:</b> {carta.atributoMentor}</p>
 <p style={{margin:"2px 0",color:"#7a624d"}}><b style={{color:"#3a2414",fontWeight:"700"}}>Aroma:</b> {carta.aromaMentor}</p>
 
-<p style={{margin:"2px 0",color:"#7a624d"}}><b style={{color:"#3a2414",fontWeight:"700"}}>Gracia:</b> {carta.graciaMentor}</p>
+<p style={{margin:"2px 0",color:"#7a624d"}}><b style={{color:"#3a2414",fontWeight:"700"}}>Don:</b>  {carta.donMentor}</p>
 <p style={{margin:"2px 0",color:"#7a624d"}}><b style={{color:"#3a2414",fontWeight:"700"}}>Gemas:</b> {carta.gemasMentor}</p>
 
-<p style={{gridColumn:"1 / span 2", margin:"2px 0",color:"#7a624d"}}>
+<p style={{gridColumn:"1 / span 2", margin:"5px 0",fontSize:"17px",lineHeight:"1.45", color:"#7a624d"}}>
   <b style={{color:"#3a2414",fontWeight:"700"}}>Se canaliza para:</b> {carta.canalizacionMentor}
 </p>
 
-<p style={{gridColumn:"1 / span 2", margin:"2px 0",color:"#7a624d"}}>
-  <b style={{color:"#3a2414",fontWeight:"700"}}>Don:</b> {carta.donMentor}
+<p style={{gridColumn:"1 / span 2", margin:"5px 0",fontSize:"17px",lineHeight:"1.45",color:"#7a624d"}}>
+  <b style={{color:"#3a2414",fontWeight:"700"}}>Gracia:</b> {carta.graciaMentor}
 </p>
 
 </div>
@@ -2570,7 +2773,7 @@ zIndex:0
     maxWidth:"260px",
     objectFit:"contain",
 
-    // 🔥 SOLO aplicar máscara en APP
+    //  SOLO aplicar máscara en APP
     WebkitMaskImage: modoPDF ? "none" : `
       radial-gradient(ellipse 75% 90% at center, black 75%, transparent 100%),
       linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%)
@@ -2580,7 +2783,7 @@ zIndex:0
       linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%)
     `,
 
-    // 🔥 SOMBRA DIFERENTE PARA PDF
+    //  SOMBRA DIFERENTE PARA PDF
     filter: modoPDF
       ? "drop-shadow(0 4px 8px rgba(0,0,0,0.15))"
       : "drop-shadow(0 12px 18px rgba(0,0,0,0.35))",
@@ -2687,13 +2890,13 @@ zIndex:0
 
 <div style={{
   padding:"18px",
-  display:"grid",
-  gridTemplateColumns:"1fr 1fr 1fr 1fr",
-  gap:"12px 18px",
-  fontSize:"15px",
+  display:"flex",
+  flexDirection:"column",
+  gap:"10px",
+  fontSize:"17px",
   fontFamily:"IM Fell English, serif",
   letterSpacing:"0.4px",
-  lineHeight:"1.2",
+  lineHeight:"1.4",
   color:"#6f5742",
   mixBlendMode:"multiply",
   textShadow:`
@@ -2703,47 +2906,67 @@ zIndex:0
   `
 }}>
 
-  <div>
-    <p style={{margin:"2px 0",color:"#7a624d"}}>
-      <b style={{color:"#3a2414",fontWeight:"700"}}>Ángel guía:</b> {carta.angelGuia}
-    </p>
-    <p style={{margin:"2px 0",color:"#7a624d"}}>
-      <b style={{color:"#3a2414",fontWeight:"700"}}>Color:</b> {nombreColorGuia}
-    </p>
-  </div>
+{/* Fila 1 */}
+<div style={{
+  display:"grid",
+  gridTemplateColumns:"1fr 1fr 2fr",
+  gap:"20px",
+  alignItems:"start"
+}}>
+  <p style={{margin:"2px 0", color:"#7a624d"}}>
+    <b style={{color:"#3a2414", fontWeight:"700"}}>Ángel guía:</b> {carta.angelGuia}
+  </p>
 
-  <div>
-    <p style={{margin:"2px 0",color:"#7a624d"}}>
-      <b style={{color:"#3a2414",fontWeight:"700"}}>Ángel mes:</b> {carta.angelMes}
-    </p>
-    <p style={{margin:"2px 0",color:"#7a624d"}}>
-      <b style={{color:"#3a2414",fontWeight:"700"}}>Ángel signo:</b> {carta.angelSigno}
-    </p>
-  </div>
+  <p style={{margin:"2px 0", color:"#7a624d"}}>
+    <b style={{color:"#3a2414", fontWeight:"700"}}>Color:</b> {nombreColorGuia}
+  </p>
 
-  <div>
-    <p style={{margin:"2px 0",color:"#7a624d"}}>
-      <b style={{color:"#3a2414",fontWeight:"700"}}>Ángel día:</b> {carta.angelDia}
-    </p>
-    <p style={{margin:"2px 0",color:"#7a624d"}}>
-      <b style={{color:"#3a2414",fontWeight:"700"}}>Color:</b> {nombreColorDia}
-    </p>
-  </div>
+  <p style={{margin:"2px 0", fontSize:"18px", lineHeight:"1.5", color:"#7a624d"}}>
+    <b style={{color:"#3a2414", fontWeight:"700"}}>Significado:</b> {carta.significado}
+  </p>
+</div>
 
-  <div>
-    <p style={{margin:"2px 0",color:"#7a624d"}}>
-      <b style={{color:"#3a2414",fontWeight:"700"}}>Ángel hora:</b> {carta.angelHora}
-    </p>
-    <p style={{margin:"2px 0",color:"#7a624d"}}>
-      <b style={{color:"#3a2414",fontWeight:"700"}}>Ángel año:</b> {carta.angelAnio}
-    </p>
-  </div>
+{/* Fila 2 */}
+<div style={{
+  display:"grid",
+  gridTemplateColumns:"1fr 1fr 1fr",
+  gap:"20px",
+  alignItems:"start"
+}}>
+  <p style={{margin:"2px 0", color:"#7a624d"}}>
+    <b style={{color:"#3a2414", fontWeight:"700"}}>Ángel día:</b> {carta.angelDia}
+  </p>
 
-  <div style={{gridColumn:"1 / span 4", marginTop:"4px"}}>
-    <p style={{margin:"2px 0",color:"#7a624d"}}>
-      <b style={{color:"#3a2414",fontWeight:"700"}}>Significado:</b> {carta.significado}
+  <p style={{margin:"2px 0",marginLeft:"-70px", color:"#7a624d"}}>
+    <b style={{color:"#3a2414", fontWeight:"700"}}>Color:</b> {nombreColorDia}
+  </p>
+
+  <p style={{margin:"2px 0",marginLeft:"-130px", color:"#7a624d"}}>
+    <b style={{color:"#3a2414", fontWeight:"700"}}>Ángel mes:</b> {carta.angelMes}
+  </p>
+</div>
+
+{/* Fila 3 */}
+<div style={{
+  display:"grid",
+  gridTemplateColumns:"1fr 1fr 1fr",
+  gap:"20px",
+  alignItems:"start"
+}}>
+  <p style={{margin:"2px 0", color:"#7a624d"}}>
+    <b style={{color:"#3a2414", fontWeight:"700"}}>Ángel signo:</b> {carta.angelSigno}
+  </p>
+
+  <p style={{margin:"2px 0", marginLeft:"-70px", color:"#7a624d"}}>
+    <b style={{color:"#3a2414", fontWeight:"700"}}>Ángel año:</b> {carta.angelAnio}
+  </p>
+
+  {carta.angelHora && (
+    <p style={{margin:"2px 0",marginLeft:"-130px", color:"#7a624d"}}>
+      <b style={{color:"#3a2414", fontWeight:"700"}}>Ángel hora:</b> {carta.angelHora}
     </p>
-  </div>
+  )}
+</div>
 
 </div>
 
@@ -2949,12 +3172,12 @@ zIndex:2,
 padding:"18px",
 display:"grid",
 gridTemplateColumns:"1fr 1fr",
-gap:"6px 14px",
+gap:"10px 30px",
 
-fontSize:"16px",
+fontSize:"18px",
 fontFamily:"IM Fell English, serif",
 letterSpacing:"0.4px",
-lineHeight:"1.15",
+lineHeight:"1.45",
 
 color:"#3d2b1f",
 mixBlendMode:"multiply",
@@ -2982,11 +3205,11 @@ textShadow:`
   <b style={{color:"#3a2414",fontWeight:"700"}}>Esencia mentor:</b> {carta.esenciaMentor}
 </p>
 
-<p style={{gridColumn:"1 / span 2", margin:"2px 0", color:"#6f5742"}}>
+<p style={{gridColumn:"1 / span 2", margin:"6px 0",fontSize:"19px",lineHeight:"1.55", color:"#6f5742"}}>
   <b style={{color:"#3a2414",fontWeight:"700"}}>Esencia ángel guarda:</b> {carta.esenciaAngelGuarda}
 </p>
 
-<p style={{gridColumn:"1 / span 2", margin:"2px 0", color:"#6f5742"}}>
+<p style={{gridColumn:"1 / span 2", margin:"6px 0",fontSize:"19px",lineHeight:"1.55", color:"#6f5742"}}>
   <b style={{color:"#3a2414",fontWeight:"700"}}>Sirve para:</b> {carta.sirvePara}
 </p>
 
@@ -3124,7 +3347,7 @@ opacity:"0.9"
 }}>
 
 <div
-className="firmaAngelologo"
+className="firmaAngeologo"
 style={{
 textAlign:"center",
 marginTop:"1px",
