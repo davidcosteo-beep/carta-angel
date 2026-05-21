@@ -7,6 +7,7 @@ function Menu({ onLogout }){
   const location = useLocation();
   const menuRef = useRef(null);
   const [style, setStyle] = useState({ left: 0, width: 0 });
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const active = menuRef.current.querySelector(".active");
@@ -23,35 +24,45 @@ function Menu({ onLogout }){
 
     <div className="menu">
 
-      <div className="menu-left" ref={menuRef}>
+     <div className="menu-left" ref={menuRef}>
 
-        <div className="menu-title">Kabala Pro</div>
+  <button
+    className="menu-mobile-btn"
+    onClick={() => setMenuOpen(!menuOpen)}
+  >
+    ☰
+  </button>
 
-        <NavLink to="/" end
-          className={({ isActive }) => isActive ? "menu-link active" : "menu-link"}>
-          Generar Carta
-        </NavLink>
+  <div className="menu-title">Kabala Pro</div>
 
-        <NavLink to="/historial"
-          className={({ isActive }) => isActive ? "menu-link active" : "menu-link"}>
-          Historial
-        </NavLink>
+  <div className={`menu-links ${menuOpen ? "open" : ""}`}>
 
-        <NavLink to="/configuracion"
-          className={({ isActive }) => isActive ? "menu-link active" : "menu-link"}>
-          Configuración
-        </NavLink>
+    <NavLink to="/" end
+      className={({ isActive }) => isActive ? "menu-link active" : "menu-link"}>
+      Generar Carta
+    </NavLink>
 
-        {/* 🔥 barra deslizante */}
-        <span
-          className="menu-indicator"
-          style={{
-            left: style.left,
-            width: style.width
-          }}
-        />
+    <NavLink to="/historial"
+      className={({ isActive }) => isActive ? "menu-link active" : "menu-link"}>
+      Historial
+    </NavLink>
 
-      </div>
+    <NavLink to="/configuracion"
+      className={({ isActive }) => isActive ? "menu-link active" : "menu-link"}>
+      Configuración
+    </NavLink>
+
+  </div>
+
+  <span
+    className="menu-indicator"
+    style={{
+      left: style.left,
+      width: style.width
+    }}
+  />
+
+</div>
 
       <div className="menu-right">
         <button className="menu-btn" onClick={onLogout}>

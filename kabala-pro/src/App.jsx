@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useState, useEffect } from "react";
-
+import SplashScreen from "./components/SplashScreen";
 import Login from "./pages/Login";
 import GenerarCarta from "./pages/GenerarCarta";
 import Configuracion from "./pages/Configuracion";
@@ -11,6 +11,7 @@ import Menu from "./components/Menu";
 function App(){
 
   const [logueado, setLogueado] = useState(false);
+  const [mostrarSplash, setMostrarSplash] = useState(true);
 
   // 🌙 CARGAR TEMA GLOBAL
   useEffect(() => {
@@ -22,6 +23,18 @@ function App(){
       document.body.classList.remove("dark");
     }
   }, []);
+
+  useEffect(() => {
+
+  const timer = setTimeout(() => {
+
+    setMostrarSplash(false);
+
+  }, 2500);
+
+  return () => clearTimeout(timer);
+
+}, []);
 
   const auraAnimation = `
 @keyframes auraGlow {
@@ -45,6 +58,10 @@ text-shadow:
 }
 }
 `;
+
+if(mostrarSplash){
+  return <SplashScreen/>
+}
 
   if(!logueado){
     return <Login onLogin={setLogueado}/>

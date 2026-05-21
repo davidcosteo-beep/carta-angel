@@ -1,0 +1,355 @@
+.historial-page{
+
+  min-height:100vh;
+
+  padding:30px;
+
+  background:
+  linear-gradient(
+  180deg,
+  #f4ead7 0%,
+  #ead8bb 50%,
+  #e2c79f 100%
+  );
+}
+
+.historial-title{
+
+  font-family:"Cinzel", serif;
+
+  font-size:38px;
+
+  color:#4d2d18;
+
+  margin-bottom:30px;
+
+  letter-spacing:1px;
+}
+
+.historial-search{
+
+  width:100%;
+
+  max-width:420px;
+
+  padding:14px 18px;
+
+  margin-bottom:28px;
+
+  border:none;
+
+  border-radius:14px;
+
+  background:
+  rgba(255,248,230,0.75);
+
+  backdrop-filter:blur(6px);
+
+  color:#4d2d18;
+
+  font-size:16px;
+
+  box-shadow:
+  0 8px 20px rgba(90,50,20,0.08);
+
+  outline:none;
+
+  transition:all 0.25s ease;
+}
+
+.historial-search:focus{
+
+  box-shadow:
+  0 10px 24px rgba(90,50,20,0.16);
+}
+
+.historial-search::placeholder{
+
+  color:#8b6a52;
+}
+
+.historial-empty{
+
+  color:#5a351c;
+
+  font-size:18px;
+}
+
+.historial-card{
+
+  background:rgba(255,248,230,0.42);
+
+  backdrop-filter:blur(6px);
+
+  border:
+  1px solid rgba(120,90,40,0.16);
+
+  border-radius:18px;
+
+  padding:22px;
+
+  margin-bottom:18px;
+
+  box-shadow:
+  0 10px 24px rgba(90,50,20,0.10);
+}
+
+.historial-name{
+
+  display:block;
+
+  font-size:22px;
+
+  color:#4d2d18;
+
+  font-family:"Cinzel", serif;
+
+  margin-bottom:12px;
+}
+
+.historial-card{
+
+  background:
+  rgba(255,248,230,0.42);
+
+  backdrop-filter:blur(6px);
+
+  border:
+  1px solid rgba(120,90,40,0.16);
+
+  border-radius:18px;
+
+  padding:22px;
+
+  margin-bottom:18px;
+
+  box-shadow:
+  0 10px 24px rgba(90,50,20,0.10);
+
+  cursor:pointer;
+
+  transition:
+  transform 0.28s ease,
+  box-shadow 0.28s ease,
+  border 0.28s ease;
+}
+
+.historial-card:hover{
+
+  transform:
+  translateY(-4px);
+
+  border:
+  1px solid rgba(160,110,50,0.28);
+
+  box-shadow:
+  0 18px 36px rgba(90,50,20,0.16);
+}
+
+.historial-header{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:18px;
+
+  margin-bottom:18px;
+}
+
+.historial-info{
+
+  flex:1;
+}
+
+.favorito-btn{
+
+  border:none;
+
+  background:none;
+
+  width:auto;
+
+  height:auto;
+
+  padding:0;
+
+  font-size:28px;
+
+  cursor:pointer;
+
+  color:#c8b08a;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  align-self:flex-start;
+
+  transition:
+  transform 0.2s ease,
+  color 0.2s ease,
+  text-shadow 0.2s ease;
+}
+
+.favorito-btn:hover{
+
+  transform:scale(1.12);
+}
+
+.favorito-btn.activo{
+
+  color:#d4a017;
+
+  text-shadow:
+  0 0 10px rgba(212,160,23,0.45);
+}
+
+.historial-sello{
+
+  width:62px;
+
+  height:62px;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  border-radius:50%;
+
+  background:
+  linear-gradient(
+  180deg,
+  #d8b07a,
+  #8b5a2b
+  );
+
+  color:white;
+
+  font-size:28px;
+
+  box-shadow:
+  0 8px 18px rgba(90,50,20,0.18);
+}
+
+.historial-angel{
+
+  margin-top:6px;
+
+  color:#8b5a2b;
+
+  font-style:italic;
+
+  font-size:15px;
+}
+
+.historial-filtros{
+
+  display:flex;
+
+  gap:12px;
+
+  margin-bottom:24px;
+}
+
+.filtro-btn{
+
+  border:none;
+
+  padding:8px 18px;
+
+  border-radius:999px;
+
+  cursor:pointer;
+
+  background:
+  rgba(255,248,230,0.72);
+
+  color:#6a4528;
+
+  font-weight:600;
+
+  font-size:14px;
+
+  width:auto;
+
+  min-width:unset;
+
+  box-shadow:
+  0 4px 10px rgba(90,50,20,0.06);
+
+  transition:
+  all 0.25s ease;
+}
+
+.filtro-btn:hover{
+
+  transform:
+  translateY(-1px);
+
+  box-shadow:
+  0 6px 14px rgba(90,50,20,0.10);
+}
+
+.filtro-btn.activo{
+
+  background:
+  linear-gradient(
+  180deg,
+  #c89b5c,
+  #8b5a2b
+  );
+
+  color:white;
+
+  box-shadow:
+  0 8px 18px rgba(90,50,20,0.18);
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width:768px){
+
+  .historial-page{
+
+    padding:20px 16px;
+  }
+
+  .historial-title{
+
+    font-size:28px;
+
+    margin-bottom:24px;
+  }
+
+  .historial-search{
+
+  max-width:100%;
+
+  font-size:15px;
+
+  padding:12px 16px;
+}
+
+  .historial-card{
+
+    padding:18px;
+  }
+
+  .historial-name{
+
+    font-size:20px;
+  }
+
+  .historial-card p{
+
+    font-size:15px;
+  }
+
+}

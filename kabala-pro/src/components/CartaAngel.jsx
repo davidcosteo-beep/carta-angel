@@ -3,10 +3,79 @@ import { tablaMentor } from "../core/tablaMentor";
 import { tablaCartas } from "../core/tablaCartas";
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import fontkit from "@pdf-lib/fontkit";
-
+import { useIsMobile } from "../hooks/useIsMobile";
+import { useEffect, useState } from "react";
 
 
 function CartaAngel({ carta }) {
+
+const isMobile = useIsMobile();  
+const [pdfData, setPdfData] = useState(null);
+const [generando, setGenerando] = useState(false);  
+
+useEffect(() => {
+
+  if (!isMobile) return;
+
+  const generar = async () => {
+
+  try {
+
+    setGenerando(true);
+
+    const inicio = Date.now();
+
+    const resultado =
+      await generarPDFNuevo();
+
+    const tiempo =
+      Date.now() - inicio;
+
+    const minimo = 3800;
+
+    if (tiempo < minimo) {
+
+      await new Promise(resolve =>
+        setTimeout(
+          resolve,
+          minimo - tiempo
+        )
+      );
+
+    }
+
+    setPdfData(resultado);
+
+  } catch (error) {
+
+    console.error(error);
+
+  } finally {
+
+    setGenerando(false);
+
+  }
+
+};
+
+  generar();
+
+}, []);
+
+const abrirPDF = () => {
+
+  if (!pdfData?.url) return;
+
+  window.open(pdfData.url, "_blank");
+
+  setTimeout(() => {
+
+    URL.revokeObjectURL(pdfData.url);
+
+  }, 15000);
+
+};
+
 
 async function generarPDFNuevo() {
 
@@ -139,13 +208,7 @@ const diasSemana = [
 const diaSemana = diasSemana[fechaNacimiento.getDay()];
 
 const horaTexto = carta.hora
-  ? (() => {
-      const [hora, minuto] = carta.hora.split(":");
-      const h = parseInt(hora, 10);
-      const periodo = h >= 12 ? "p.m." : "a.m.";
-      const hora12 = h % 12 || 12;
-      return ` | Hora: ${hora12}:${minuto} ${periodo}`;
-    })()
+  ? ` | Hora: ${carta.hora}`
   : "";
 
 const textoFecha = `Nacimiento: ${carta.fecha} | Día: ${diaSemana}${horaTexto} | Signo: ${carta.signo}`;
@@ -319,32 +382,25 @@ const angelImg = await pdfDoc.embedPng(angelBytes);
 
 page.drawImage(angelImg, {
   x: imagenPrincipalX - 24,
-  y: inicioY - 204,
+  y: inicioY - 232,
   width: 163,
-  height: 193,
+  height: 242,
   opacity: 0.08,
 });
 
 page.drawImage(angelImg, {
   x: imagenPrincipalX - 10,
-  y: inicioY - 190,
+  y: inicioY - 215,
   width: 135,
-  height: 161,
+  height: 205,
   opacity: 0.20,
 });
 
 page.drawImage(angelImg, {
   x: imagenPrincipalX,
-  y: inicioY - 180,
+  y: inicioY - 205,
   width: 115,
-  height: 145,
-});
-
-page.drawImage(angelImg, {
-  x: imagenPrincipalX,
-  y: inicioY - 180,
-  width: 115,
-  height: 145,
+  height: 188,
 });
 
 let y = 685;
@@ -1648,7 +1704,7 @@ async function dibujarSigno({
 
   let y = yStart;
 
-  const imgX = 80;  
+  const imgX = 65;  
 
   const lineHeight = 18;
 
@@ -1837,33 +1893,33 @@ y -= 20;
 
    page.drawCircle({
     x: imgX + 27,
-    y: y - 18,
-    size: 30,
+    y: y - 68,
+    size: 36,
     color: rgb(1, 0.72, 0.08),
     opacity: 0.10,
     });
 
     page.drawCircle({
     x: imgX + 27,
-    y: y - 18,
-    size: 24,
+    y: y - 68,
+    size: 29,
     color: rgb(1, 0.85, 0.25),
     opacity: 0.14,
     });
 
     page.drawCircle({
     x: imgX + 27,
-    y: y - 18,
-    size: 18,
+    y: y - 68,
+    size: 22,
     color: rgb(1, 0.95, 0.5),
     opacity: 0.08,
     });
 
     page.drawImage(signoImg, {
       x: imgX ,
-      y: y - 45,
-      width: 55,
-      height: 55,
+      y: y - 68,
+      width: 82,
+      height: 82,
       opacity:0.85,
     });
 
@@ -2082,7 +2138,7 @@ lineas.forEach((linea) => {
 });
 
 // Actualizar y
-y = propositoBoxY -8;
+y = propositoBoxY -28;
 
 if (
   nombreAngeologo &&
@@ -2091,30 +2147,19 @@ if (
   tituloAngeologo !== "Título del Angeólogo"
 ) {
 
-  page.drawText("Angeólogo", {
-    x: 260,
-    y,
-    size: 12,
-    font: fontBold,
-  });
-
-  y -= 18;
-
 const nombreSize = 12;
-const nombreAncho = cardoItalicFont.widthOfTextAtSize(nombreAngeologo, nombreSize);
 
 page.drawText(nombreAngeologo, {
-  x: (page.getWidth() - nombreAncho) / 2,
+  x: 120,
   y,
   size: nombreSize,
   font: cardoItalicFont,
   color: rgb(0.28, 0.18, 0.10),
 });
 
-  y -= 16;
-const tituloAncho = font.widthOfTextAtSize(tituloAngeologo, 10);
+  y -= 11;
 
-const tituloX = propositoBoxX + ((propositoBoxWidth - tituloAncho) / 2)- 30;
+const tituloX = 120;
 
 page.drawText(tituloAngeologo, {
   x: tituloX,
@@ -2133,7 +2178,7 @@ page.drawText(tituloAngeologo, {
 
     page.drawImage(florImg, {
   x: inicioX + (anchoUtil / 2) - 32,
-  y: y - 40,
+  y: y - 15,
   width: 64,
   height: 44,
   });
@@ -2144,25 +2189,25 @@ page.drawText(tituloAngeologo, {
 }
 
 
-const fechaTexto = carta.fecha || "";
-
-const nombreArchivo = `${nombreTexto || "PACIENTE"}_${fechaTexto || "SIN_FECHA"}`
-  .replace(/[\\/:*?"<>|]/g, "_")
-  .replace(/\s+/g, "_");
+const nombreArchivo = `
+Pergamino_${carta.angel}_${nombreTexto || "PACIENTE"}
+`
+.replace(/[\\/:*?"<>|]/g, "_")
+.replace(/\s+/g, "_");
 
 const pdfBytes = await pdfDoc.save();
 
-const blob = new Blob([pdfBytes], { type: "application/pdf" });
+const blob = new Blob([pdfBytes], {
+  type: "application/pdf"
+});
+
 const url = URL.createObjectURL(blob);
 
-const a = document.createElement("a");
-a.href = url;
-a.download = `${nombreArchivo}.pdf`;
-document.body.appendChild(a);
-a.click();
-document.body.removeChild(a);
-
-URL.revokeObjectURL(url);
+return {
+  blob,
+  url,
+  nombreArchivo
+};
 }
 
 const auraColor = (hex, alpha) => {
@@ -2227,6 +2272,266 @@ carta.nombre.length > 35 ? "32px" :
 carta.nombre.length > 28 ? "36px" :
 "40px";
 
+const botonStyle = {
+  padding: "14px 24px",
+  borderRadius: "14px",
+  border: "none",
+  background: "#8B5CF6",
+  color: "white",
+  fontSize: "16px",
+  fontWeight: "600",
+  cursor: "pointer",
+  boxShadow: "0 8px 20px rgba(139,92,246,0.35)"
+};
+
+if (isMobile) {
+
+    if (generando) {
+
+  return (
+
+    <div
+      style={{
+
+        width: "100vw",
+        minHeight: "100vh",
+
+        display: "flex",
+
+        alignItems: "center",
+        justifyContent: "center",
+
+        flexDirection: "column",
+
+        background: `
+          radial-gradient(
+            circle at top,
+            rgba(139,92,246,0.18),
+            transparent 35%
+          ),
+          linear-gradient(
+            180deg,
+            #070B16 0%,
+            #0B1020 45%,
+            #111827 100%
+          )
+        `,
+
+        color: "white",
+
+        padding: "24px"
+
+      }}
+    >
+
+      <div className="orbe-ceremonial" />
+
+      <div
+        style={{
+          marginTop: "28px",
+          textAlign: "center"
+        }}
+      >
+
+        <div
+          style={{
+            fontSize: "20px",
+            fontWeight: "600",
+            marginBottom: "10px"
+          }}
+        >
+          Canalizando pergamino angelical
+        </div>
+
+        <div
+          style={{
+            opacity: 0.7,
+            fontSize: "14px"
+          }}
+        >
+          Consultando Kabala Angelical...
+        </div>
+
+      </div>
+
+    </div>
+
+  );
+
+}
+
+  return (
+
+    <div
+      style={{
+        minHeight: "100vh",
+        width: "100vw",
+        background: `
+          radial-gradient(
+            circle at top,
+            rgba(139,92,246,0.18),
+            transparent 35%
+          ),
+          linear-gradient(
+            180deg,
+            #070B16 0%,
+            #0B1020 45%,
+            #111827 100%
+          )
+        `,
+
+        color: "white",
+
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+
+        padding: "24px",
+
+        position: "relative",
+        overflow: "hidden"
+      }}
+    >
+
+      {/* CARD CEREMONIAL */}
+
+      <div
+        style={{
+          width: "100%",
+          maxWidth: "370px",
+          background: "rgba(255,255,255,0.04)",
+          border: "1px solid rgba(255,255,255,0.08)",
+          borderRadius: "28px",
+          padding: "38px 30px",
+          backdropFilter: "blur(18px)",
+          boxShadow: `
+            0 10px 40px rgba(0,0,0,0.45),
+            inset 0 1px 0 rgba(255,255,255,0.06)
+          `,
+          textAlign: "center"
+        }}
+      >
+
+        {/* TITULO */}
+
+        <h2
+          style={{
+            fontSize: "32px",
+            fontWeight: "700",
+            marginBottom: "10px",
+            letterSpacing: "0.5px"
+          }}
+        >
+          {carta.angel}
+        </h2>
+
+        {/* SUBTEXTO */}
+
+        <p
+          style={{
+            opacity: 0.72,
+            lineHeight: "1.5",
+            fontSize: "15px",
+            marginBottom: "28px"
+          }}
+        >
+          Carta Angelical Generada 
+        </p>
+
+        {/* LOADING */}
+
+        {generando && (
+
+  <div
+    style={{
+
+      display: "flex",
+      flexDirection: "column",
+
+      alignItems: "center",
+      justifyContent: "center",
+
+      gap: "26px",
+
+      marginTop: "10px"
+
+    }}
+  >
+
+    {/* ORBE */}
+
+    <div
+      className="orbe-ceremonial"
+    />
+
+    {/* TEXOS */}
+
+    <div
+      style={{
+        textAlign: "center"
+      }}
+    >
+
+      <div
+        style={{
+          fontSize: "20px",
+          fontWeight: "600",
+          marginBottom: "10px",
+          letterSpacing: "0.5px"
+        }}
+      >
+        Canalizando pergamino angelical
+      </div>
+
+      <div
+        style={{
+          opacity: 0.68,
+          fontSize: "14px",
+          lineHeight: "1.6"
+        }}
+      >
+        Consultando Kabala Angelical...
+      </div>
+
+    </div>
+
+  </div>
+
+)}
+
+        {/* BOTONES */}
+
+        {!generando && pdfData && (
+
+          <div
+            style={{
+              width: "100%",
+              maxWidth: "290px",
+              margin: "25px auto 0 auto"
+            }}
+          >
+
+            <button
+              onClick={abrirPDF}
+              style={botonStyle}
+            >
+              Ver  Carta
+            </button>
+
+            
+
+          </div>
+
+        )}
+
+      </div>
+
+    </div>
+
+  );
+
+}
+
 return (
 
 <div>
@@ -2247,7 +2552,7 @@ backgroundPosition: "center",
 backgroundRepeat: "no-repeat",
 
 padding: "40px clamp(18px, 5vw, 85px) 100px clamp(18px, 5vw, 85px)",
-minHeight:"1150px",
+minHeight:"auto",
 
 boxShadow:`
 0 10px 30px rgba(0,0,0,0.25),
@@ -2292,7 +2597,7 @@ textShadow:`
 0 0 6px rgba(255,220,140,0.12)
 `,
 
-background:"radial-gradient(circle at top, rgba(255,220,140,0.35) 0%, rgba(255,220,140,0.15) 35%, rgba(255,220,140,0) 70%)",
+
 
 padding:"10px 20px",
 borderRadius:"10px",
@@ -2308,8 +2613,7 @@ lineHeight:"1.25"
 
 <div
   style={{
-    background:"rgba(255,255,255,0.10)",
-    border:"1px solid rgba(80,60,30,0.2)",
+    border:"1px solid rgba(190,160,110,0.22)",
     fontFamily:"serif",
     letterSpacing:"1px",
     padding:"4px 10px",
@@ -2322,15 +2626,8 @@ lineHeight:"1.25"
 >
   {(() => {
     const horaTexto = carta.hora
-      ? (() => {
-          const [hora, minuto] = carta.hora.split(":");
-          const h = parseInt(hora, 10);
-          const periodo = h >= 12 ? "PM" : "AM";
-          const hora12 = h % 12 || 12;
-
-          return ` | Hora: ${hora12}:${minuto} ${periodo}`;
-        })()
-      : "";
+  ? ` | Hora: ${carta.hora}`
+  : "";
 
     return `Nacimiento: ${carta.fecha} | Día: ${carta.diaNacimiento}${horaTexto} | Signo: ${carta.signo}`;
   })()}
@@ -2342,8 +2639,7 @@ lineHeight:"1.25"
 
 <div style={{
   borderRadius:"8px",
-  background:"rgba(255,255,255,0.10)",
-  border:"1px solid rgba(80,60,30,0.2)",
+  border:"1px solid rgba(190,160,110,0.22)",
   marginBottom:"18px",
   width: "calc(100% - 80px)",
   margin:"0 auto 18px auto"
@@ -2400,13 +2696,14 @@ lineHeight:"1.25"
 display:"flex",
 justifyContent:"center",
 alignItems:"center",
-position:"relative"
+position:"relative",
+marginTop:"18px"
 }}>
 
 <div style={{
   position:"absolute",
-  width:"520px",
-  height:"560px",
+  width:"620px",
+  height:"760px",
   borderRadius:"50% / 60%",
   background: modoPDF
     ? "radial-gradient(circle, rgba(255,200,120,0.4) 0%, transparent 70%)"
@@ -2418,8 +2715,8 @@ position:"relative"
   className="auraAngel"
   style={{
     position:"absolute",
-    width: modoPDF ? "420px" : "380px",
-    height: modoPDF ? "460px" : "420px",
+    width: modoPDF ? "520px" : "450px",
+    height: modoPDF ? "620px" : "520px",
     borderRadius:"50% / 60%",
 
    background: modoPDF
@@ -2457,9 +2754,8 @@ src={`/angeles/${carta.angel.toLowerCase()}.webp`}
 alt={carta.angel}
 style={{
 
-maxHeight:"280px",
+maxHeight:"390px",
 width:"auto",
-
 position:"relative",
 zIndex:"2",
 
@@ -2471,8 +2767,6 @@ maskImage:"radial-gradient(ellipse, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%)",
   drop-shadow(0 0 45px ${auraGuardian1})
   drop-shadow(0 0 90px ${auraGuardian2})
 `
-
-
 }}
 />
 
@@ -2628,8 +2922,7 @@ color:"#7a624d"
 
 <div style={{
   borderRadius:"8px",
-  background:"rgba(255,255,255,0.10)",
-  border:"1px solid rgba(80,60,30,0.2)",
+  border:"1px solid rgba(190,160,110,0.22)",
   marginBottom:"18px",
   width:"calc(100% - 80px)",
   margin:"0 auto 18px auto"
@@ -2845,8 +3138,7 @@ zIndex:0
 
 <div style={{
   borderRadius:"8px",
-  background:"rgba(255,255,255,0.10)",
-  border:"1px solid rgba(80,60,30,0.2)",
+  border:"1px solid rgba(190,160,110,0.22)",
   marginBottom:"18px",
   width:"calc(100% - 80px)",
   margin:"0 auto 18px auto"
@@ -3016,8 +3308,7 @@ zIndex:0
 
 <div style={{
   borderRadius:"8px",
-  background:"rgba(255,255,255,0.10)",
-  border:"1px solid rgba(80,60,30,0.2)",
+  border:"1px solid rgba(190,160,110,0.22)",
   width:"calc(100% - 80px)",
   margin:"0 auto 18px auto"
 }}>
@@ -3057,8 +3348,8 @@ zIndex:0
 <div style={{
 display:"grid",
 gridTemplateColumns:"200px 1fr",
-gap:"20px",
-padding:"18px"
+gap:"12px",
+padding:"10px 16px 8px 16px"
 }}>
 
 <div style={{
@@ -3141,7 +3432,8 @@ position:"relative"
 src={`/signos/${carta.signo.toLowerCase()}.webp`}
 alt={carta.signo}
 style={{
-width:"140px",
+width:"185px",
+marginTop:"-8px",
 
 maskImage:"radial-gradient(circle, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 100%)",
 WebkitMaskImage:"radial-gradient(circle, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%)",
@@ -3177,7 +3469,7 @@ gap:"10px 30px",
 fontSize:"18px",
 fontFamily:"IM Fell English, serif",
 letterSpacing:"0.4px",
-lineHeight:"1.45",
+lineHeight:"1.18",
 
 color:"#3d2b1f",
 mixBlendMode:"multiply",
@@ -3225,7 +3517,7 @@ textShadow:`
     display:"flex",
     alignItems:"center",
     justifyContent:"center",
-    margin:"28px 0"
+    margin:"18px 0 12px 0"
   }}
 >
   <div
@@ -3266,40 +3558,29 @@ textShadow:`
 
 <>
 <div style={{
-
-maxWidth:"794px",
-margin:"0px auto",
-padding:"18px 30px",
-
-background:"rgba(255,255,255,0.10)",
-
-borderRadius:"8px",
-
+maxWidth:"820px",
+margin:"0 auto",
+padding:"8px 24px",
 fontFamily:"Cinzel Decorative, serif",
 fontSize:"20px",
-
 textAlign:"center",
-lineHeight:"1.5",
-
+lineHeight:"1.3",
 color:"#3a2a18",
-
-boxShadow:"0 6px 18px rgba(0,0,0,0.15)",
-border:"1px solid rgba(120,90,40,0.35)",
-
 display:"flex",
 flexDirection:"column",
 justifyContent:"center"
-
 }}>
 
 <div style={{
-fontSize:"24px",
-padding:"8px",
+fontSize:"21px",
+padding:"4px",
+marginTop:"-15px",
 fontFamily:"Cinzel Decorative, serif",
 textAlign:"center",
+lineHeight:"1.0",
 letterSpacing:"3px",
-wordSpacing:"10px",
-marginBottom:"0 auto",
+wordSpacing:"4px",
+marginBottom:"12px",
 color:"#2a1a0f",
 textShadow:`
     0 1px 0 rgba(255,255,255,0.25),
@@ -3311,12 +3592,13 @@ PROPOSITO DEL ÁNGEL DE LA GUARDA
 
 <div style={{
 fontFamily:"serif",
-fontSize:"30px",
+fontSize:"20px",
+marginBottom:"2px",
 fontWeight:"700",
-lineHeight:"1.5",
+lineHeight:"1.0",
 letterSpacing:"3px",
 color:"#2a1a0f",
-
+marginTop:"-5px",
 }}>
 “{mensajeAngel}”
 </div>
@@ -3331,39 +3613,18 @@ color:"#2a1a0f",
 
 </div>
 
-<div style={{
-marginTop:"-135px",
-paddingTop:"10px",
-maxWidth:"794px",
-marginLeft:"auto",
-marginRight:"auto",
-width:"70%",
-borderTop:`1px solid rgba(120,90,400,0.35)`,
-borderRadius:"8px",
-textAlign:"center",
-fontSize:"15px",
-letterSpacing:"1px",
-opacity:"0.9"
-}}>
-
 <div
 className="firmaAngeologo"
+
 style={{
-textAlign:"center",
-marginTop:"1px",
-font:"fontTitulo",
-paddingTop:"10px",
-paddingBottom:"12px",
-borderTop:"1px solid rgba(120,90,40,0.35)",
-background:"rgba(255,248,230,0.10)",
-borderRadius:"8px",
-width:"70%",
-marginLeft:"auto",
-marginRight:"auto"
+  marginTop:"-125px",
+  paddingTop:"0px",
+  width:"72%",
+  marginLeft:"auto",
+  marginRight:"auto",
+  textAlign:"left"
 }}
 >
-
-<div style={{ marginTop:"30px", textAlign:"center" }}>
 
 {(
   nombreAngeologo?.trim() &&
@@ -3372,51 +3633,79 @@ marginRight:"auto"
   tituloAngeologo !== "Título del Angeólogo"
 ) ? (
 
-  <>
-    <div style={{
-      fontWeight:"600",
-      marginBottom:"4px",
-      letterSpacing:"1px"
-    }}>
-      Angeólogo
-    </div>
+<>
 
-    <div style={{
-      fontSize:"16px",
-      letterSpacing:"0.5px",
-      font:"fontTitulo",
-    }}>
-      {nombreAngeologo}
-    </div>
+  <div
 
-    <div style={{
-      fontSize:"13px",
-      opacity:"0.8",
-      marginTop:"2px"
-    }}>
-      {tituloAngeologo}
-    </div>
-  </>
+  style={{
+  display:"flex",
+  alignItems:"center",
+  justifyContent:"center",
+  gap:"18px",
+  marginTop:"20px"
+  }}
+  />
+
+  <div
+  style={{
+    fontSize:"15px",
+    letterSpacing:"2px",
+    marginBottom:"1px",
+    color:"#1e0d05",
+    marginTop:"0px",
+    opacity:"1.0"
+  }}
+  >
+    Angeólogo
+  </div>
+
+  <div
+  style={{
+
+    fontFamily:"Cinzel, serif",
+    fontSize:"20px",
+    fontWeight:"600",
+    letterSpacing:"1px",
+    color:"#2a1409",
+    marginBottom:"1px",
+    lineHeight:"1",
+    textTransform:"uppercase"
+  }}
+  >
+    {nombreAngeologo}
+  </div>
+
+  <div
+  style={{
+    fontSize:"14px",
+    letterSpacing:"0.5px",
+    color:"#2d160b",
+     lineHeight:"1",
+    fontWeight:"500"
+  }}
+  >
+    {tituloAngeologo}
+  </div>
+
+</>
 
 ) : (
 
-  <img
-    src={florVida}
-    alt="Flor de la Vida"
-    style={{
-      width:"90px",
-      opacity:"0.85",
-      margin:"10px auto",
-      display:"block",
-      filter:"sepia(1) brightness(0.35) contrast(1.4)"
-    }}
-  />
+<img
+  src={florVida}
+  alt="Flor de la Vida"
+
+  style={{
+    width:"90px",
+    opacity:"0.82",
+    margin:"14px auto",
+    display:"block",
+    filter:
+    "sepia(1) brightness(0.35) contrast(1.4)"
+  }}
+/>
 
 )}
-
-</div>
-
-</div>
 
 </div>
 
@@ -3426,23 +3715,54 @@ marginRight:"auto"
 <div style={{
 textAlign:"center",
 marginTop:"25px",
-width:"794px",
+maxWidth:"794px",
+width:"100%",
+padding:"0 14px",
+boxSizing:"border-box",
 marginLeft:"auto",
 marginRight:"auto"
 }}>
 
 <button
-  onClick={() => generarPDFNuevo(carta)}
+  onClick={async () => {
+
+  const resultado = await generarPDFNuevo(carta);
+
+  if (!resultado?.url) return;
+
+  const a = document.createElement("a");
+
+  a.href = resultado.url;
+
+  a.download = `${resultado.nombreArchivo}.pdf`;
+
+  document.body.appendChild(a);
+
+  a.click();
+
+  document.body.removeChild(a);
+
+}}
   style={{
-    padding: "12px 26px",
-    fontSize: "16px",
-    background: "#4CAF50",
-    color: "#fff",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
-    marginLeft: "10px"
-  }}
+
+  padding:"12px 28px",
+  width:"240px",
+  display:"block",
+  margin:"55px auto 0 auto",
+  background:
+  "linear-gradient(180deg, #7b5532 0%, #5f3f24 100%)",
+  color:"#fff",
+  border:
+  "1px solid rgba(255,220,160,0.18)",
+  borderRadius:"12px",
+  cursor:"pointer",
+  fontSize:"15px",
+  fontWeight:"600",
+  letterSpacing:"0.5px",
+  boxShadow:
+  "0 8px 18px rgba(90,50,20,0.22)",
+  transition:"all 0.25s ease"
+}}
 >
   Generar PDF
 </button>

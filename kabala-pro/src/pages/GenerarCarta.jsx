@@ -24,7 +24,111 @@ const cartaRef = useRef(null);
 const [nombre,setNombre] = useState("");
 const [fecha,setFecha] = useState("");
 const [hora,setHora] = useState("");
+const [horaPartes, setHoraPartes] = useState({
+  hora: "",
+  minuto: "",
+  periodo: ""
+});
 const [carta,setCarta] = useState(null);
+const [fechaPartes, setFechaPartes] = useState({
+  dia: "",
+  mes: "",
+  anio: ""
+});
+
+const dias = Array.from(
+  { length: 31 },
+  (_, i) => String(i + 1).padStart(2, "0")
+);
+
+const meses = Array.from(
+  { length: 12 },
+  (_, i) => String(i + 1).padStart(2, "0")
+);
+
+const anios = Array.from(
+  { length: 100 },
+  (_, i) => String(new Date().getFullYear() - i)
+);
+
+const horas = Array.from(
+  { length: 12 },
+  (_, i) => String(i + 1).padStart(2, "0")
+);
+
+const minutos = Array.from(
+  { length: 60 },
+  (_, i) => String(i).padStart(2, "0")
+);
+
+const inputStyle = {
+
+  flex: 1,
+  padding: "12px",
+  borderRadius: "12px",
+  border: "1px solid rgba(0,0,0,0.1)",
+  background: "white",
+  fontSize: "15px",
+  outline: "none"
+};
+
+useEffect(() => {
+
+  const cartaGuardada =
+    localStorage.getItem("cartaTemporal");
+
+  if(!cartaGuardada) return;
+
+  const cartaParseada =
+    JSON.parse(cartaGuardada);
+
+  setTimeout(() => {
+
+    setNombre(cartaParseada.nombre || "");
+    setFecha(cartaParseada.fecha || "");
+    setHora(cartaParseada.hora || "");
+
+  }, 0);
+
+  localStorage.removeItem("cartaTemporal");
+
+}, []);
+
+useEffect(() => {
+
+  if (!fecha) return;
+
+  const partes = fecha.split("-");
+
+  if (partes.length !== 3) return;
+
+  setFechaPartes({
+    anio: partes[0],
+    mes: partes[1],
+    dia: partes[2]
+  });
+
+}, [fecha]);
+
+useEffect(() => {
+
+  if (!hora) return;
+
+  const partes = hora.split(" ");
+
+  if (partes.length !== 2) return;
+
+  const tiempo = partes[0].split(":");
+
+  if (tiempo.length !== 2) return;
+
+  setHoraPartes({
+    hora: tiempo[0],
+    minuto: tiempo[1],
+    periodo: partes[1]
+  });
+
+}, [hora]);
 
 const nombreAngeologo = localStorage.getItem("nombreAngeologo") || "";
 const tituloAngeologo = localStorage.getItem("tituloAngeologo") || "";
@@ -36,17 +140,27 @@ useEffect(() => {
   }
 }, []);
 
-const guardarHistorial = (data)=>{
+const guardarHistorial = (data) => {
 
-const historial = JSON.parse(localStorage.getItem("historialCartas")) || [];
+  const historial =
+    JSON.parse(localStorage.getItem("historialCartas")) || [];
 
-historial.push(data);
+  const nuevaCarta = {
 
-localStorage.setItem(
-"historialCartas",
-JSON.stringify(historial)
-);
+   id: Date.now().toString(),
 
+    fechaGeneracion:
+      new Date().toISOString(),
+
+    ...data
+  };
+
+  historial.unshift(nuevaCarta);
+
+  localStorage.setItem(
+    "historialCartas",
+    JSON.stringify(historial)
+  );
 };
 
 const generarCarta = ()=>{
@@ -209,27 +323,38 @@ const nuevaCarta = () => {
 
 return(
 
-<div style={{ width:"100%" }}>
+<div
+style={{
+minHeight:"100vh",
+
+background:
+"linear-gradient(180deg, #f4ead7 0%, #ead8bb 50%, #e2c79f 100%)",
+
+padding:"20px"
+}}
+>
+
+{!carta && (
 
 <div
 style={{
-maxWidth:"420px",
+maxWidth:"460px",
 margin:"40px auto",
-padding:"25px",
-
-background:"rgba(255,248,230,0.55)",
-border:"1px solid rgba(120,90,40,0.25)",
-borderRadius:"10px",
-
-boxShadow:"0 8px 20px rgba(0,0,0,0.25)"
+padding:"30px",
+background:"rgba(255,248,230,0.42)",
+backdropFilter:"blur(6px)",
+border:"1px solid rgba(120,90,40,0.22)",
+borderRadius:"18px",
+boxShadow:"0 12px 35px rgba(90,50,20,0.15)"
 }}
 >
 
  <h2
 style={{
-fontFamily:"Almendra Display, serif",
+fontFamily:"Cinzel, serif",
 fontSize:"28px",
-letterSpacing:"2px",
+fontWeight:"600",
+letterSpacing:"1px",
 textAlign:"center",
 marginBottom:"12px",
 
@@ -268,9 +393,9 @@ Nombre del Paciente
 
     let valor = e.target.value
       .toUpperCase()
-      .replace(/[^A-ZÁÉÍÓÚÑ ]/g,"")   // solo letras y espacios
-      .replace(/\s+/g," ")            // evita múltiples espacios
-      .trimStart();                   // evita espacio al inicio
+      .replace(/[^A-ZÁÉÍÓÚÑ ]/g,"")
+      .replace(/\s+/g," ")
+      .trimStart();
 
     setNombre(valor)
 
@@ -280,22 +405,22 @@ Nombre del Paciente
     if(e.key === "Enter"){
       e.preventDefault();
       fechaRef.current?.focus();
-      fechaRef.current?.showPicker();
     }
   }}
 
   style={{
   width:"100%",
-  padding:"10px",
+  padding:"12px 14px",
   marginBottom:"15px",
-
-  border:"1px solid rgba(120,90,40,0.35)",
-  borderRadius:"6px",
-
+  border:"1px solid rgba(120,90,40,0.16)",
+  borderRadius:"10px",
   fontSize:"15px",
   fontFamily:"IM Fell English, serif",
-
-  background:"rgba(255,255,255,0.9)",
+  background:"rgba(255,255,255,0.58)",
+  backdropFilter:"blur(4px)",
+  boxShadow:"inset 0 1px 3px rgba(90,50,20,0.05)",
+  transition:"all 0.25s ease",
+  color:"#3a1f12",
   textTransform:"uppercase"
   }}
 
@@ -314,43 +439,141 @@ color:"#3a1f12"
 Fecha de Nacimiento
 </div>
 
-<input
-  ref={fechaRef}
-  type="date"
-  value={fecha}
-  onChange={(e)=>{
-    setFecha(e.target.value);
-
-    setTimeout(()=>{
-      horaRef.current?.focus();
-      horaRef.current?.showPicker?.();
-    },100);
-  }}
-
-  onFocus={()=>{
-    fechaRef.current?.showPicker?.();
-  }}
-
-  onKeyDown={(e)=>{
-    if(e.key !== "Tab"){
-      e.preventDefault();
-    }
-  }}
-
+<div
   style={{
-  width:"100%",
-  padding:"10px",
-  marginBottom:"15px",
-
-  border:"1px solid rgba(120,90,40,0.35)",
-  borderRadius:"6px",
-
-  fontSize:"15px",
-  fontFamily:"IM Fell English, serif",
-
-  background:"rgba(255,255,255,0.9)"
+    display: "flex",
+    gap: "10px",
+    width: "100%"
   }}
-/>
+>
+
+  {/* DIA */}
+
+  <select
+    value={fechaPartes.dia}
+    onChange={(e) => {
+
+      const nuevoDia = e.target.value;
+
+      setFechaPartes(prev => ({
+  ...prev,
+  dia: nuevoDia
+}));
+
+if (
+  nuevoDia &&
+  fechaPartes.mes &&
+  fechaPartes.anio
+) {
+
+  setFecha(
+    `${fechaPartes.anio}-${fechaPartes.mes}-${nuevoDia}`
+  );
+
+        setTimeout(() => {
+          horaRef.current?.focus();
+        }, 100);
+
+      }
+
+    }}
+    style={inputStyle}
+  >
+    <option value="">Día</option>
+
+    {dias.map((d) => (
+      <option key={d} value={d}>
+        {d}
+      </option>
+    ))}
+
+  </select>
+
+  {/* MES */}
+
+  <select
+    value={fechaPartes.mes}
+    onChange={(e) => {
+
+      const nuevoMes = e.target.value;
+
+      setFechaPartes(prev => ({
+  ...prev,
+  mes: nuevoMes
+}));
+
+if (
+  fechaPartes.dia &&
+  nuevoMes &&
+  fechaPartes.anio
+) {
+
+  setFecha(
+    `${fechaPartes.anio}-${nuevoMes}-${fechaPartes.dia}`
+  );
+
+  setTimeout(() => {
+    horaRef.current?.focus();
+  }, 100);
+
+}
+
+    }}
+    style={inputStyle}
+  >
+    <option value="">Mes</option>
+
+    {meses.map((m) => (
+      <option key={m} value={m}>
+        {m}
+      </option>
+    ))}
+
+  </select>
+
+  {/* AÑO */}
+
+  <select
+    value={fechaPartes.anio}
+    onChange={(e) => {
+
+      const nuevoAnio = e.target.value;
+
+     setFechaPartes(prev => ({
+  ...prev,
+  anio: nuevoAnio
+}));
+
+if (
+  fechaPartes.dia &&
+  fechaPartes.mes &&
+  nuevoAnio
+) {
+
+  setFecha(
+    `${nuevoAnio}-${fechaPartes.mes}-${fechaPartes.dia}`
+  );
+
+  setTimeout(() => {
+    horaRef.current?.focus();
+  }, 100);
+
+}
+
+    }}
+    style={inputStyle}
+  >
+    <option value="">Año</option>
+
+    {anios.map((a) => (
+      <option key={a} value={a}>
+        {a}
+      </option>
+    ))}
+
+  </select>
+
+</div>
 
 <br/><br/>
 
@@ -365,34 +588,139 @@ color:"#3a1f12"
 Hora de Nacimiento
 </div>
 
-<input
-  ref={horaRef}
-  type="time"
-  value={hora}
-  onChange={(e)=>setHora(e.target.value)}
-
-  onKeyDown={(e)=>{
-    if(e.key === "Enter"){
-      e.preventDefault();
-      botonRef.current?.focus();
-    }
-  }}
-
+<div
   style={{
-  width:"100%",
-  padding:"10px",
-  marginBottom:"15px",
+    display: "flex",
+    gap: "10px",
+    width: "100%",
+    marginBottom: "15px"
+  }}
+>
 
-  border:"1px solid rgba(120,90,40,0.35)",
-  borderRadius:"6px",
+  {/* HORA */}
 
-  fontSize:"15px",
-  fontFamily:"IM Fell English, serif",
+  <select
+    value={horaPartes.hora}
 
-  background:"rgba(255,255,255,0.9)"
+    onChange={(e) => {
 
-}}
-/>
+      const nuevaHora = e.target.value;
+
+      setHoraPartes(prev => ({
+        ...prev,
+        hora: nuevaHora
+      }));
+
+      if (
+        nuevaHora &&
+        horaPartes.minuto &&
+        horaPartes.periodo
+      ) {
+
+        setHora(
+          `${nuevaHora}:${horaPartes.minuto} ${horaPartes.periodo}`
+        );
+
+      }
+
+    }}
+
+    style={inputStyle}
+  >
+
+    <option value="">Hora</option>
+
+    {horas.map((h) => (
+      <option key={h} value={h}>
+        {h}
+      </option>
+    ))}
+
+  </select>
+
+  {/* MINUTOS */}
+
+  <select
+    value={horaPartes.minuto}
+
+    onChange={(e) => {
+
+      const nuevoMinuto = e.target.value;
+
+      setHoraPartes(prev => ({
+        ...prev,
+        minuto: nuevoMinuto
+      }));
+
+      if (
+        horaPartes.hora &&
+        nuevoMinuto &&
+        horaPartes.periodo
+      ) {
+
+        setHora(
+          `${horaPartes.hora}:${nuevoMinuto} ${horaPartes.periodo}`
+        );
+
+      }
+
+    }}
+
+    style={inputStyle}
+  >
+
+    <option value="">Min</option>
+
+    {minutos.map((m) => (
+      <option key={m} value={m}>
+        {m}
+      </option>
+    ))}
+
+  </select>
+
+  {/* AM PM */}
+
+  <select
+    ref={horaRef}
+
+    value={horaPartes.periodo}
+
+    onChange={(e) => {
+
+      const nuevoPeriodo = e.target.value;
+
+      setHoraPartes(prev => ({
+        ...prev,
+        periodo: nuevoPeriodo
+      }));
+
+      if (
+        horaPartes.hora &&
+        horaPartes.minuto &&
+        nuevoPeriodo
+      ) {
+
+        setHora(
+          `${horaPartes.hora}:${horaPartes.minuto} ${nuevoPeriodo}`
+        );
+
+      }
+
+    }}
+
+    style={inputStyle}
+  >
+
+    <option value="">AM/PM</option>
+
+    <option value="AM">AM</option>
+
+    <option value="PM">PM</option>
+
+  </select>
+
+</div>
 
 <br/><br/>
 
@@ -403,23 +731,19 @@ disabled={!nombre || !fecha}
 
 style={{
 width:"100%",
-padding:"12px",
-
-background:"#6b4c2f",
+padding:"14px",
+background:
+"linear-gradient(180deg, #7b5532 0%, #5f3f24 100%)",
 color:"#fff",
-
-border:"none",
-borderRadius:"6px",
-
-fontSize:"16px",
+border:"1px solid rgba(255,220,160,0.18)",
+borderRadius:"12px",
+fontSize:"17px",
 fontWeight:"600",
-
-marginTop:"10px",
-
-boxShadow:"0 4px 10px rgba(0,0,0,0.25)",
-
+marginTop:"12px",
+boxShadow:"0 8px 18px rgba(90,50,20,0.25)",
 opacity: !nombre || !fecha ? 0.5 : 1,
-cursor: !nombre || !fecha ? "not-allowed" : "pointer"
+cursor: !nombre || !fecha ? "not-allowed" : "pointer",
+transition:"all 0.25s ease"
 }}
 
 >
@@ -434,15 +758,18 @@ Generar Carta
 onClick={nuevaCarta}
 style={{
 width:"100%",
-padding:"10px",
-
-marginTop:"10px",
-
-background:"#e6d3a3",
-border:"1px solid #8b6a3c",
-
-borderRadius:"6px",
-cursor:"pointer"
+padding:"13px",
+marginTop:"12px",
+background:
+"linear-gradient(180deg, #ecd9ab 0%, #dcc08b 100%)",
+border:"1px solid rgba(120,90,40,0.35)",
+borderRadius:"12px",
+cursor:"pointer",
+fontSize:"15px",
+fontWeight:"600",
+color:"#5a351c",
+boxShadow:"0 6px 14px rgba(90,50,20,0.12)",
+transition:"all 0.25s ease"
 }}
 >
 Nueva Carta
@@ -452,19 +779,28 @@ Nueva Carta
 
 </div>
 
+)}
+
 {carta && (
 
-<div
-ref={cartaRef}
-style={{
-  width:"100%",
-  display:"flex",
-  justifyContent:"center",
-  marginTop:"35px"
-}}
->
-<CartaAngel carta={carta}/>
-</div>
+  <div
+    key={carta.id}
+
+    ref={cartaRef}
+
+    style={{
+      width:"100%",
+      display:"flex",
+      justifyContent:"center",
+      marginTop:"35px",
+
+      animation:
+        "revelarCarta 1.4s ease forwards"
+    }}
+  >
+    
+    <CartaAngel carta={carta}/>
+  </div>
 
 )}
 

@@ -21,13 +21,17 @@ function Configuracion() {
 
   return (
 
+  <div className="config-page">
+
    <div className="config-wrapper">
 
-  <h1>Configuración</h1>
+  <h1 className="config-title">Configuración</h1>
 
   <div className="config-card">
 
-    <h2>Datos del Angeólogo</h2>
+    <h2 className="config-subtitle">
+Datos del Angeólogo
+</h2>
 
     <label>Nombre del Angeólogo</label>
     <input
@@ -46,6 +50,8 @@ function Configuracion() {
     <button onClick={guardarConfiguracion}>
       Guardar
     </button>
+
+  </div>
 
   </div>
 

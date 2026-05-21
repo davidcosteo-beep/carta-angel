@@ -55,3 +55,91 @@ body{
 *{
   box-sizing:border-box;
 }
+
+@keyframes spin {
+
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+
+}
+
+.orbe-ceremonial {
+
+  width: 95px;
+  height: 95px;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(255,220,120,0.95) 0%,
+      rgba(255,190,70,0.55) 35%,
+      rgba(255,180,60,0.08) 70%,
+      transparent 100%
+    );
+
+  animation:
+    pulsoAngelical 2.8s ease-in-out infinite;
+
+  box-shadow:
+    0 0 35px rgba(255,200,90,0.38),
+    0 0 70px rgba(255,190,70,0.18);
+
+  will-change: transform, opacity;
+
+}
+
+@keyframes revelarCarta {
+
+  0% {
+
+    opacity: 0;
+
+    transform:
+      translateY(35px)
+      scale(0.985);
+
+  }
+
+  100% {
+
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+
+  }
+
+}
+
+@keyframes pulsoAngelical {
+
+  0% {
+
+    transform: scale(1);
+    opacity: 0.82;
+
+  }
+
+  50% {
+
+    transform: scale(1.08);
+    opacity: 1;
+
+  }
+
+  100% {
+
+    transform: scale(1);
+    opacity: 0.82;
+
+  }
+
+}
