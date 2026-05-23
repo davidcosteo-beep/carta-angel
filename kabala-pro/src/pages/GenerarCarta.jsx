@@ -72,27 +72,6 @@ const inputStyle = {
   outline: "none"
 };
 
-useEffect(() => {
-
-  const cartaGuardada =
-    localStorage.getItem("cartaTemporal");
-
-  if(!cartaGuardada) return;
-
-  const cartaParseada =
-    JSON.parse(cartaGuardada);
-
-  setTimeout(() => {
-
-    setNombre(cartaParseada.nombre || "");
-    setFecha(cartaParseada.fecha || "");
-    setHora(cartaParseada.hora || "");
-
-  }, 0);
-
-  localStorage.removeItem("cartaTemporal");
-
-}, []);
 
 useEffect(() => {
 
@@ -308,6 +287,33 @@ setTimeout(()=>{
 },100);
 
 };
+
+// eslint-disable-next-line react-hooks/exhaustive-deps
+
+useEffect(() => {
+
+  const cartaGuardada =
+    localStorage.getItem("cartaTemporal");
+
+  if(!cartaGuardada) return;
+
+  const cartaParseada =
+    JSON.parse(cartaGuardada);
+
+  setTimeout(() => {
+
+    setNombre(cartaParseada.nombre || "");
+    setFecha(cartaParseada.fecha || "");
+    setHora(cartaParseada.hora || "");
+
+  }, 0);
+
+  localStorage.removeItem("cartaTemporal");
+
+}, []);
+
+
+
 const nuevaCarta = () => {
 
   setNombre("");

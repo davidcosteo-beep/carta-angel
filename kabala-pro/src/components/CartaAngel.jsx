@@ -4,13 +4,16 @@ import { tablaCartas } from "../core/tablaCartas";
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import fontkit from "@pdf-lib/fontkit";
 import { useIsMobile } from "../hooks/useIsMobile";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 
 function CartaAngel({ carta }) {
 
 const isMobile = useIsMobile();  
 const [pdfData, setPdfData] = useState(null);
+const pdfCacheRef = useRef(null);
+const ultimoURLRef = useRef(null);
+const [abriendoPDF, setAbriendoPDF] =useState(false);
 const [generando, setGenerando] = useState(false);  
 
 useEffect(() => {
@@ -46,6 +49,17 @@ useEffect(() => {
 
     setPdfData(resultado);
 
+    const preloadLink =
+    document.createElement("link");
+
+    preloadLink.rel = "preload";
+
+    preloadLink.as = "document";
+
+    preloadLink.href = resultado.url;
+
+    document.head.appendChild(preloadLink);
+
   } catch (error) {
 
     console.error(error);
@@ -60,24 +74,32 @@ useEffect(() => {
 
   generar();
 
-}, []);
+}, [isMobile]);
 
-const abrirPDF = () => {
+const abrirPDF = async () => {
 
   if (!pdfData?.url) return;
 
-  window.open(pdfData.url, "_blank");
+  setAbriendoPDF(true);
 
   setTimeout(() => {
 
-    URL.revokeObjectURL(pdfData.url);
+    window.open(pdfData.url, "_blank");
 
-  }, 15000);
+    setAbriendoPDF(false);
+
+  }, 700);
 
 };
 
 
 async function generarPDFNuevo() {
+
+if (pdfCacheRef.current) {
+
+  return pdfCacheRef.current;
+
+}  
 
 const inicioX = 67;
 const inicioY = 760;
@@ -2203,11 +2225,28 @@ const blob = new Blob([pdfBytes], {
 
 const url = URL.createObjectURL(blob);
 
-return {
+if (ultimoURLRef.current) {
+
+  URL.revokeObjectURL(
+    ultimoURLRef.current
+  );
+
+}
+
+ultimoURLRef.current = url;
+
+const resultado = {
+
   blob,
   url,
   nombreArchivo
+
 };
+
+pdfCacheRef.current =
+  resultado;
+
+return resultado;
 }
 
 const auraColor = (hex, alpha) => {
@@ -2281,6 +2320,8 @@ const botonStyle = {
   fontSize: "16px",
   fontWeight: "600",
   cursor: "pointer",
+  transition:"transform 0.18s ease, box-shadow 0.25s ease",
+  touchAction: "manipulation",
   boxShadow: "0 8px 20px rgba(139,92,246,0.35)"
 };
 
@@ -2379,6 +2420,11 @@ if (isMobile) {
             #111827 100%
           )
         `,
+        transition:
+        "opacity 0.45s ease, filter 0.45s ease",
+
+        opacity:
+          abriendoPDF ? 0.82 : 1,
 
         color: "white",
 
@@ -2512,11 +2558,34 @@ if (isMobile) {
           >
 
             <button
-              onClick={abrirPDF}
-              style={botonStyle}
-            >
-              Ver  Carta
-            </button>
+
+  onClick={abrirPDF}
+
+  onPointerDown={(e) => {
+
+    e.currentTarget.style.transform =
+      "scale(0.97)";
+
+  }}
+
+  onPointerUp={(e) => {
+
+    e.currentTarget.style.transform =
+      "scale(1)";
+
+  }}
+
+  style={botonStyle}
+
+  disabled={abriendoPDF}
+
+>
+
+  {abriendoPDF
+    ? "Generando Carta..."
+    : "Ver Carta"}
+
+</button>
 
             
 

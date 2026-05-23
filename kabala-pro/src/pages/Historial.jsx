@@ -29,6 +29,9 @@ function Historial() {
 
   const [filtro, setFiltro] =  useState("todas");
 
+  const [cargandoCarta, setCargandoCarta] =
+  useState(null);  
+
   const [historial, setHistorial] = useState(() => {
 
   const datos =
@@ -47,12 +50,23 @@ return ordenarHistorial(
 
 const reabrirCarta = (item) => {
 
-  localStorage.setItem(
-    "cartaTemporal",
-    JSON.stringify(item)
-  );
+  setCargandoCarta(item.id);
 
-  navigate("/");
+  requestAnimationFrame(() => {
+
+    setTimeout(() => {
+
+      localStorage.setItem(
+        "cartaTemporal",
+        JSON.stringify(item)
+      );
+
+      navigate("/");
+
+    }, 700);
+
+  });
+
 };
 
 const toggleFavorito = (id) => {
@@ -239,7 +253,11 @@ const planetasVisuales = {
 
 <div
   key={index}
-  className="historial-card"
+  className={`historial-card ${
+  cargandoCarta === item.id
+    ? "historial-card-loading"
+    : ""
+}`}
 
   onClick={() => reabrirCarta(item)}
 >
