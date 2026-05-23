@@ -77,7 +77,15 @@ if(mostrarSplash){
 
     <BrowserRouter>
 
-      <Menu onLogout={() => setLogueado(false)}/>
+      <Menu
+  onLogout={() => {
+
+    localStorage.removeItem('token');
+
+    setLogueado(false);
+
+  }}
+/>
 
       <Routes>
 
