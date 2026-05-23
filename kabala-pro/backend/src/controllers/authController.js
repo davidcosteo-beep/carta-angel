@@ -81,6 +81,20 @@ const login = async (req, res) => {
 
 };
 
-module.exports = {
-  login
+const profile = async (req, res) => {
+
+  res.json({
+
+    ok: true,
+
+    usuario: req.usuario
+
+  });
+
 };
+
+module.exports = {
+  login, 
+  profile
+};
+
