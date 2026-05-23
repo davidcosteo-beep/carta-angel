@@ -10,7 +10,11 @@ import Menu from "./components/Menu";
 
 function App(){
 
-  const [logueado, setLogueado] = useState(false);
+  const [logueado, setLogueado] = useState(
+
+  !!localStorage.getItem('token')
+
+);
   const [mostrarSplash, setMostrarSplash] = useState(true);
 
   // 🌙 CARGAR TEMA GLOBAL
