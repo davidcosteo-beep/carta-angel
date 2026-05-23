@@ -5,7 +5,7 @@ import Login from "./pages/Login";
 import GenerarCarta from "./pages/GenerarCarta";
 import Configuracion from "./pages/Configuracion";
 import Historial from "./pages/Historial";
-
+import ProtectedRoute from "./routes/ProtectedRoute";
 import Menu from "./components/Menu";
 
 function App(){
@@ -89,11 +89,32 @@ if(mostrarSplash){
 
       <Routes>
 
-        <Route path="/" element={<GenerarCarta/>} />
+        <Route
+  path="/"
+  element={
+    <ProtectedRoute>
+      <GenerarCarta />
+    </ProtectedRoute>
+  }
+/>
 
-        <Route path="/configuracion" element={<Configuracion/>} />
+<Route
+  path="/configuracion"
+  element={
+    <ProtectedRoute>
+      <Configuracion />
+    </ProtectedRoute>
+  }
+/>
 
-        <Route path="/historial" element={<Historial/>} />
+<Route
+  path="/historial"
+  element={
+    <ProtectedRoute>
+      <Historial />
+    </ProtectedRoute>
+  }
+/>
 
       </Routes>
 
