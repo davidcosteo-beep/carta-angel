@@ -6,7 +6,11 @@ export function calcularAngelPorHora(angelBase, horaString) {
 
   if (!horaString) return null;
 
-  const hora = new Date(`1970-01-01T${horaString}:00`).getHours();
+  const [horaTexto, minutosTexto] =
+  horaString.split(":");
+
+const hora =
+  parseInt(horaTexto, 10);
   const fila = tablaHoras[angelBase];
 
   if (!fila) return null;

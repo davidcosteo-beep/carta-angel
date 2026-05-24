@@ -7,14 +7,15 @@ import Configuracion from "./pages/Configuracion";
 import Historial from "./pages/Historial";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Menu from "./components/Menu";
+import { isTokenValid } from "./utils/auth";
+
 
 function App(){
 
   const [logueado, setLogueado] = useState(
-
-  !!localStorage.getItem('token')
-
+  isTokenValid()
 );
+
   const [mostrarSplash, setMostrarSplash] = useState(true);
 
   // 🌙 CARGAR TEMA GLOBAL

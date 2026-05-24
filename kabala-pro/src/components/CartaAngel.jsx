@@ -5,7 +5,9 @@ import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import fontkit from "@pdf-lib/fontkit";
 import { useIsMobile } from "../hooks/useIsMobile";
 import { useEffect, useState, useRef } from "react";
-
+import {
+  generarPDFBackend
+} from '../services/pdfService';
 
 function CartaAngel({ carta }) {
 
@@ -29,7 +31,9 @@ useEffect(() => {
     const inicio = Date.now();
 
     const resultado =
-      await generarPDFNuevo();
+  await generarPDFBackend(
+    carta
+  );
 
     const tiempo =
       Date.now() - inicio;
@@ -82,13 +86,20 @@ const abrirPDF = async () => {
 
   setAbriendoPDF(true);
 
-  setTimeout(() => {
 
-    window.open(pdfData.url, "_blank");
+ const data =
+  await generarPDFBackend(carta);
 
-    setAbriendoPDF(false);
+if(data.ok){
 
-  }, 700);
+  window.open(
+    data.url,
+    "_blank"
+  );
+
+}
+
+setAbriendoPDF(false);
 
 };
 

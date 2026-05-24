@@ -1,0 +1,14 @@
+export const tablaAngelMes = {
+  "1": "Gabriel",
+  "2": "Barachiel",
+  "3": "Macadiel",
+  "4": "Chamuel",
+  "5": "Ambriel",
+  "6": "Mariel",
+  "7": "Verchiel",
+  "8": "Hamaliel",
+  "9": "Uriel",
+  "10": "Barael",
+  "11": "Anaquiel",
+  "12": "Anael"
+};

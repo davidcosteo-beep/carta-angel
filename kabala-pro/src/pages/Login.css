@@ -1,0 +1,354 @@
+.login-container{
+
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:24px;
+  background:
+  radial-gradient(
+    circle at top,
+    #fff8ef 0%,
+    #f3e7d6 38%,
+    #eadcc8 100%
+  );
+
+}
+
+.login-card{
+
+  width:100%;
+  max-width:420px;
+  background:
+    rgba(255,248,238,0.82);
+  border-radius:32px;
+  padding:56px 34px;
+  border:
+    1px solid rgba(170,120,70,0.12);
+  box-shadow:
+    0 12px 34px rgba(90,55,20,0.10);
+  backdrop-filter:blur(10px);
+
+}
+
+.login-title{
+
+  font-family:'UnifrakturCook', cursive;
+  font-size:46px;
+  line-height:1.05;
+  text-align:center;
+  color:#5a341d;
+  margin:0;
+  letter-spacing:1px;
+  text-shadow:
+    0 2px 1px rgba(255,255,255,0.55);
+
+}
+
+/* DIVIDER TITLE */
+
+.title-divider{
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+  margin-top:18px;
+  margin-bottom:20px;
+
+}
+
+.divider-line{
+
+  width:90px;
+  height:1px;
+  background:
+    linear-gradient(
+      to right,
+      transparent,
+      #d8b17c,
+      transparent
+    );
+
+}
+
+.divider-ornament{
+
+  color:#c89a63;
+  font-size:16px;
+  opacity:0.9;
+
+}
+
+.login-subtitle{
+
+  text-align:center;
+  color:#b58a5b;
+  letter-spacing:5px;
+  font-size:12px;
+  font-weight:600;
+  margin-top:10px;
+  margin-bottom:34px;
+  opacity:0.9;
+
+}
+
+.login-input{
+
+  width:100%;
+  height:64px;
+  border-radius:18px;
+  border:1px solid #e5cfb2;
+  background:
+    linear-gradient(
+      180deg,
+      #fffdf9 0%,
+      #fdf7ef 100%
+    );
+  padding:0 22px;
+  font-size:18px;
+  color:#6a4326;
+  outline:none;
+  transition:all 0.25s ease;
+  box-sizing:border-box;
+  box-shadow:
+    inset 0 1px 2px rgba(255,255,255,0.7);
+  padding-left:58px;
+padding-right:56px;
+line-height:64px;
+}
+
+.login-input:focus{
+
+  border-color:#c49463;
+  box-shadow:
+    0 0 0 4px rgba(196,148,99,0.10),
+    0 8px 20px rgba(196,148,99,0.08);
+  transform:translateY(-1px);
+
+}
+
+.login-input::placeholder{
+
+  color:#c2a17f;
+
+}
+
+.input-group{
+
+  position:relative;
+
+  width:100%;
+
+  margin-bottom:15px;
+
+}
+
+.input-icon{
+
+  position:absolute;
+
+  left:18px;
+
+  inset:0 auto 0 18px;
+
+  margin:auto 0;
+
+  color:#9d734a;
+
+  z-index:2;
+
+}
+
+.eye-btn{
+
+  position:absolute;
+
+  right:12px;
+
+  inset:0 12px 0 auto;
+
+  margin:auto 0;
+
+  width:42px;
+
+  height:42px;
+
+  background:none;
+
+  border:none;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  cursor:pointer;
+
+  color:#9d734a;
+
+  padding:0;
+
+  z-index:3;
+
+  -webkit-tap-highlight-color: transparent;
+
+  outline:none;
+
+  box-shadow:none;
+
+}
+
+.eye-btn:focus{
+
+  outline:none;
+
+  box-shadow:none;
+
+}
+
+.eye-btn:active{
+
+  transform:
+    translateY(-50%) scale(0.96);
+
+}
+
+.faceid-btn{
+
+  width:100%;
+  height:118px;
+  border-radius:30px;
+  border:1px solid rgba(212,176,132,0.35);
+  background:
+    linear-gradient(
+      180deg,
+      #fffaf4 0%,
+      #f7ecdf 100%
+    );
+  margin-top:26px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+  cursor:pointer;
+  transition:all 0.28s ease;
+  box-shadow:
+    0 10px 28px rgba(181,132,74,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.8);
+  overflow:hidden;
+  position:relative;
+
+}
+
+.faceid-btn:hover{
+
+  transform:translateY(-2px);
+  box-shadow:
+    0 16px 36px rgba(181,132,74,0.14),
+    inset 0 1px 0 rgba(255,255,255,0.9);
+
+}
+
+.face-icon{
+
+  position:relative;
+  width:48px;
+  height:48px;
+
+}
+
+.face-corner{
+
+  position:absolute;
+  width:14px;
+  height:14px;
+  border:2px solid #9f6b3c;
+  opacity:0.9;
+
+}
+.tl{
+
+  top:0;
+  left:0;
+  border-right:none;
+  border-bottom:none;
+
+}
+.tr{
+
+  top:0;
+  right:0;
+  border-left:none;
+  border-bottom:none;
+
+}
+.bl{
+
+  bottom:0;
+  left:0;
+  border-right:none;
+  border-top:none;
+
+}
+.br{
+
+  bottom:0;
+  right:0;
+  border-left:none;
+  border-top:none;
+
+}
+.face-center{
+
+  position:absolute;
+  inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:#9b6b40;
+  font-size:18px;
+  opacity:0.9;
+
+}
+
+.face-divider{
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  gap:14px;
+
+  margin-top:28px;
+
+  margin-bottom:28px;
+
+}
+
+.line{
+
+  flex:1;
+
+  height:1px;
+
+  background:
+    linear-gradient(
+      to right,
+      transparent,
+      #d8c2a1,
+      transparent
+    );
+
+}
+
+.flower{
+
+  color:#c89a63;
+
+  font-size:14px;
+
+}
