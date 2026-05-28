@@ -48,7 +48,7 @@ const generarPDF = async (req, res) => {
       ok:true,
 
       url:
-`http://192.168.1.19:4000/pdfs/${nombreArchivo}`
+`http://100.95.42.29:4000/pdfs/${nombreArchivo}`
 
     });
 

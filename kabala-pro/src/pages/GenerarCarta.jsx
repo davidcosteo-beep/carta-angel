@@ -109,6 +109,8 @@ useEffect(() => {
 
 }, [hora]);
 
+
+
 const nombreAngeologo = localStorage.getItem("nombreAngeologo") || "";
 const tituloAngeologo = localStorage.getItem("tituloAngeologo") || "";
 
@@ -288,6 +290,47 @@ setTimeout(()=>{
 
 };
 
+useEffect(() => {
+
+ const resetFormulario = () => {
+
+  setNombre("");
+
+  setFecha("");
+  setHora("");
+
+  setFechaPartes({
+    dia: "",
+    mes: "",
+    anio: ""
+  });
+
+  setHoraPartes({
+    hora: "",
+    minuto: "",
+    periodo: ""
+  });
+
+  setCarta(null);
+
+};
+
+  window.addEventListener(
+    "reset-generar-carta",
+    resetFormulario
+  );
+
+  return () => {
+
+    window.removeEventListener(
+      "reset-generar-carta",
+      resetFormulario
+    );
+
+  };
+
+}, []);
+
 // eslint-disable-next-line react-hooks/exhaustive-deps
 
 useEffect(() => {
@@ -311,21 +354,6 @@ useEffect(() => {
   localStorage.removeItem("cartaTemporal");
 
 }, []);
-
-
-
-const nuevaCarta = () => {
-
-  setNombre("");
-  setFecha("");
-  setHora("");
-  setCarta(null);
-
-  setTimeout(()=>{
-    nombreRef.current?.focus();
-  },100);
-
-};
 
 return(
 
@@ -758,31 +786,6 @@ Generar Carta
 
 </button>
 
-{carta && (
-
-<button
-onClick={nuevaCarta}
-style={{
-width:"100%",
-padding:"13px",
-marginTop:"12px",
-background:
-"linear-gradient(180deg, #ecd9ab 0%, #dcc08b 100%)",
-border:"1px solid rgba(120,90,40,0.35)",
-borderRadius:"12px",
-cursor:"pointer",
-fontSize:"15px",
-fontWeight:"600",
-color:"#5a351c",
-boxShadow:"0 6px 14px rgba(90,50,20,0.12)",
-transition:"all 0.25s ease"
-}}
->
-Nueva Carta
-</button>
-
-)}
-
 </div>
 
 )}
@@ -790,22 +793,19 @@ Nueva Carta
 {carta && (
 
   <div
-    key={carta.id}
-
     ref={cartaRef}
-
     style={{
       width:"100%",
       display:"flex",
       justifyContent:"center",
       marginTop:"35px",
-
       animation:
         "revelarCarta 1.4s ease forwards"
     }}
   >
-    
+
     <CartaAngel carta={carta}/>
+
   </div>
 
 )}

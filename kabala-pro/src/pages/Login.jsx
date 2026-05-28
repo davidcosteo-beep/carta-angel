@@ -1,14 +1,19 @@
 import { useState } from 'react';
+
 import { loginRequest } from '../services/authService';
+
 import './Login.css';
+
 import {
   Mail,
   Lock,
   Eye,
-  EyeOff
+  EyeOff,
+  ScanFace,
+  Shield
 } from 'lucide-react';
 
-export default function Login({onLogin}) {
+export default function Login({ onLogin }) {
 
   const [correo, setCorreo] = useState('');
 
@@ -61,153 +66,201 @@ export default function Login({onLogin}) {
       setLoading(false);
 
     }
-
   };
 
- return (
+  return (
 
-  <div className="login-container">
+    <div className="login-container login-enter">
 
-    <div className="login-card">
+      {/* BACKGROUND SYMBOL */}
 
-      <h1 className="login-title">
-        Kabala Pro
-      </h1>
+      <svg
+        className="bg-symbol"
+        viewBox="0 0 200 200"
+      >
 
-      <div className="title-divider">
-      <div className="divider-line" />
-      <div className="divider-ornament">
-        ❀
-      </div>
-      <div className="divider-line" />
+        <path
+          d="
+          M100 60
+          C120 60 135 80 100 100
+          C65 80 80 60 100 60
 
-</div>
+          M140 100
+          C140 120 120 135 100 100
+          C120 65 140 80 140 100
 
-      <p className="login-subtitle">
-        ACCESO PREMIUM
-      </p>
+          M100 140
+          C80 140 65 120 100 100
+          C135 120 120 140 100 140
 
-      {/* CORREO */}
+          M60 100
+          C60 80 80 65 100 100
+          C80 135 60 120 60 100
+          "
+        />
 
-      <label className="login-label">
-        Correo
-      </label>
+      </svg>
 
-      <div className="input-group">
+      {/* LOGIN CARD */}
 
-  <Mail className="input-icon" size={20} />
+      <div className="login-card">
 
-  <input
-    type="email"
-    placeholder="Ingresa tu correo"
-    value={correo}
-    onChange={(e) =>
-      setCorreo(e.target.value)
-    }
-    className="login-input"
-  />
+        <h1 className="login-title">
+          Kabala Pro
+        </h1>
 
-</div>
+        <div className="title-divider">
 
-      {/* PASSWORD */}
+          <div className="divider-line" />
 
-      <label className="login-label">
-        Contraseña
-      </label>
-
-      <div className="input-group">
-
-  <Lock className="input-icon" size={20} />
-
-  <input
-    type={
-      showPassword
-        ? 'text'
-        : 'password'
-    }
-    placeholder="Contraseña"
-    value={password}
-    onChange={(e) =>
-      setPassword(e.target.value)
-    }
-    className="login-input"
-  />
-
-  <button
-    type="button"
-    className="eye-btn"
-    onClick={() =>
-      setShowPassword(!showPassword)
-    }
-  >
-
-    {
-      showPassword
-        ? <EyeOff size={20}/>
-        : <Eye size={20}/>
-    }
-
-  </button>
-
-</div>
-
-      {/* BOTÓN */}
-
-      <button
-  className="login-btn"
-  onClick={handleLogin}
-  disabled={loading}
->
-
-  {
-    loading
-      ? 'Ingresando...'
-      : '✦ Ingresar ✦'
-  }
-
-</button>
-
-      {/* DIVIDER */}
-
-      <div className="face-divider">
-        <div className="line" />
-        <div className="flower">❀</div>
-        <div className="line" />
-      </div>
-
-      {/* FACE ID */}
-
-      <button className="faceid-btn">
-
-        <div className="face-icon">
-
-          <div className="face-corner tl" />
-          <div className="face-corner tr" />
-          <div className="face-corner bl" />
-          <div className="face-corner br" />
-
-          <div className="face-center">
-            ☺
+          <div className="divider-ornament">
+            ❀
           </div>
+
+          <div className="divider-line" />
 
         </div>
 
-        <span>
-          Ingresar con Face ID
-        </span>
+        <p className="login-subtitle">
+          ACCESO PREMIUM
+        </p>
 
-      </button>
+        {/* EMAIL */}
 
-      {/* FOOTER */}
+        <label className="login-label">
+          Correo
+        </label>
 
-      <div className="login-protect">
-        🔒 Tu información está protegida
+        <div className="input-group">
+
+          <Mail
+            className="input-icon"
+            size={20}
+          />
+
+          <input
+            type="email"
+            placeholder="Ingresa tu correo"
+            value={correo}
+            onChange={(e) =>
+              setCorreo(e.target.value)
+            }
+            className="login-input"
+          />
+
+        </div>
+
+        {/* PASSWORD */}
+
+        <label className="login-label">
+          Contraseña
+        </label>
+
+        <div className="input-group">
+
+          <Lock
+            className="input-icon"
+            size={20}
+          />
+
+          <input
+            type={
+              showPassword
+                ? 'text'
+                : 'password'
+            }
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) =>
+              setPassword(e.target.value)
+            }
+            className="login-input"
+          />
+
+          <button
+            type="button"
+            className="eye-btn"
+            onClick={() =>
+              setShowPassword(!showPassword)
+            }
+          >
+
+            {
+              showPassword
+                ? <EyeOff size={20}/>
+                : <Eye size={20}/>
+            }
+
+          </button>
+
+        </div>
+
+        {/* LOGIN BUTTON */}
+
+        <button
+          className="login-btn"
+          onClick={handleLogin}
+          disabled={loading}
+        >
+
+          {
+            loading
+              ? 'Ingresando...'
+              : '✦ Ingresar ✦'
+          }
+
+        </button>
+
+        {/* DIVIDER */}
+
+        <div className="face-divider">
+
+          <div className="line" />
+
+          <div className="flower">
+            ❀
+          </div>
+
+          <div className="line" />
+
+        </div>
+
+        {/* FACE ID */}
+
+        <button className="faceid-btn">
+
+          <div className="face-icon">
+
+            <ScanFace
+              size={34}
+              strokeWidth={1.6}
+            />
+
+          </div>
+
+          <span>
+            Ingresar con Face ID
+          </span>
+
+        </button>
+
+        {/* FOOTER */}
+
+        <div className="login-protect">
+
+          <Shield
+            size={16}
+            strokeWidth={1.8}
+          />
+
+          <span>
+            Tu información está protegida
+          </span>
+
+        </div>
+
       </div>
 
     </div>
-
-  </div>
-
-);
-
+  );
 }

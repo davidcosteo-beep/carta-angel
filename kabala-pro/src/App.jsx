@@ -35,7 +35,7 @@ function App(){
 
     setMostrarSplash(false);
 
-  }, 2500);
+  }, 7000);
 
   return () => clearTimeout(timer);
 

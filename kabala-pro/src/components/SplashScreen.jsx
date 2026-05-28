@@ -1,8 +1,28 @@
+import { useEffect, useState } from "react";
+
+import "./SplashScreen.css";
+
 function SplashScreen() {
+
+  const [fadeOut, setFadeOut] = useState(false);
+
+  useEffect(() => {
+
+    const timer = setTimeout(() => {
+
+      setFadeOut(true);
+
+    }, 5000);
+
+    return () => clearTimeout(timer);
+
+  }, []);
 
   return (
 
     <div
+      className={fadeOut ? "splash fade-out" : "splash"}
+
       style={{
 
         width:"100%",
@@ -15,29 +35,51 @@ function SplashScreen() {
         alignItems:"center",
 
         background:
-        "linear-gradient(180deg, #f4ead7 0%, #ead8bb 50%, #e2c79f 100%)",
+        "radial-gradient(circle at top, #f4e6cf 0%, #e7d1ad 45%, #d9bc8f 100%)",
 
-        overflow:"hidden"
+        overflow:"hidden",
+
+        transition:
+        "all 1.8s ease"
       }}
     >
 
-      <div
-        style={{
+      <div className="splash-symbol">
 
-          width:"140px",
-          height:"140px",
+        <div className="ring ring-1"></div>
 
-          borderRadius:"50%",
+        <div className="ring ring-2"></div>
 
-          background:
-          "radial-gradient(circle, rgba(255,230,170,0.95) 0%, rgba(201,150,70,0.85) 55%, rgba(120,70,20,0.18) 100%)",
+        <div className="ring ring-3"></div>
 
-          boxShadow:
-          "0 0 45px rgba(255,210,120,0.45)",
+        <svg
+          className="center-symbol"
+          viewBox="0 0 200 200"
+        >
 
-          marginBottom:"28px"
-        }}
-      />
+          <path
+            d="
+            M100 60
+            C120 60 135 80 100 100
+            C65 80 80 60 100 60
+
+            M140 100
+            C140 120 120 135 100 100
+            C120 65 140 80 140 100
+
+            M100 140
+            C80 140 65 120 100 100
+            C135 120 120 140 100 140
+
+            M60 100
+            C60 80 80 65 100 100
+            C80 135 60 120 60 100
+            "
+          />
+
+        </svg>
+
+      </div>
 
       <h1
         style={{
@@ -51,7 +93,10 @@ function SplashScreen() {
           margin:0,
 
           textShadow:
-          "0 2px 6px rgba(255,255,255,0.25)"
+          "0 2px 6px rgba(255,255,255,0.25)",
+
+          transition:
+          "all 1.8s ease"
         }}
       >
         Kabala Pro
@@ -66,7 +111,10 @@ function SplashScreen() {
 
           fontSize:"15px",
 
-          letterSpacing:"1px"
+          letterSpacing:"1px",
+
+          transition:
+          "all 1.8s ease"
         }}
       >
         Sistema Angelical

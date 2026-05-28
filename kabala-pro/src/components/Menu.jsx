@@ -8,6 +8,7 @@ function Menu({ onLogout }){
   const menuRef = useRef(null);
   const [style, setStyle] = useState({ left: 0, width: 0 });
   const [menuOpen, setMenuOpen] = useState(false);
+  
 
   useEffect(() => {
     const active = menuRef.current.querySelector(".active");
@@ -37,10 +38,29 @@ function Menu({ onLogout }){
 
   <div className={`menu-links ${menuOpen ? "open" : ""}`}>
 
-    <NavLink to="/" end
-      className={({ isActive }) => isActive ? "menu-link active" : "menu-link"}>
-      Generar Carta
-    </NavLink>
+ <div
+  onClick={() => {
+
+    window.dispatchEvent(
+      new Event("reset-generar-carta")
+    );
+
+    setMenuOpen(false);
+
+  }}
+
+  className={
+    location.pathname === "/"
+      ? "menu-link active"
+      : "menu-link"
+  }
+
+  style={{
+    cursor:"pointer"
+  }}
+>
+  Generar Carta
+</div>
 
     <NavLink to="/historial"
       className={({ isActive }) => isActive ? "menu-link active" : "menu-link"}>

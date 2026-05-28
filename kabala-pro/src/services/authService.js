@@ -1,4 +1,4 @@
-const API_URL = 'http://192.168.1.19:4000/api/auth';
+const API_URL = 'http://100.95.42.29:4000/api/auth';
 
 export const loginRequest = async (correo, password) => {
 

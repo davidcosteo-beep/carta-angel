@@ -6,7 +6,7 @@ export const generarPDFBackend =
       const response =
         await fetch(
 
-          'http://192.168.1.19:4000/api/pdf/generar',
+          'http://100.95.42.29:4000/api/pdf/generar',
 
           {
             method:'POST',
