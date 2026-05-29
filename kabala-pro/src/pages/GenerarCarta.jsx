@@ -29,6 +29,7 @@ const [horaPartes, setHoraPartes] = useState({
   minuto: "",
   periodo: ""
 });
+
 const [carta,setCarta] = useState(null);
 const [fechaPartes, setFechaPartes] = useState({
   dia: "",
@@ -120,6 +121,7 @@ useEffect(() => {
     nombreRef.current.select();
   }
 }, []);
+
 
 const guardarHistorial = (data) => {
 
@@ -358,6 +360,9 @@ useEffect(() => {
 return(
 
 <div
+
+className="generar-carta-enter"
+
 style={{
 minHeight:"100vh",
 

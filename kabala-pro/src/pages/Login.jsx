@@ -1,4 +1,8 @@
-import { useState } from 'react';
+import {
+  useState,
+  useRef,
+  useEffect
+} from 'react';
 
 import { loginRequest } from '../services/authService';
 
@@ -15,6 +19,10 @@ import {
 
 export default function Login({ onLogin }) {
 
+  const [mensaje, setMensaje] = useState("");
+
+  const [tipoMensaje, setTipoMensaje] = useState("");
+
   const [correo, setCorreo] = useState('');
 
   const [password, setPassword] = useState('');
@@ -23,84 +31,93 @@ export default function Login({ onLogin }) {
 
   const [showPassword, setShowPassword] = useState(false);
 
+  const [fadeOut, setFadeOut] = useState(false);
+
+  const correoRef = useRef(null);
+
+  const passwordRef = useRef(null);
+
+  const ingresarRef = useRef(null);
+
   const handleLogin = async (e) => {
 
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
+  try {
 
-      setLoading(true);
+    setLoading(true);
 
-      const data = await loginRequest(
-        correo,
-        password
+    setMensaje('');
+
+    const data = await loginRequest(
+      correo,
+      password
+    );
+
+    console.log(data);
+
+    if (data.ok) {
+
+      setMensaje('✦ Acceso concedido ✦');
+
+      setTipoMensaje('success');
+
+      localStorage.setItem(
+        'token',
+        data.token
       );
 
-      console.log(data);
+      setTimeout(() => {
 
-      if (data.ok) {
+  setFadeOut(true);
 
-        localStorage.setItem(
-          'token',
-          data.token
-        );
+}, 500);
 
-        onLogin(true);
+setTimeout(() => {
 
-        alert('Login correcto');
+  onLogin(true);
 
-      } else {
+}, 500);
 
-        alert(data.message);
+    } else {
 
-      }
+      setMensaje(data.message);
 
-    } catch (error) {
-
-      console.error(error);
-
-      alert('Error conexión');
-
-    } finally {
-
-      setLoading(false);
+      setTipoMensaje('error');
 
     }
-  };
+
+  } catch (error) {
+
+    console.error(error);
+
+    setMensaje('Error de conexión');
+
+    setTipoMensaje('error');
+
+  } finally {
+
+    setLoading(false);
+
+  }
+
+};
+
+  useEffect(() => {
+
+  correoRef.current?.focus();
+
+}, []);
 
   return (
 
-    <div className="login-container login-enter">
-
-      {/* BACKGROUND SYMBOL */}
-
-      <svg
-        className="bg-symbol"
-        viewBox="0 0 200 200"
-      >
-
-        <path
-          d="
-          M100 60
-          C120 60 135 80 100 100
-          C65 80 80 60 100 60
-
-          M140 100
-          C140 120 120 135 100 100
-          C120 65 140 80 140 100
-
-          M100 140
-          C80 140 65 120 100 100
-          C135 120 120 140 100 140
-
-          M60 100
-          C60 80 80 65 100 100
-          C80 135 60 120 60 100
-          "
-        />
-
-      </svg>
-
+    <div
+  className={
+    fadeOut
+      ? "login-container login-fade-out"
+      : "login-container login-enter"
+  }
+>
       {/* LOGIN CARD */}
 
       <div className="login-card">
@@ -139,14 +156,39 @@ export default function Login({ onLogin }) {
           />
 
           <input
-            type="email"
-            placeholder="Ingresa tu correo"
-            value={correo}
-            onChange={(e) =>
-              setCorreo(e.target.value)
-            }
-            className="login-input"
-          />
+
+  ref={correoRef}
+
+  autoFocus
+
+  type="email"
+
+  autoComplete="email"
+
+  inputMode="email"
+
+  placeholder="Ingresa tu correo"
+
+  value={correo}
+
+  onChange={(e) =>
+    setCorreo(e.target.value)
+  }
+
+  onKeyDown={(e) => {
+
+    if(e.key === "Enter"){
+
+      e.preventDefault();
+
+      passwordRef.current?.focus();
+
+    }
+
+  }}
+
+  className="login-input"
+/>
 
         </div>
 
@@ -164,18 +206,37 @@ export default function Login({ onLogin }) {
           />
 
           <input
-            type={
-              showPassword
-                ? 'text'
-                : 'password'
-            }
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) =>
-              setPassword(e.target.value)
-            }
-            className="login-input"
-          />
+
+              ref={passwordRef}
+
+              type={
+                showPassword
+                  ? 'text'
+                  : 'password'
+              }
+
+              placeholder="Contraseña"
+
+              value={password}
+
+              onChange={(e) =>
+                setPassword(e.target.value)
+              }
+
+              onKeyDown={(e) => {
+
+                if(e.key === "Enter"){
+
+                  e.preventDefault();
+
+                  ingresarRef.current?.click();
+
+                }
+
+              }}
+
+              className="login-input"
+            />
 
           <button
             type="button"
@@ -198,6 +259,7 @@ export default function Login({ onLogin }) {
         {/* LOGIN BUTTON */}
 
         <button
+          ref={ingresarRef}
           className="login-btn"
           onClick={handleLogin}
           disabled={loading}
@@ -210,6 +272,20 @@ export default function Login({ onLogin }) {
           }
 
         </button>
+
+        {
+  mensaje && (
+
+    <div
+      className={`login-message ${tipoMensaje}`}
+    >
+
+      {mensaje}
+
+    </div>
+
+  )
+}
 
         {/* DIVIDER */}
 

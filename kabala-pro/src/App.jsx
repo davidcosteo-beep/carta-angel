@@ -69,8 +69,18 @@ if(mostrarSplash){
 }
 
   if(!logueado){
-    return <Login onLogin={setLogueado}/>
-  }
+
+  return (
+
+    <div className="page-transition">
+
+      <Login onLogin={setLogueado}/>
+
+    </div>
+
+  );
+
+}
   
   return(
     <>

@@ -52,32 +52,25 @@ function SplashScreen() {
 
         <div className="ring ring-3"></div>
 
-        <svg
-          className="center-symbol"
-          viewBox="0 0 200 200"
+      <svg
+        className="center-symbol"
+        viewBox="0 0 200 200"
         >
 
-          <path
-            d="
-            M100 60
-            C120 60 135 80 100 100
-            C65 80 80 60 100 60
+        <g className="flower-group">
 
-            M140 100
-            C140 120 120 135 100 100
-            C120 65 140 80 140 100
+            <circle cx="100" cy="100" r="28" />
 
-            M100 140
-            C80 140 65 120 100 100
-            C135 120 120 140 100 140
+            <circle cx="100" cy="72" r="28" />
+            <circle cx="124" cy="86" r="28" />
+            <circle cx="124" cy="114" r="28" />
+            <circle cx="100" cy="128" r="28" />
+            <circle cx="76" cy="114" r="28" />
+            <circle cx="76" cy="86" r="28" />
 
-            M60 100
-            C60 80 80 65 100 100
-            C80 135 60 120 60 100
-            "
-          />
+          </g>
 
-        </svg>
+      </svg>
 
       </div>
 
