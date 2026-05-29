@@ -37,10 +37,29 @@ const [fechaPartes, setFechaPartes] = useState({
   anio: ""
 });
 
-const dias = Array.from(
-  { length: 31 },
-  (_, i) => String(i + 1).padStart(2, "0")
-);
+const diasMes = (() => {
+
+  const mes = Number(fechaPartes.mes);
+  const anio = Number(fechaPartes.anio);
+
+  if (!mes) {
+
+    return Array.from(
+      { length: 31 },
+      (_, i) => String(i + 1).padStart(2, "0")
+    );
+
+  }
+
+  const cantidadDias =
+    new Date(anio || 2024, mes, 0).getDate();
+
+  return Array.from(
+    { length: cantidadDias },
+    (_, i) => String(i + 1).padStart(2, "0")
+  );
+
+})();
 
 const meses = Array.from(
   { length: 12 },
@@ -110,7 +129,30 @@ useEffect(() => {
 
 }, [hora]);
 
+useEffect(() => {
 
+  const mes = Number(fechaPartes.mes);
+  const anio = Number(fechaPartes.anio);
+
+  if (!mes || !fechaPartes.dia) return;
+
+  const maxDias =
+    new Date(anio || 2024, mes, 0).getDate();
+
+  if (Number(fechaPartes.dia) > maxDias) {
+
+    setFechaPartes(prev => ({
+      ...prev,
+      dia: ""
+    }));
+
+  }
+
+}, [
+  fechaPartes.dia,
+  fechaPartes.mes,
+  fechaPartes.anio
+]);
 
 const nombreAngeologo = localStorage.getItem("nombreAngeologo") || "";
 const tituloAngeologo = localStorage.getItem("tituloAngeologo") || "";
@@ -520,7 +562,7 @@ if (
   >
     <option value="">Día</option>
 
-    {dias.map((d) => (
+    {diasMes.map((d) => (
       <option key={d} value={d}>
         {d}
       </option>

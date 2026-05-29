@@ -1648,12 +1648,18 @@ y -= 20;
     font: fontBold,
   });
 
+  // 🔹 Dibujar label 3 solo si tiene valor
+
+if (value3) {
+
   page.drawText(`${label3}:`, {
     x: col3X - 90,
     y,
     size: fontSize,
     font: fontBold,
   });
+
+}
 
   // 🔹 Textos con salto automático
   const lines1 = wrapText(String(value1 || ""), 80, font, fontSize);
@@ -1685,6 +1691,8 @@ y -= 20;
   });
 
   // 🔹 Columna 3
+  if (value3) {
+
   lines3.forEach((line, index) => {
 
     page.drawText(line, {
@@ -1695,6 +1703,8 @@ y -= 20;
     });
 
   });
+
+}
 
   // 🔹 Detectar cuántas líneas ocupó la fila
   const maxLines = Math.max(
