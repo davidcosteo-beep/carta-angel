@@ -14,6 +14,8 @@ import { tablaMentor } from "../core/tablaMentor";
 import { tablaEsenciaMes } from "../core/tablaEsenciaMes";
 import { tablaEsenciaDia } from "../core/tablaEsenciaDia";
 
+import "./GenerarCarta.css";
+import florVida from "../assets/flor-vida.png";
 function GenerarCarta() {
 
 const nombreRef = useRef(null);
@@ -80,17 +82,6 @@ const minutos = Array.from(
   { length: 60 },
   (_, i) => String(i).padStart(2, "0")
 );
-
-const inputStyle = {
-
-  flex: 1,
-  padding: "12px",
-  borderRadius: "12px",
-  border: "1px solid rgba(0,0,0,0.1)",
-  background: "white",
-  fontSize: "15px",
-  outline: "none"
-};
 
 
 useEffect(() => {
@@ -401,68 +392,36 @@ useEffect(() => {
 
 return(
 
-<div
-
-className="generar-carta-enter"
-
-style={{
-minHeight:"100vh",
-
-background:
-"linear-gradient(180deg, #f4ead7 0%, #ead8bb 50%, #e2c79f 100%)",
-
-padding:"20px"
-}}
->
+<div className="generar-carta-enter">
 
 {!carta && (
 
-<div
-style={{
-maxWidth:"460px",
-margin:"40px auto",
-padding:"30px",
-background:"rgba(255,248,230,0.42)",
-backdropFilter:"blur(6px)",
-border:"1px solid rgba(120,90,40,0.22)",
-borderRadius:"18px",
-boxShadow:"0 12px 35px rgba(90,50,20,0.15)"
-}}
->
+<div className="generar-carta-panel">
 
- <h2
-style={{
-fontFamily:"Cinzel, serif",
-fontSize:"28px",
-fontWeight:"600",
-letterSpacing:"1px",
-textAlign:"center",
-marginBottom:"12px",
-
-color:"#1a0f08"
-
-
-}}
->
-GENERAR CARTA
-</h2> 
-
-<div
-style={{
-height:"1px",
-background:"rgba(120,90,40,0.2)",
-marginBottom:"20px"
-}}
+<img
+  src={florVida}
+  alt="Flor de la Vida"
+  className="generar-carta-simbolo"
 />
 
+ <h2 className="generar-carta-titulo">
+
+  CANALIZACIÓN ANGELICAL
+
+ </h2>
+
+<div className="generar-carta-divider">
+  <div className="generar-carta-divider-line"></div>
+
+  <div className="generar-carta-divider-ornament">
+    ❈
+  </div>
+
+  <div className="generar-carta-divider-line"></div>
+</div>
+
 <div
-style={{
-fontFamily:"IM Fell English, serif",
-fontSize:"14px",
-marginBottom:"4px",
-color:"#3a1f12"
-}}
->
+className="generar-carta-label">
 Nombre del Paciente
 </div>
 
@@ -489,44 +448,17 @@ Nombre del Paciente
     }
   }}
 
-  style={{
-  width:"100%",
-  padding:"12px 14px",
-  marginBottom:"15px",
-  border:"1px solid rgba(120,90,40,0.16)",
-  borderRadius:"10px",
-  fontSize:"15px",
-  fontFamily:"IM Fell English, serif",
-  background:"rgba(255,255,255,0.58)",
-  backdropFilter:"blur(4px)",
-  boxShadow:"inset 0 1px 3px rgba(90,50,20,0.05)",
-  transition:"all 0.25s ease",
-  color:"#3a1f12",
-  textTransform:"uppercase"
-  }}
+className="generar-carta-input"
 
 />
 
 <br/><br/>
 
-<div
-style={{
-fontFamily:"IM Fell English, serif",
-fontSize:"14px",
-marginBottom:"4px",
-color:"#3a1f12"
-}}
->
+<div className="generar-carta-label">
 Fecha de Nacimiento
 </div>
 
-<div
-  style={{
-    display: "flex",
-    gap: "10px",
-    width: "100%"
-  }}
->
+<div className="generar-carta-row">
 
   {/* DIA */}
 
@@ -558,7 +490,7 @@ if (
       }
 
     }}
-    style={inputStyle}
+    className="generar-carta-select"
   >
     <option value="">Día</option>
 
@@ -600,7 +532,7 @@ if (
 }
 
     }}
-    style={inputStyle}
+    className="generar-carta-select"
   >
     <option value="">Mes</option>
 
@@ -642,7 +574,7 @@ if (
 }
 
     }}
-    style={inputStyle}
+    className="generar-carta-select"
   >
     <option value="">Año</option>
 
@@ -658,35 +590,15 @@ if (
 
 <br/><br/>
 
-<div
-style={{
-fontFamily:"IM Fell English, serif",
-fontSize:"14px",
-marginBottom:"4px",
-color:"#3a1f12"
-}}
->
+<div className="generar-carta-label">
 Hora de Nacimiento
 <span
-style={{
-fontSize:"11px",
-color:"#8c6f4f",
-marginLeft:"6px",
-fontStyle:"italic"
-}}
->
+className="generar-carta-opcional">
 (Opcional)
 </span>
 </div>
 
-<div
-  style={{
-    display: "flex",
-    gap: "10px",
-    width: "100%",
-    marginBottom: "15px"
-  }}
->
+<div className="generar-carta-row-hora">
 
   {/* HORA */}
 
@@ -716,7 +628,7 @@ fontStyle:"italic"
 
     }}
 
-    style={inputStyle}
+    className="generar-carta-select"
   >
 
     <option value="">Hora</option>
@@ -757,7 +669,7 @@ fontStyle:"italic"
 
     }}
 
-    style={inputStyle}
+    className="generar-carta-select"
   >
 
     <option value="">Min</option>
@@ -800,7 +712,7 @@ fontStyle:"italic"
 
     }}
 
-    style={inputStyle}
+    className="generar-carta-select"
   >
 
     <option value="">AM/PM</option>
@@ -819,28 +731,9 @@ fontStyle:"italic"
 ref={botonRef}
 onClick={generarCarta}
 disabled={!nombre || !fecha}
-
-style={{
-width:"100%",
-padding:"14px",
-background:
-"linear-gradient(180deg, #7b5532 0%, #5f3f24 100%)",
-color:"#fff",
-border:"1px solid rgba(255,220,160,0.18)",
-borderRadius:"12px",
-fontSize:"17px",
-fontWeight:"600",
-marginTop:"12px",
-boxShadow:"0 8px 18px rgba(90,50,20,0.25)",
-opacity: !nombre || !fecha ? 0.5 : 1,
-cursor: !nombre || !fecha ? "not-allowed" : "pointer",
-transition:"all 0.25s ease"
-}}
-
+className="generar-carta-boton"
 >
-
-Generar Carta
-
+  Generar Carta
 </button>
 
 </div>
@@ -850,16 +743,9 @@ Generar Carta
 {carta && (
 
   <div
-    ref={cartaRef}
-    style={{
-      width:"100%",
-      display:"flex",
-      justifyContent:"center",
-      marginTop:"35px",
-      animation:
-        "revelarCarta 1.4s ease forwards"
-    }}
-  >
+  ref={cartaRef}
+  className="generar-carta-resultado"
+>
 
     <CartaAngel carta={carta}/>
 
