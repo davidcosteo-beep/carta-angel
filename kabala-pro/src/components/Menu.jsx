@@ -1,6 +1,6 @@
-import { NavLink, useLocation } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import "./menu.css";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 
 function Menu({ onLogout }){
 
@@ -8,7 +8,8 @@ function Menu({ onLogout }){
   const menuRef = useRef(null);
   const [style, setStyle] = useState({ left: 0, width: 0 });
   const [menuOpen, setMenuOpen] = useState(false);
-  
+  const navigate = useNavigate();
+ 
 
   useEffect(() => {
     const active = menuRef.current.querySelector(".active");
@@ -34,20 +35,25 @@ function Menu({ onLogout }){
     ☰
   </button>
 
-  <div className="menu-title">Kabala Pro</div>
+  <div className="menu-brand">
+  <div className="menu-title">✦ Kabala Pro ✦</div>
+  <div className="menu-subtitle">Sistema Angelical</div>
+</div>
 
   <div className={`menu-links ${menuOpen ? "open" : ""}`}>
 
  <div
   onClick={() => {
 
-    window.dispatchEvent(
-      new Event("reset-generar-carta")
-    );
+  window.dispatchEvent(
+    new Event("reset-generar-carta")
+  );
 
-    setMenuOpen(false);
+  navigate("/");
 
-  }}
+  setMenuOpen(false);
+
+}}
 
   className={
     location.pathname === "/"
@@ -72,6 +78,20 @@ function Menu({ onLogout }){
       Configuración
     </NavLink>
 
+    <div
+  className="menu-link"
+  onClick={() => {
+
+    setMenuOpen(false);
+
+    onLogout();
+
+  }}
+  style={{ cursor: "pointer" }}
+>
+  Salir
+</div>
+
   </div>
 
   <span
@@ -83,12 +103,6 @@ function Menu({ onLogout }){
   />
 
 </div>
-
-      <div className="menu-right">
-        <button className="menu-btn" onClick={onLogout}>
-          Salir
-        </button>
-      </div>
 
     </div>
 

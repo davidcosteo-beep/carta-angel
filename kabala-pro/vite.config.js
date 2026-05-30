@@ -16,29 +16,37 @@ export default defineConfig({
         enabled: true,
       },
       manifest: {
-        id: "/",
+  id: "/",
 
-        name: "Kabala Pro",
-        short_name: "Kabala",
-        description: "Generador de Carta Angelical",
-        theme_color: "#1E3A8A",
-        background_color: "#111827",
-        display: "standalone",
-        orientation: "portrait",
-        start_url: "/",       
-        icons: [
-          {
-            src: "/icon-192.png",
-            sizes: "192x192",
-            type: "image/png",
-          },
-          {
-            src: "/icon-512.png",
-            sizes: "512x512",
-            type: "image/png",
-          },
-        ],
-      },
+  name: "Kabala Pro - Sistema Angelical",
+
+  short_name: "Kabala Pro",
+
+  description: "Generador de Cartas Angelicales",
+
+  theme_color: "#e7d1ad",
+
+  background_color: "#f4e6cf",
+
+  display: "standalone",
+
+  orientation: "portrait",
+
+  start_url: "/",
+
+  icons: [
+    {
+      src: "/icon-192.png",
+      sizes: "192x192",
+      type: "image/png",
+    },
+    {
+      src: "/icon-512.png",
+      sizes: "512x512",
+      type: "image/png",
+    }
+  ]
+}
     }),
   ],
 });

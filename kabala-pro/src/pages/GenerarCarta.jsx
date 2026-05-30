@@ -667,6 +667,16 @@ color:"#3a1f12"
 }}
 >
 Hora de Nacimiento
+<span
+style={{
+fontSize:"11px",
+color:"#8c6f4f",
+marginLeft:"6px",
+fontStyle:"italic"
+}}
+>
+(Opcional)
+</span>
 </div>
 
 <div
