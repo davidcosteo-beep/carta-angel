@@ -100,6 +100,30 @@ const toggleFavorito = (id) => {
 );
 };
 
+const eliminarCarta = (id) => {
+
+  const confirmar = window.confirm(
+    "¿Deseas eliminar esta carta del historial?"
+  );
+
+  if (!confirmar) return;
+
+  const historialActualizado =
+    historial.filter(
+      (item) => item.id !== id
+    );
+
+  localStorage.setItem(
+    "historialCartas",
+    JSON.stringify(historialActualizado)
+  );
+
+  setHistorial(
+    ordenarHistorial(historialActualizado)
+  );
+
+};
+
 const historialFiltrado =
   historial.filter((item) => {
 
@@ -314,6 +338,20 @@ const planetasVisuales = {
   >
     ★
   </button>
+
+  <button
+  className="eliminar-btn"
+
+  onClick={(e) => {
+
+    e.stopPropagation();
+
+    eliminarCarta(item.id);
+
+  }}
+>
+  🗑
+</button>
 
       </div>
 
