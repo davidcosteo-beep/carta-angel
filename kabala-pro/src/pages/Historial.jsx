@@ -32,6 +32,9 @@ function Historial() {
   const [cargandoCarta, setCargandoCarta] =
   useState(null);  
 
+  const [seleccionadas, setSeleccionadas] =
+  useState([]);
+
   const [historial, setHistorial] = useState(() => {
 
   const datos =
@@ -121,6 +124,83 @@ const eliminarCarta = (id) => {
   setHistorial(
     ordenarHistorial(historialActualizado)
   );
+
+};
+
+const toggleSeleccion = (id) => {
+
+  if (seleccionadas.includes(id)) {
+
+    setSeleccionadas(
+      seleccionadas.filter(
+        itemId => itemId !== id
+      )
+    );
+
+  } else {
+
+    setSeleccionadas([
+      ...seleccionadas,
+      id
+    ]);
+
+  }
+
+};
+
+const eliminarSeleccionadas = () => {
+
+  if (seleccionadas.length === 0) {
+
+    alert(
+      "No hay cartas seleccionadas."
+    );
+
+    return;
+  }
+
+  const confirmar = window.confirm(
+    `¿Eliminar ${seleccionadas.length} carta(s)?`
+  );
+
+  if (!confirmar) return;
+
+  const historialActualizado =
+    historial.filter(
+      item =>
+        !seleccionadas.includes(item.id)
+    );
+
+  localStorage.setItem(
+    "historialCartas",
+    JSON.stringify(historialActualizado)
+  );
+
+  setHistorial(
+    ordenarHistorial(
+      historialActualizado
+    )
+  );
+
+  setSeleccionadas([]);
+
+};
+
+const eliminarTodoHistorial = () => {
+
+  const confirmar = window.confirm(
+    "¿Deseas eliminar TODO el historial?\n\nEsta acción no se puede deshacer."
+  );
+
+  if (!confirmar) return;
+
+  localStorage.removeItem(
+    "historialCartas"
+  );
+
+  setHistorial([]);
+
+  setSeleccionadas([]);
 
 };
 
@@ -263,6 +343,22 @@ const planetasVisuales = {
     Favoritas
   </button>
 
+  <button
+  className="filtro-btn"
+
+  onClick={eliminarSeleccionadas}
+>
+  Borrar Selec.
+</button>
+
+<button
+  className="filtro-btn eliminar-todo-btn"
+
+  onClick={eliminarTodoHistorial}
+>
+  Eliminar todo
+</button>
+
 </div>
 
   {historial.length === 0 && (
@@ -285,6 +381,22 @@ const planetasVisuales = {
 
   onClick={() => reabrirCarta(item)}
 >
+
+  <input
+  type="checkbox"
+  className="seleccion-checkbox"
+
+  checked={seleccionadas.includes(item.id)}
+
+  onClick={(e) => {
+    e.stopPropagation();
+  }}
+
+  onChange={(e) => {
+    e.stopPropagation();
+    toggleSeleccion(item.id);
+  }}
+/>
 
   {(() => {
 

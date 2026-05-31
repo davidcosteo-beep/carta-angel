@@ -254,6 +254,8 @@
   gap:12px;
 
   margin-bottom:24px;
+
+  flex-wrap:wrap;
 }
 
 .filtro-btn{
@@ -465,4 +467,48 @@
   color: #b47b4e;
 
   transform: scale(1.08);
+}
+
+
+.historial-card{
+  position: relative;
+}
+
+.seleccion-checkbox{
+
+  position: absolute;
+
+  top: 18px;
+
+  left: 18px;
+
+  width: 18px;
+
+  height: 18px;
+
+  cursor: pointer;
+
+  z-index: 10;
+}
+
+.eliminar-todo-btn{
+
+  background:
+    linear-gradient(
+      180deg,
+      #c96b5c,
+      #7a2d1f
+    );
+
+  color: white;
+}
+
+.eliminar-todo-btn:hover{
+
+  transform:
+    translateY(-1px);
+
+  box-shadow:
+    0 6px 14px
+    rgba(122,45,31,0.25);
 }
