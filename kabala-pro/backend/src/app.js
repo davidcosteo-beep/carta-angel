@@ -7,6 +7,9 @@ const authRoutes = require('./routes/authRoutes');
 const pdfRoutes =
   require('./routes/pdfRoutes');
 
+const pacientesRoutes =
+  require('./routes/pacientesRoutes');  
+
 const app = express();
 
 app.use(cors());
@@ -29,6 +32,8 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 
 app.use('/api/pdf', pdfRoutes);
+
+app.use('/api/pacientes', pacientesRoutes);
 
 module.exports = app;
 
