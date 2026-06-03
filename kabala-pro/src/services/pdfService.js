@@ -1,3 +1,5 @@
+import { API_URL } from "../config/api";
+
 export const generarPDFBackend =
   async (carta) => {
 
@@ -6,7 +8,7 @@ export const generarPDFBackend =
       const response =
         await fetch(
 
-          'http://100.95.42.29:4000/api/pdf/generar',
+          `${API_URL}/api/pdf/generar`,
 
           {
             method:'POST',

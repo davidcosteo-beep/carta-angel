@@ -19,8 +19,15 @@ const generarPDF = async (req, res) => {
         carta
       );
 
+    const nombrePaciente =
+  (carta.nombre || "PACIENTE")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[\\/:*?"<>|]/g, "_")
+    .replace(/\s+/g, "_");
+
     const nombreArchivo =
-      `carta-${Date.now()}.pdf`;
+      `${nombrePaciente}.pdf`;
 
     const rutaPDF = path.join(
 

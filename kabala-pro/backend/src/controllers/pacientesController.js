@@ -7,6 +7,7 @@ const listarPacientes = async (req, res) => {
     const result = await sql.query`
       SELECT *
       FROM Pacientes
+      WHERE activo = 1
       ORDER BY Nombres
     `;
 
@@ -67,6 +68,35 @@ const obtenerPaciente = async (req, res) => {
 
 };
 
+const listarPacientesArchivados = async (req, res) => {
+
+  try {
+
+    const result = await sql.query`
+      SELECT *
+      FROM Pacientes
+      WHERE activo = 0
+      ORDER BY fecha_archivado DESC
+    `;
+
+    res.json({
+      ok: true,
+      pacientes: result.recordset
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      ok: false,
+      message: 'Error al listar pacientes archivados'
+    });
+
+  }
+
+};
+
 const crearPaciente = async (req, res) => {
 
   try {
@@ -75,8 +105,8 @@ const crearPaciente = async (req, res) => {
       nombres,
       apellidos,
       telefono,
-      correo,
       fechaNacimiento,
+      horaNacimiento,
       observaciones
     } = req.body;
 
@@ -87,8 +117,8 @@ const crearPaciente = async (req, res) => {
     Nombres,
     Apellidos,
     Telefono,
-    Correo,
     FechaNacimiento,
+    HoraNacimiento,
     Observaciones
   )
   VALUES
@@ -97,8 +127,8 @@ const crearPaciente = async (req, res) => {
     ${nombres},
     ${apellidos},
     ${telefono},
-    ${correo},
     ${fechaNacimiento},
+    ${horaNacimiento},
     ${observaciones}
   )
 `;
@@ -128,25 +158,26 @@ const actualizarPaciente = async (req, res) => {
     const { id } = req.params;
 
     const {
-      nombres,
-      apellidos,
-      telefono,
-      correo,
-      fechaNacimiento,
-      observaciones
-    } = req.body;
+  nombres,
+  apellidos,
+  telefono,
+  fechaNacimiento,
+  horaNacimiento,
+  observaciones
+} = req.body;
 
     await sql.query`
-      UPDATE Pacientes
-      SET
-        Nombres = ${nombres},
-        Apellidos = ${apellidos},
-        Telefono = ${telefono},
-        Correo = ${correo},
-        FechaNacimiento = ${fechaNacimiento},
-        Observaciones = ${observaciones}
-      WHERE IdPaciente = ${id}
-    `;
+  UPDATE Pacientes
+  SET
+    Nombres = ${nombres},
+    Apellidos = ${apellidos},
+    Telefono = ${telefono},
+    FechaNacimiento = ${fechaNacimiento},
+    HoraNacimiento = ${horaNacimiento},
+    Observaciones = ${observaciones},
+    fecha_modificacion = GETDATE()
+  WHERE IdPaciente = ${id}
+`;
 
     res.json({
       ok: true,
@@ -166,20 +197,23 @@ const actualizarPaciente = async (req, res) => {
 
 };
 
-const eliminarPaciente = async (req, res) => {
+const archivarPaciente = async (req, res) => {
 
   try {
 
     const { id } = req.params;
 
     await sql.query`
-      DELETE FROM Pacientes
+      UPDATE Pacientes
+      SET
+        activo = 0,
+        fecha_archivado = GETDATE()
       WHERE IdPaciente = ${id}
     `;
 
     res.json({
       ok: true,
-      message: 'Paciente eliminado'
+      message: 'Paciente archivado'
     });
 
   } catch (error) {
@@ -188,7 +222,39 @@ const eliminarPaciente = async (req, res) => {
 
     res.status(500).json({
       ok: false,
-      message: 'Error al eliminar paciente'
+      message: 'Error al archivar paciente'
+    });
+
+  }
+
+};
+
+const reactivarPaciente = async (req, res) => {
+
+  try {
+
+    const { id } = req.params;
+
+    await sql.query`
+      UPDATE Pacientes
+      SET
+        activo = 1,
+        fecha_archivado = NULL
+      WHERE IdPaciente = ${id}
+    `;
+
+    res.json({
+      ok: true,
+      message: 'Paciente reactivado'
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      ok: false,
+      message: 'Error al reactivar paciente'
     });
 
   }
@@ -197,8 +263,10 @@ const eliminarPaciente = async (req, res) => {
 
 module.exports = {
   listarPacientes,
+  listarPacientesArchivados,
   obtenerPaciente,
   crearPaciente,
   actualizarPaciente,
-  eliminarPaciente
+  archivarPaciente,
+  reactivarPaciente
 };

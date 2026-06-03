@@ -29,7 +29,7 @@
 }
 
 :root{
-  --bg:#f3f4f7;
+  --bg:#f1e6d2;
   --card:#ffffff;
   --text:#1a1a1a;
   --border:#dcdcdc;
@@ -141,5 +141,121 @@ body{
     opacity: 0.82;
 
   }
+
+}
+
+@keyframes pageReveal {
+
+  0% {
+
+    opacity: 0;
+
+    transform:
+      translateY(45px)
+      scale(0.97);
+
+    filter: blur(8px);
+
+  }
+
+  100% {
+
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+
+    filter: blur(0);
+
+  }
+
+}
+
+.page-transition {
+
+  animation:
+    pageReveal 1s ease-out;
+
+}
+
+/* ==========================
+   COMPONENTES REUTILIZABLES
+========================== */
+
+.page-container {
+
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 30px 20px;
+
+}
+
+.page-header {
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+
+}
+
+.card-kabala {
+
+  background: var(--card);
+
+  border-radius: 16px;
+
+  padding: 22px;
+
+  margin-bottom: 20px;
+
+  box-shadow:
+    0 8px 24px rgba(0,0,0,0.08);
+
+}
+
+.btn-kabala {
+
+  background:
+    linear-gradient(
+      180deg,
+      #8d5b2f,
+      #6d4421
+    );
+
+  color: white;
+
+  border: none;
+
+  border-radius: 12px;
+
+  padding: 12px 24px;
+
+  cursor: pointer;
+
+  transition: .25s;
+
+}
+
+.btn-kabala:hover {
+
+  transform: translateY(-2px);
+
+}
+
+.btn-danger {
+
+  background: #b33a3a;
+
+  color: white;
+
+  border: none;
+
+  border-radius: 12px;
+
+  padding: 12px 24px;
+
+  cursor: pointer;
 
 }

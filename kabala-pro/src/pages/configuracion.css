@@ -126,14 +126,14 @@ button{
 
   padding:14px;
 
-  background:
-  linear-gradient(
-  180deg,
-  #7b5532 0%,
-  #5f3f24 100%
+  background: linear-gradient(
+    180deg,
+    #cba97a 0%,
+    #b98e5f 100%
   );
 
-  color:white;
+  color: #2f1c12;
+  border: 1px solid rgba(120,90,40,0.20);
 
   border:none;
 
@@ -158,4 +158,65 @@ button:hover{
 
   box-shadow:
   0 10px 22px rgba(90,50,20,0.30);
+}
+
+.login-message {
+
+  margin-top: 18px;
+
+  text-align: center;
+
+  font-size: 14px;
+
+  letter-spacing: 0.4px;
+
+  padding: 12px 16px;
+
+  border-radius: 16px;
+
+  backdrop-filter: blur(10px);
+
+  animation:
+    messageFade 0.45s ease;
+
+  transition:
+    all 0.35s ease;
+
+}
+
+.login-message.success {
+
+  color: #6b4122;
+
+  background:
+    rgba(212, 167, 106, 0.10);
+
+  border:
+    1px solid rgba(212, 167, 106, 0.16);
+
+  box-shadow:
+    0 0 20px rgba(212, 167, 106, 0.06);
+
+}
+
+@keyframes messageFade {
+
+  from {
+
+    opacity: 0;
+
+    transform:
+      translateY(8px);
+
+  }
+
+  to {
+
+    opacity: 1;
+
+    transform:
+      translateY(0);
+
+  }
+
 }

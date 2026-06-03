@@ -493,14 +493,14 @@
 
 .eliminar-todo-btn{
 
-  background:
-    linear-gradient(
-      180deg,
-      #c96b5c,
-      #7a2d1f
-    );
+  background: linear-gradient(
+    180deg,
+    #d8b0a9 0%,
+    #c8968d 100%
+  );
 
-  color: white;
+  color: #4d1f1f;
+  border: 1px solid rgba(120,90,40,0.20);
 }
 
 .eliminar-todo-btn:hover{

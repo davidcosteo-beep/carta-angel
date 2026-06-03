@@ -26,8 +26,11 @@ const {
 async function generarPDFNuevo(carta) {
 
 
-const nombreAngeologo =  "Nombre del Angeólogo";
-const tituloAngeologo = "Título del Angeólogo";
+const nombreAngeologo =
+  carta.nombreAngeologo || "";
+
+const tituloAngeologo =
+  carta.tituloAngeologo || "";
 const inicioX = 67;
 const inicioY = 760;
 const anchoUtil = 464;
@@ -2274,10 +2277,8 @@ lineas.forEach((linea) => {
 y = propositoBoxY -28;
 
 if (
-  nombreAngeologo &&
-  nombreAngeologo !== "Nombre del Angeólogo" &&
-  tituloAngeologo &&
-  tituloAngeologo !== "Título del Angeólogo"
+  nombreAngeologo.trim() &&
+  tituloAngeologo.trim()
 ) {
 
 const nombreSize = 12;

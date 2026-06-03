@@ -68,12 +68,30 @@ function Menu({ onLogout }){
   Generar Carta
 </div>
 
+    <NavLink
+      to="/pacientes"
+      onClick={() => setMenuOpen(false)}  
+      className={({ isActive }) =>
+        isActive ? "menu-link active" : "menu-link"}>
+      Pacientes
+    </NavLink>
+
+    <NavLink
+      to="/agenda"
+      onClick={() => setMenuOpen(false)} 
+      className={({ isActive }) =>
+        isActive ? "menu-link active" : "menu-link"}>
+      Agenda
+    </NavLink>
+
     <NavLink to="/historial"
+      onClick={() => setMenuOpen(false)}
       className={({ isActive }) => isActive ? "menu-link active" : "menu-link"}>
       Historial
     </NavLink>
 
     <NavLink to="/configuracion"
+      onClick={() => setMenuOpen(false)}
       className={({ isActive }) => isActive ? "menu-link active" : "menu-link"}>
       Configuración
     </NavLink>

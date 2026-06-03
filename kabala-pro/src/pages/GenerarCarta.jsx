@@ -715,7 +715,7 @@ className="generar-carta-opcional">
     className="generar-carta-select"
   >
 
-    <option value="">AM/PM</option>
+    <option value="">A.M / P.M</option>
 
     <option value="AM">AM</option>
 

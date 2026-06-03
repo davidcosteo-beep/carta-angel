@@ -66,18 +66,19 @@
 .generar-carta-boton {
   width: 100%;
   padding: 14px;
-  background: linear-gradient(
+   background: linear-gradient(
     180deg,
-    #7b5532 0%,
-    #5f3f24 100%
+    #cba97a 0%,
+    #b98e5f 100%
   );
-  color: #fff;
-  border: 1px solid rgba(255, 220, 160, 0.18);
+
+  color: #2f1c12;
+  border: 1px solid rgba(120,90,40,0.20);
   border-radius: 12px;
   font-size: 17px;
   font-weight: 600;
   margin-top: 12px;
-  box-shadow: 0 8px 18px rgba(90, 50, 20, 0.25);
+
   transition: all 0.25s ease;
 }
 

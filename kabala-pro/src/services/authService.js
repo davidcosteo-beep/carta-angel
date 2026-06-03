@@ -1,8 +1,8 @@
-const API_URL = 'http://100.95.42.29:4000/api/auth';
+import { API_URL } from "../config/api";
 
 export const loginRequest = async (correo, password) => {
 
-  const response = await fetch(`${API_URL}/login`, {
+  const response = await fetch(`${API_URL}/api/auth/login`, {
 
     method: 'POST',
 

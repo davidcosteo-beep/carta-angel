@@ -291,6 +291,8 @@ const planetasVisuales = {
 
   return (
 
+<div className="page-transition">    
+
 <div className="historial-page">
 
   <h1 className="historial-title">
@@ -494,6 +496,7 @@ const planetasVisuales = {
 
   ))}
 
+</div>
 </div>
 );
 }

@@ -2173,6 +2173,7 @@ lineas.forEach((linea) => {
 // Actualizar y
 y = propositoBoxY -28;
 
+
 if (
   nombreAngeologo &&
   nombreAngeologo !== "Nombre del Angeólogo" &&

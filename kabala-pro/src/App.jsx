@@ -8,6 +8,9 @@ import Historial from "./pages/Historial";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Menu from "./components/Menu";
 import { isTokenValid } from "./utils/auth";
+import Pacientes from "./pages/Pacientes";
+import Agenda from "./pages/Agenda";
+
 
 
 function App(){
@@ -123,6 +126,24 @@ if(mostrarSplash){
   element={
     <ProtectedRoute>
       <Historial />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/pacientes"
+  element={
+    <ProtectedRoute>
+      <Pacientes />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/agenda"
+  element={
+    <ProtectedRoute>
+      <Agenda />
     </ProtectedRoute>
   }
 />
