@@ -134,30 +134,34 @@ const reactivarPaciente = async (idPaciente) => {
 
         <h1>Pacientes</h1>
 
-        <button
-  className="kp-btn-nuevo"
-  onClick={() =>
-    setModalAbierto(true)
-  }
->
-  ➕ Nuevo Paciente
-</button>
-
-<div className="kp-pacientes-tabs">
+       <div className="kp-pacientes-controles">
 
   <button
-    className={!verArchivados ? "kp-tab-activa" : ""}
-    onClick={() => setVerArchivados(false)}
+    className="kp-btn-nuevo"
+    onClick={() =>
+      setModalAbierto(true)
+    }
   >
-    Activos
+    ➕ Nuevo Paciente
   </button>
 
-  <button
-    className={verArchivados ? "kp-tab-activa" : ""}
-    onClick={() => setVerArchivados(true)}
-  >
-    Archivados
-  </button>
+  <div className="kp-pacientes-tabs">
+
+    <button
+      className={!verArchivados ? "kp-tab-activa" : ""}
+      onClick={() => setVerArchivados(false)}
+    >
+      Activos
+    </button>
+
+    <button
+      className={verArchivados ? "kp-tab-activa" : ""}
+      onClick={() => setVerArchivados(true)}
+    >
+      Archivados
+    </button>
+
+  </div>
 
 </div>
 

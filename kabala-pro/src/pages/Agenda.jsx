@@ -234,28 +234,32 @@ for (let i = 0; i < 7; i++) {
 
         <h1>Agenda</h1>
 
-        <button
-          className="kp-btn-nuevo"
-          onClick={() => {
+       <div className="kp-agenda-toolbar">
 
-            setCitaEditar(null);
+  <button
+    className="kp-btn-nuevo"
+    onClick={() => {
 
-            setModalAbierto(true);
+      setCitaEditar(null);
 
-          }}
-        >
-          ➕ Nueva Cita
-        </button>
+      setModalAbierto(true);
 
-        <input
-          type="text"
-          className="kp-buscador-agenda"
-          placeholder="❈ Buscar paciente..."
-          value={busqueda}
-          onChange={(e) =>
-            setBusqueda(e.target.value)
-          }
-        />
+    }}
+  >
+    ➕ Nueva Cita
+  </button>
+
+  <input
+    type="text"
+    className="kp-buscador-agenda"
+    placeholder="❈ Buscar paciente..."
+    value={busqueda}
+    onChange={(e) =>
+      setBusqueda(e.target.value)
+    }
+  />
+
+</div>
 
         <div className="kp-agenda-vistas">
 
