@@ -17,7 +17,7 @@ const listarCitas = async (req, res) => {
       FROM Citas c
       INNER JOIN Pacientes p
         ON c.IdPaciente = p.IdPaciente
-      ORDER BY c.Fecha, c.Hora
+      ORDER BY c.Fecha ASC, c.Hora ASC
     `;
 
     res.json({
@@ -130,8 +130,43 @@ const actualizarCita = async (
 
 };
 
+const cancelarCita = async (
+  req,
+  res
+) => {
+
+  try {
+
+    const { id } = req.params;
+
+    await sql.query`
+      UPDATE Citas
+      SET Estado = 'CANCELADA'
+      WHERE IdCita = ${id}
+    `;
+
+    res.json({
+      ok: true,
+      message: "Cita cancelada"
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      ok: false,
+      message:
+        "Error al cancelar cita"
+    });
+
+  }
+
+};
+
 module.exports = {
   listarCitas,
   crearCita,
-  actualizarCita
+  actualizarCita,
+  cancelarCita
 };

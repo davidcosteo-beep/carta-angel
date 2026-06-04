@@ -7,7 +7,8 @@ function ConfirmModal({
   textoConfirmar = "Confirmar",
   textoCancelar = "Cancelar",
   onConfirmar,
-  onCancelar
+  onCancelar,
+  onCerrar
 }) {
 
   if (!abierto) return null;
@@ -26,7 +27,7 @@ function ConfirmModal({
 
           <button
             className="kp-btn-cancelar"
-            onClick={onCancelar}
+            onClick={onCancelar || onCerrar}
           >
             {textoCancelar}
           </button>
