@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import "./CitaModal.css";
 import { API_URL } from "../config/api";
+import ConfirmModal
+  from "./ConfirmModal";
+  
 
 function CitaModal({
   abierto,
@@ -50,6 +53,12 @@ function CitaModal({
 
 };
 
+const [mensajeError, setMensajeError] =
+  useState("");
+
+const [errorAbierto, setErrorAbierto] =
+  useState(false);
+
 const guardarCita = async () => {
 
   try {
@@ -85,7 +94,17 @@ const guardarCita = async () => {
 
     const data = await response.json();
 
-    if (data.ok) {
+if (!data.ok) {
+
+  setMensajeError(data.message);
+
+  setErrorAbierto(true);
+
+  return;
+
+}
+
+if (data.ok) {
 
   if (onCitaGuardada) {
 
@@ -141,7 +160,9 @@ useEffect(() => {
 
 if (!abierto) return null;
 
-  return (
+return (
+
+  <>
 
     <div className="kp-modal-overlay">
 
@@ -243,9 +264,25 @@ if (!abierto) return null;
 
         </div>
 
-      </div>
+            </div>
 
     </div>
+
+    <ConfirmModal
+      abierto={errorAbierto}
+      titulo="Conflicto de agenda"
+      mensaje={mensajeError}
+      textoConfirmar="Aceptar"
+      textoCancelar=""
+      onConfirmar={() =>
+        setErrorAbierto(false)
+      }
+      onCancelar={() =>
+        setErrorAbierto(false)
+      }
+    />
+
+  </>
 
   );
 

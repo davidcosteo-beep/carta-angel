@@ -49,6 +49,33 @@ const crearCita = async (req, res) => {
       motivo
     } = req.body;
 
+    const citaExistente = await sql.query`
+
+        SELECT TOP 1 IdCita
+
+        FROM Citas
+
+        WHERE Fecha = ${fecha}
+
+        AND Hora = ${hora}
+
+        AND Estado = 'PROGRAMADA'
+
+      `;
+
+      if (citaExistente.recordset.length > 0) {
+
+        return res.status(400).json({
+
+          ok: false,
+
+          message:
+            "Ya existe una cita programada para esa fecha y hora"
+
+        });
+
+      }
+
     await sql.query`
       INSERT INTO Citas
       (
@@ -102,13 +129,43 @@ const actualizarCita = async (
       motivo
     } = req.body;
 
+    const citaExistente = await sql.query`
+
+    SELECT TOP 1 IdCita
+
+    FROM Citas
+
+    WHERE Fecha = ${fecha}
+
+    AND Hora = ${hora}
+
+    AND Estado = 'PROGRAMADA'
+
+    AND IdCita <> ${id}
+
+  `;
+
+  if (citaExistente.recordset.length > 0) {
+
+    return res.status(400).json({
+
+      ok: false,
+
+      message:
+        "Ya existe una cita programada para esa fecha y hora"
+
+    });
+
+  }
+
     await sql.query`
       UPDATE Citas
       SET
         IdPaciente = ${idPaciente},
         Fecha = ${fecha},
         Hora = ${hora},
-        Motivo = ${motivo}
+        Motivo = ${motivo},
+        fechaModificacion = GETDATE()
       WHERE IdCita = ${id}
     `;
 
@@ -141,7 +198,8 @@ const cancelarCita = async (
 
     await sql.query`
       UPDATE Citas
-      SET Estado = 'CANCELADA'
+      SET Estado = 'CANCELADA',
+      fechaModificacion = GETDATE()
       WHERE IdCita = ${id}
     `;
 

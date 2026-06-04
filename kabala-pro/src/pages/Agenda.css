@@ -327,3 +327,214 @@
   transform: translateY(-1px);
 
 }
+
+.kp-dia-header {
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  gap: 20px;
+
+}
+
+.kp-dia-header button {
+
+  width: 44px;
+
+  height: 44px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  padding: 0;
+
+}
+
+.kp-dia-header span {
+
+  font-size: 20px;
+
+  font-weight: 700;
+
+  color: #2f1c12;
+
+  display: flex;
+
+  align-items: center;
+
+  height: 44px;
+
+}
+
+.kp-dia-cita {
+
+  background:
+    rgba(255,248,230,0.42);
+
+  border:
+    1px solid rgba(120,90,40,0.22);
+
+  border-radius: 14px;
+
+  padding: 16px;
+
+  margin-top: 12px;
+
+}
+
+.kp-dia-hora {
+
+  font-size: 18px;
+
+  font-weight: 700;
+
+  color: #2f1c12;
+
+  margin-bottom: 8px;
+
+}
+
+.kp-dia-nombre {
+
+  font-size: 16px;
+
+  font-weight: 600;
+
+  color: #2f1c12;
+
+}
+
+.kp-dia-motivo {
+
+  margin-top: 6px;
+
+  color: #555;
+
+}
+
+.kp-semana-dia {
+
+  background:
+    rgba(255,248,230,0.42);
+
+  border:
+    1px solid rgba(120,90,40,0.22);
+
+  border-radius: 14px;
+
+  padding: 16px;
+
+  margin-top: 12px;
+
+}
+
+.kp-semana-dia h4 {
+
+  margin-top: 0;
+
+  color: #2f1c12;
+
+  text-transform: capitalize;
+
+}
+
+.kp-semana-cita {
+
+  margin-top: 8px;
+
+  padding-top: 8px;
+
+  border-top:
+    1px solid rgba(120,90,40,0.12);
+
+}
+
+.kp-semana-header {
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 20px;
+
+  margin-bottom: 20px;
+
+}
+
+.kp-semana-header button {
+
+  width: 44px;
+
+  height: 44px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  background: linear-gradient(
+    180deg,
+    #cba97a 0%,
+    #b98e5f 100%
+  );
+
+  color: #2f1c12;
+
+  font-weight: 700;
+
+}
+
+.kp-semana-header h3 {
+
+  margin: 0;
+
+  text-align: center;
+
+}
+
+.kp-semana-header p {
+
+  margin: 4px 0 0 0;
+
+  text-align: center;
+
+}
+
+.kp-dia-header h3 {
+
+  margin: 0;
+
+  text-align: center;
+
+}
+
+.kp-dia-header p {
+
+  margin: 4px 0 0 0;
+
+  text-align: center;
+
+}
+
+.kp-dia-header h3,
+.kp-semana-header h3 {
+
+  cursor: pointer;
+
+  transition: opacity .2s ease;
+
+}
+
+.kp-dia-header h3:hover,
+.kp-semana-header h3:hover {
+
+  opacity: .75;
+
+}

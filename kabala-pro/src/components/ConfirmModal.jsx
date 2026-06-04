@@ -25,12 +25,16 @@ function ConfirmModal({
 
         <div className="kp-confirm-botones">
 
+          {textoCancelar && (
+
           <button
             className="kp-btn-cancelar"
             onClick={onCancelar || onCerrar}
           >
             {textoCancelar}
           </button>
+
+        )}
 
           <button
             className="kp-btn-confirmar"

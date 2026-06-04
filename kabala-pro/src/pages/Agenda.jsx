@@ -20,6 +20,13 @@ function Agenda() {
   const [vistaAgenda, setVistaAgenda] =
   useState("LISTA");
 
+  const [fechaSeleccionada, setFechaSeleccionada] =
+  useState(
+    new Date()
+      .toISOString()
+      .substring(0, 10)
+  );
+
   const [busqueda, setBusqueda] =
   useState("");
 
@@ -95,6 +102,25 @@ function Agenda() {
 
   }, []);
 
+  const formatearHora = (hora) => {
+
+  const hora24 = hora.substring(11, 16);
+
+  let [h, m] = hora24.split(":");
+
+  h = parseInt(h);
+
+  const ampm =
+    h >= 12 ? "PM" : "AM";
+
+  h = h % 12;
+
+  if (h === 0) h = 12;
+
+  return `${h}:${m} ${ampm}`;
+
+};
+
   const citasFiltradas = citas.filter((cita) => {
 
   const coincideEstado =
@@ -117,6 +143,83 @@ function Agenda() {
   );
 
 });
+
+const citasDelDia =
+  citas
+    .filter(
+      (cita) =>
+        cita.Fecha?.substring(0, 10) ===
+        fechaSeleccionada &&
+        cita.Estado === "PROGRAMADA"
+    )
+    .sort((a, b) =>
+      a.Hora.localeCompare(b.Hora)
+    );
+
+  const obtenerInicioSemana = (fecha) => {
+
+  const d = new Date(fecha);
+
+  const dia = d.getDay();
+
+  const diferencia =
+    dia === 0 ? -6 : 1 - dia;
+
+  d.setDate(
+    d.getDate() + diferencia
+  );
+
+  return d;
+
+};
+
+const inicioSemana =
+  obtenerInicioSemana(
+    fechaSeleccionada
+  );
+
+const finSemana =
+  new Date(inicioSemana);
+
+finSemana.setDate(
+  inicioSemana.getDate() + 6
+);
+
+const citasSemana =
+  citas.filter((cita) => {
+
+    if (
+      cita.Estado !== "PROGRAMADA"
+    ) {
+      return false;
+    }
+
+    const fechaCita =
+      new Date(
+        cita.Fecha.substring(0, 10)
+      );
+
+    return (
+      fechaCita >= inicioSemana &&
+      fechaCita <= finSemana
+    );
+
+  });  
+
+  const diasSemana = [];
+
+for (let i = 0; i < 7; i++) {
+
+  const fecha = new Date(inicioSemana);
+
+  fecha.setDate(
+    inicioSemana.getDate() + i
+  );
+
+  diasSemana.push(fecha);
+
+}
+    
   return (
 
     <div className="page-transition">
@@ -234,11 +337,130 @@ function Agenda() {
 
 </div>
 
-    {vistaAgenda === "DIA" && (
+   {vistaAgenda === "DIA" && (
 
   <div className="kp-vista-placeholder">
 
-    Vista Día en desarrollo
+    <div className="kp-dia-header">
+
+  <button
+    onClick={() => {
+
+      const fecha =
+        new Date(fechaSeleccionada);
+
+      fecha.setDate(
+        fecha.getDate() - 1
+      );
+
+      setFechaSeleccionada(
+        fecha
+          .toISOString()
+          .substring(0, 10)
+      );
+
+    }}
+  >
+    ◀
+  </button>
+
+  <div>
+
+    <h3
+  style={{
+    cursor: "pointer"
+  }}
+  onClick={() =>
+    setFechaSeleccionada(
+      new Date()
+        .toISOString()
+        .substring(0, 10)
+    )
+  }
+>
+  Día
+</h3>
+
+    <p>
+
+      {
+        fechaSeleccionada
+          .split("-")
+          .reverse()
+          .join("/")
+      }
+
+    </p>
+
+  </div>
+
+  <button
+    onClick={() => {
+
+      const fecha =
+        new Date(fechaSeleccionada);
+
+      fecha.setDate(
+        fecha.getDate() + 1
+      );
+
+      setFechaSeleccionada(
+        fecha
+          .toISOString()
+          .substring(0, 10)
+      );
+
+    }}
+  >
+    ▶
+  </button>
+
+</div>
+
+    {citasDelDia.length === 0 ? (
+
+  <p
+    style={{
+      marginTop: "20px"
+    }}
+  >
+    No hay citas para este día.
+  </p>
+
+) : (
+
+  citasDelDia.map((cita) => (
+
+    <div
+      key={cita.IdCita}
+      className="kp-dia-cita"
+    >
+
+      <div className="kp-dia-hora">
+
+        {formatearHora(cita.Hora)}
+
+      </div>
+
+      <div className="kp-dia-nombre">
+
+        {cita.Nombres}
+        {" "}
+        {cita.Apellidos}
+
+      </div>
+
+      <div className="kp-dia-motivo">
+
+        ✧ {cita.Motivo}
+
+      </div>
+
+    </div>
+
+  ))
+
+)}
 
   </div>
 
@@ -248,7 +470,162 @@ function Agenda() {
 
   <div className="kp-vista-placeholder">
 
-    Vista Semana en desarrollo
+    <div className="kp-semana-header">
+
+  <button
+    onClick={() => {
+
+      const fecha =
+        new Date(fechaSeleccionada);
+
+      fecha.setDate(
+        fecha.getDate() - 7
+      );
+
+      setFechaSeleccionada(
+        fecha
+          .toISOString()
+          .substring(0, 10)
+      );
+
+    }}
+  >
+    ◀
+  </button>
+
+  <div>
+
+    <h3
+  style={{
+    cursor: "pointer"
+  }}
+  onClick={() =>
+    setFechaSeleccionada(
+      new Date()
+        .toISOString()
+        .substring(0, 10)
+    )
+  }
+>
+  Semana
+</h3>
+
+    <p>
+
+      {
+        inicioSemana
+          .toLocaleDateString("es-CO")
+      }
+
+      {" - "}
+
+      {
+        finSemana
+          .toLocaleDateString("es-CO")
+      }
+
+    </p>
+
+  </div>
+
+  <button
+    onClick={() => {
+
+      const fecha =
+        new Date(fechaSeleccionada);
+
+      fecha.setDate(
+        fecha.getDate() + 7
+      );
+
+      setFechaSeleccionada(
+        fecha
+          .toISOString()
+          .substring(0, 10)
+      );
+
+    }}
+  >
+    ▶
+  </button>
+
+</div>
+
+    {diasSemana.map((dia) => {
+
+  const fechaTexto =
+    dia.toISOString()
+      .substring(0, 10);
+
+  const citasDia =
+    citasSemana.filter(
+      (cita) =>
+        cita.Fecha?.substring(0, 10) ===
+        fechaTexto
+    );
+
+  return (
+
+    <div
+      key={fechaTexto}
+      className="kp-semana-dia"
+    >
+
+      <h4>
+
+        {
+          dia.toLocaleDateString(
+            "es-CO",
+            {
+              weekday: "long",
+              day: "2-digit",
+              month: "2-digit"
+            }
+          )
+        }
+
+      </h4>
+
+      {citasDia.length === 0 ? (
+
+        <p>
+          Sin citas
+        </p>
+
+      ) : (
+
+        citasDia.map((cita) => (
+
+          <div
+            key={cita.IdCita}
+            className="kp-semana-cita"
+          >
+
+            <strong>
+              {formatearHora(
+                cita.Hora
+              )}
+            </strong>
+
+            <div>
+
+              {cita.Nombres}
+              {" "}
+              {cita.Apellidos}
+
+            </div>
+
+          </div>
+
+        ))
+
+      )}
+
+    </div>
+
+  );
+
+})}
 
   </div>
 
@@ -299,18 +676,10 @@ function Agenda() {
           <p>
             🕒 {
               cita.Hora
-                ? new Date(cita.Hora)
-                    .toLocaleTimeString(
-                      "es-CO",
-                      {
-                        hour: "numeric",
-                        minute: "2-digit",
-                        hour12: true
-                      }
-                    )
+                ? formatearHora(cita.Hora)
                 : ""
             }
-          </p>
+          </p>  
 
           <p>
             ✧ {cita.Motivo}
