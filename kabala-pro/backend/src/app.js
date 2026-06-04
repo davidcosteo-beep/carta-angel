@@ -1,4 +1,3 @@
-
 const express = require('express');
 const cors = require('cors');
 
@@ -8,7 +7,10 @@ const pdfRoutes =
   require('./routes/pdfRoutes');
 
 const pacientesRoutes =
-  require('./routes/pacientesRoutes');  
+  require('./routes/pacientesRoutes');
+
+const citasRoutes =
+  require('./routes/citas');
 
 const app = express();
 
@@ -35,5 +37,6 @@ app.use('/api/pdf', pdfRoutes);
 
 app.use('/api/pacientes', pacientesRoutes);
 
-module.exports = app;
+app.use('/api/citas', citasRoutes);
 
+module.exports = app;

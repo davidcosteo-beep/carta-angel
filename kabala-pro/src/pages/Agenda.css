@@ -131,3 +131,29 @@
   background: white;
 
 }
+
+.kp-cita-card {
+
+  background:
+    rgba(255,248,230,0.42);
+
+  backdrop-filter: blur(6px);
+
+  border:
+    1px solid rgba(120,90,40,0.22);
+
+  border-radius: 18px;
+
+  padding: 20px;
+
+  margin-top: 20px;
+
+}
+
+.kp-cita-card h3 {
+
+  margin-top: 0;
+
+  color: #2f1c12;
+
+}

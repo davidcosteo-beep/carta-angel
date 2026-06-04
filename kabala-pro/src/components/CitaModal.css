@@ -1,0 +1,135 @@
+.kp-modal-overlay {
+
+  position: fixed;
+
+  inset: 0;
+
+  background: rgba(0,0,0,.45);
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  z-index: 9999;
+
+}
+
+.kp-modal {
+
+  width: 90%;
+
+  max-width: 520px;
+
+  background:
+    rgba(255,248,230,0.98);
+
+  backdrop-filter: blur(10px);
+
+  border-radius: 18px;
+
+  padding: 28px;
+
+  border:
+    1px solid rgba(120,90,40,.20);
+
+  box-shadow:
+    0 20px 40px rgba(0,0,0,.20);
+
+}
+
+.kp-modal h2 {
+
+  margin-top: 0;
+
+  color: #2f1c12;
+
+}
+
+.kp-form-group {
+
+  display: flex;
+
+  flex-direction: column;
+
+  margin-bottom: 16px;
+
+}
+
+.kp-form-group label {
+
+  margin-bottom: 6px;
+
+  font-weight: 600;
+
+  color: #2f1c12;
+
+}
+
+.kp-form-group input,
+.kp-form-group select,
+.kp-form-group textarea {
+
+  padding: 12px;
+
+  border-radius: 10px;
+
+  border:
+    1px solid rgba(120,90,40,.20);
+
+  background:
+    rgba(255,255,255,.65);
+
+  font-size: 14px;
+
+}
+
+.kp-modal-actions {
+
+  display: flex;
+
+  justify-content: flex-end;
+
+  gap: 12px;
+
+  margin-top: 24px;
+
+}
+
+.kp-btn-cancelar {
+
+  background:
+    rgba(180,180,180,.15);
+
+  border: none;
+
+  border-radius: 10px;
+
+  padding: 12px 20px;
+
+  cursor: pointer;
+
+}
+
+.kp-btn-guardar {
+
+  background: linear-gradient(
+    180deg,
+    #cba97a 0%,
+    #b98e5f 100%
+  );
+
+  color: #2f1c12;
+
+  border: none;
+
+  border-radius: 10px;
+
+  padding: 12px 20px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+}
