@@ -5,9 +5,12 @@ import CitaModal
   from "../components/CitaModal";
 import ConfirmModal
   from "../components/ConfirmModal";  
+import { useLocation } from "react-router-dom";  
 
 
 function Agenda() {
+
+  const location = useLocation();
 
   const [citas, setCitas] = useState([]);
 
@@ -16,6 +19,8 @@ function Agenda() {
 
   const [citaEditar, setCitaEditar] =
   useState(null);
+
+  const esDesktop = window.innerWidth >= 1024;
 
   const [vistaAgenda, setVistaAgenda] =
   useState("LISTA");
@@ -54,6 +59,24 @@ function Agenda() {
   }
 
 };
+
+const [pacientePreseleccionado,
+  setPacientePreseleccionado] =
+  useState(null);
+
+useEffect(() => {
+
+  if (location.state?.pacienteId) {
+
+    setPacientePreseleccionado(
+      location.state.pacienteId
+    );
+
+    setModalAbierto(true);
+
+  }
+
+}, [location.state]);
 
   const cancelarCita = async () => {
 
@@ -219,6 +242,35 @@ for (let i = 0; i < 7; i++) {
   diasSemana.push(fecha);
 
 }
+
+const fechaMes =
+  new Date(fechaSeleccionada);
+
+const anio =
+  fechaMes.getFullYear();
+
+const mes =
+  fechaMes.getMonth();
+
+//const primerDiaMes =
+  //new Date(anio, mes, 1);
+
+const ultimoDiaMes =
+  new Date(anio, mes + 1, 0);
+
+const diasMes = [];
+
+for (
+  let i = 1;
+  i <= ultimoDiaMes.getDate();
+  i++
+) {
+
+  diasMes.push(
+    new Date(anio, mes, i)
+  );
+
+}
     
   return (
 
@@ -232,32 +284,38 @@ for (let i = 0; i < 7; i++) {
         }}
       >
 
-        <h1>Agenda</h1>
+       <div className="kp-agenda-header">
 
-       <div className="kp-agenda-toolbar">
-
-  <button
-    className="kp-btn-nuevo"
-    onClick={() => {
-
-      setCitaEditar(null);
-
-      setModalAbierto(true);
-
-    }}
-  >
-    ➕ Nueva Cita
-  </button>
+  <h1>Agenda</h1>
 
   <input
     type="text"
-    className="kp-buscador-agenda"
+    className="kp-buscador-pacientes"
     placeholder="❈ Buscar paciente..."
     value={busqueda}
     onChange={(e) =>
       setBusqueda(e.target.value)
     }
   />
+
+</div>
+
+<div className="kp-agenda-toolbar">
+
+  <button
+  className="kp-btn-nuevo"
+  onClick={() => {
+
+    setCitaEditar(null);
+
+    setPacientePreseleccionado(null);
+
+    setModalAbierto(true);
+
+  }}
+>
+  ➕ Nueva Cita
+</button>
 
 </div>
 
@@ -301,6 +359,21 @@ for (let i = 0; i < 7; i++) {
   >
     Semana
   </button>
+
+  {esDesktop && (
+  <button
+    className={
+      vistaAgenda === "MES"
+        ? "kp-tab-activa"
+        : ""
+    }
+    onClick={() =>
+      setVistaAgenda("MES")
+    }
+  >
+    Mes
+  </button>
+)}
 
 </div>
 
@@ -568,6 +641,8 @@ for (let i = 0; i < 7; i++) {
         fechaTexto
     );
 
+    
+
   return (
 
     <div
@@ -743,9 +818,166 @@ for (let i = 0; i < 7; i++) {
 
 )}
 
+{vistaAgenda === "MES" && (
+
+  <div className="kp-mes-container">
+
+    <div className="kp-semana-header">
+
+      <button
+        onClick={() => {
+
+          const fecha =
+            new Date(fechaSeleccionada);
+
+          fecha.setMonth(
+            fecha.getMonth() - 1
+          );
+
+          setFechaSeleccionada(
+            fecha
+              .toISOString()
+              .substring(0, 10)
+          );
+
+        }}
+      >
+        ◀
+      </button>
+
+      <div
+  style={{ cursor: "pointer" }}
+  onClick={() => {
+
+    setFechaSeleccionada(
+      new Date()
+        .toISOString()
+        .substring(0, 10)
+    );
+
+  }}
+>
+
+  <h3>Mes</h3>
+
+  <p>
+    {new Date(fechaSeleccionada)
+      .toLocaleDateString(
+        "es-CO",
+        {
+          month: "long",
+          year: "numeric"
+        }
+      )}
+  </p>
+
+</div>
+
+      <button
+        onClick={() => {
+
+          const fecha =
+            new Date(fechaSeleccionada);
+
+          fecha.setMonth(
+            fecha.getMonth() + 1
+          );
+
+          setFechaSeleccionada(
+            fecha
+              .toISOString()
+              .substring(0, 10)
+          );
+
+        }}
+      >
+        ▶
+      </button>
+
+    </div>
+
+    <div className="kp-mes-dias-semana">
+
+  <div>L</div>
+  <div>M</div>
+  <div>M</div>
+  <div>J</div>
+  <div>V</div>
+  <div>S</div>
+  <div>D</div>
+
+</div>
+
+    <div className="kp-mes-grid">
+
+      {diasMes.map((dia) => (
+
+        <div
+      key={dia.toISOString()}
+      className={
+        dia.toISOString().substring(0, 10) ===
+        new Date().toISOString().substring(0, 10)
+          ? "kp-mes-dia kp-mes-dia-hoy"
+          : "kp-mes-dia"
+        }
+      >
+
+ <span
+  className={
+    dia.getDay() === 0
+      ? "kp-dia-domingo"
+      : ""
+  }
+>
+  {dia.getDate()}
+</span>
+
+  {(() => {
+
+  const totalCitas =
+    citas.filter((cita) =>
+
+      cita.Fecha?.substring(0, 10)
+      ===
+      dia.toISOString()
+        .substring(0, 10)
+
+    ).length;
+
+  return totalCitas > 0 ? (
+
+    <div className="kp-dia-citas">
+
+      • {totalCitas}
+      {" "}
+      cita
+      {totalCitas > 1
+        ? "s"
+        : ""
+      }
+
+    </div>
+
+  ) : null;
+
+})()}
+
+</div>
+
+      ))}
+
+    </div>
+
+  </div>
+
+)}
+
 <CitaModal
   abierto={modalAbierto}
   cita={citaEditar}
+  pacientePreseleccionado={
+    pacientePreseleccionado
+  }
   onCerrar={() => {
 
     setModalAbierto(false);

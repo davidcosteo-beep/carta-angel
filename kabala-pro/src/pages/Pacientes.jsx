@@ -5,9 +5,12 @@ import PacienteModal
   from "../components/PacienteModal";
 import ConfirmModal
   from "../components/ConfirmModal";  
+import { useNavigate } from "react-router-dom";  
 
 
 function Pacientes() {
+
+  const navigate = useNavigate();
 
   const [modalAbierto, setModalAbierto] =
   useState(false);
@@ -217,6 +220,30 @@ const reactivarPaciente = async (idPaciente) => {
   {!verArchivados ? (
 
     <>
+
+       <button
+        className="kp-btn-agendar"
+        onClick={() => {
+
+          navigate("/agenda", {
+
+            state: {
+
+              pacienteId:
+                paciente.IdPaciente,
+
+              pacienteNombre:
+                `${paciente.Nombres} ${paciente.Apellidos}`
+
+            }
+
+          });
+
+        }}
+      >
+        📅 Agendar
+      </button>
+
       <button
         className="kp-btn-editar"
         onClick={() => {
@@ -251,6 +278,8 @@ const reactivarPaciente = async (idPaciente) => {
   ) : (
 
     <>
+  
+
   <button
     style={{ visibility: "hidden" }}
     className="kp-btn-editar"
@@ -282,19 +311,19 @@ const reactivarPaciente = async (idPaciente) => {
       )}
 
       <PacienteModal
-  abierto={modalAbierto}
-  paciente={pacienteEditar}
-  onCerrar={() => {
+        abierto={modalAbierto}
+        paciente={pacienteEditar}
+        onCerrar={() => {
 
-    setModalAbierto(false);
+          setModalAbierto(false);
 
-    setPacienteEditar(null);
+          setPacienteEditar(null);
 
-  }}
-  onPacienteGuardado={
-    cargarPacientes
-  }
-/>
+        }}
+        onPacienteGuardado={
+          cargarPacientes
+        }
+      />
 
 <ConfirmModal
   abierto={confirmAbierto}

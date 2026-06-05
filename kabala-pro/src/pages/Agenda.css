@@ -543,23 +543,198 @@
 
   .kp-agenda-toolbar {
 
-    display: flex;
+  margin-bottom: 20px;
+
+}
+
+.kp-agenda-header h1 {
+  margin: 0;
+}
+
+.kp-agenda-header {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  margin-bottom: 4px;
+
+}
+
+  .kp-buscador-pacientes {
+
+  grid-column: 2;
+
+  grid-row: 1;
+
+  width: 400px;
+
+
+}
+
+.kp-cita-botones {
+
+    justify-content: flex-end;
+
+  }
+
+  .kp-cita-botones button {
+
+    flex: none;
+
+  }
+
+  .kp-btn-editar,
+  .kp-btn-cancelar {
+
+    min-width: 110px;
+
+    width: auto;
+
+    padding: 10px 16px;
+
+  }
+  .kp-agenda-toolbar {
+
+    display: grid;
+
+    grid-template-columns: auto auto;
+
+    column-gap: 25px;
+
+    row-gap: 4px;
 
     align-items: center;
 
-    gap: 16px;
-
-    margin-top: 20px;
-    margin-bottom: 20px;
-
   }
 
-  .kp-buscador-agenda {
+  .kp-mes-placeholder {
 
-    margin-top: 0;
-    max-width: 500px;
-    flex: 1;
+  margin-top: 20px;
 
-  }
+  padding: 40px;
+
+  text-align: center;
+
+  border-radius: 16px;
+
+  background: rgba(255,248,230,0.42);
+
+  border: 1px solid rgba(120,90,40,0.22);
+
+  color: #6b4b2f;
+
+}
+
+}
+
+.kp-mes-grid {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(7, 1fr);
+
+  gap: 10px;
+
+  margin-top: 20px;
+
+}
+
+.kp-mes-dia {
+
+  min-height: 90px;
+
+  border-radius: 14px;
+
+  background:
+    rgba(255,248,230,0.55);
+
+  border:
+    1px solid rgba(120,90,40,0.15);
+
+  padding: 12px;
+
+}
+
+.kp-semana-header div:hover {
+
+  opacity: .8;
+
+}
+
+.kp-dia-numero {
+
+  font-weight: 600;
+
+  color: #2f1c12;
+
+}
+
+.kp-dia-citas {
+
+  margin-top: 10px;
+
+  font-size: 13px;
+
+  color: #8d5b2f;
+
+  font-weight: 600;
+
+}
+
+.kp-dia-citas {
+
+  display: inline-block;
+
+  margin-top: 8px;
+
+  padding: 4px 8px;
+
+  border-radius: 8px;
+
+  background: rgba(201,151,89,.15);
+
+  color: #8d5b2f;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+}
+
+.kp-mes-dia-hoy {
+
+  border: 2px solid #cba97a;
+
+  box-shadow:
+    0 0 12px rgba(203,169,122,.25);
+
+}
+
+.kp-mes-dias-semana {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(7, 1fr);
+
+  margin-bottom: 10px;
+
+  text-align: center;
+
+  font-weight: 700;
+
+  color: #8d5b2f;
+
+}
+
+.kp-dia-domingo {
+
+  color: #c0392b;
+
+  font-weight: 700;
 
 }

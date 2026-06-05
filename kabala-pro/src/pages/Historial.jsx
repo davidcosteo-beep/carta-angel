@@ -295,23 +295,25 @@ const planetasVisuales = {
 
 <div className="historial-page">
 
+<div className="historial-container">
+
+  <div className="kp-historial-header">
+
   <h1 className="historial-title">
-    Historial de Cartas
+    Historial
   </h1>
 
   <input
-  type="text"
+    type="text"
+    placeholder="❈ Buscar carta..."
+    value={busqueda}
+    onChange={(e) =>
+      setBusqueda(e.target.value)
+    }
+    className="kp-buscador-pacientes"
+  />
 
-  placeholder="Buscar carta..."
-
-  value={busqueda}
-
-  onChange={(e) =>
-    setBusqueda(e.target.value)
-  }
-
-  className="historial-search"
-/>
+</div>
 
 <div className="historial-filtros">
 
@@ -497,6 +499,7 @@ const planetasVisuales = {
   ))}
 
 </div>
+</div>  
 </div>
 );
 }

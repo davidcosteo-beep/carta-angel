@@ -8,6 +8,7 @@ import ConfirmModal
 function CitaModal({
   abierto,
   cita,
+  pacientePreseleccionado,
   onCerrar,
   onCitaGuardada
 }) {
@@ -16,6 +17,9 @@ function CitaModal({
   useState([]);
 
   const [idPaciente, setIdPaciente] =
+  useState("");
+
+  const [busquedaPaciente, setBusquedaPaciente] =
   useState("");
 
   const [fecha, setFecha] =
@@ -52,6 +56,33 @@ function CitaModal({
   }
 
 };
+
+const limpiarFormulario = () => {
+
+  setIdPaciente("");
+
+  setBusquedaPaciente("");
+
+  setFecha("");
+
+  setHora("");
+
+  setMotivo("");
+
+};
+
+const pacientesFiltrados =
+  pacientes.filter((paciente) => {
+
+    const nombreCompleto =
+      `${paciente.Nombres} ${paciente.Apellidos}`
+        .toLowerCase();
+
+    return nombreCompleto.includes(
+      busquedaPaciente.toLowerCase()
+    );
+
+  });
 
 const [mensajeError, setMensajeError] =
   useState("");
@@ -132,6 +163,16 @@ useEffect(() => {
 
   }
 
+  if (
+    abierto &&
+    pacientePreseleccionado &&
+    !cita
+  ) {
+
+    setIdPaciente(pacientePreseleccionado);
+
+  }
+
   if (cita) {
 
     setIdPaciente(
@@ -156,7 +197,11 @@ useEffect(() => {
 
   }
 
-}, [abierto, cita]);
+}, [
+  abierto,
+  cita,
+  pacientePreseleccionado
+]);
 
 if (!abierto) return null;
 
@@ -174,27 +219,66 @@ return (
 
           <label>Paciente</label>
 
-          <select
-            value={idPaciente}
-            onChange={(e) => setIdPaciente(e.target.value)}
-          >
+          <input
+            type="text"
+            placeholder="❈ Buscar paciente..."
+            value={busquedaPaciente}
+            onChange={(e) =>
+              setBusquedaPaciente(
+                e.target.value
+              )
+            }
+            className="kp-buscador-paciente-cita"
+          />
 
-  <option value="">
-    Seleccionar paciente
-  </option>
 
-  {pacientes.map((paciente) => (
+          {pacientesFiltrados.length > 0 && (
 
-    <option
-      key={paciente.IdPaciente}
-      value={paciente.IdPaciente}
-    >
-      {paciente.Nombres} {paciente.Apellidos}
-    </option>
+            <select
+              value={idPaciente}
+              onChange={(e) =>
+                setIdPaciente(e.target.value)
+              }
+            >
 
-  ))}
+              <option value="">
+                Seleccionar paciente
+              </option>
 
-</select>
+              {pacientesFiltrados.map((paciente) => (
+
+                <option
+                  key={paciente.IdPaciente}
+                  value={paciente.IdPaciente}
+                >
+                  {paciente.Nombres} {paciente.Apellidos}
+                </option>
+
+              ))}
+
+            </select>
+
+)}
+
+            {pacientesFiltrados.length === 0 &&
+            busquedaPaciente.trim() !== "" && (
+
+              <div className="kp-paciente-no-encontrado">
+
+                <p>Paciente no encontrado</p>
+
+                <button
+                  className="kp-btn-crear-paciente"
+                  onClick={() => {
+                    // aquí irá la lógica
+                  }}
+                >
+                  ➕ Crear paciente
+                </button>
+
+              </div>
+
+            )}
 
         </div>
 
@@ -249,11 +333,17 @@ return (
         <div className="kp-modal-actions">
 
           <button
-            className="kp-btn-cancelar"
-            onClick={onCerrar}
-          >
-            Cancelar
-          </button>
+  className="kp-btn-cancelar"
+  onClick={() => {
+
+    limpiarFormulario();
+
+    onCerrar();
+
+  }}
+>
+  Cancelar
+</button>
 
           <button
             className="kp-btn-guardar"

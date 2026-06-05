@@ -13,17 +13,16 @@
   );
 }
 
-.historial-title{
+.historial-title {
 
-  font-family:"Cinzel", serif;
+  margin: 0 0 24px 0;
 
-  font-size:38px;
+  font-size: 3rem;
 
-  color:#4d2d18;
+  font-weight: 700;
 
-  margin-bottom:30px;
+  color: #2f1c12;
 
-  letter-spacing:1px;
 }
 
 .historial-search{
@@ -511,4 +510,34 @@
   box-shadow:
     0 6px 14px
     rgba(122,45,31,0.25);
+}
+
+@media (min-width: 1024px) {
+
+  .kp-historial-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 4px;
+
+  }
+
+  .historial-title {
+
+    margin: 0;
+
+  }
+
+  .historial-container {
+
+  max-width: 1000px;
+
+  margin: 0 auto;
+
+}
+
 }

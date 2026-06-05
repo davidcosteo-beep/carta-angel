@@ -89,6 +89,7 @@
 
 }
 
+.kp-btn-agendar,
 .kp-btn-editar,
 .kp-btn-eliminar {
 
@@ -103,6 +104,20 @@
   cursor: pointer;
 
   font-weight: 600;
+
+}
+
+.kp-btn-agendar {
+
+  background: linear-gradient(
+    180deg,
+    #8abf98 0%,
+    #73ab82 100%
+  );
+
+  color: white;
+
+  border: 1px solid rgba(120,90,40,0.20);
 
 }
 
@@ -131,6 +146,7 @@
 }
 
 .kp-btn-nuevo,
+.kp-btn-agendar,
 .kp-btn-editar,
 .kp-btn-eliminar {
 
@@ -141,6 +157,7 @@
 }
 
 .kp-btn-nuevo:hover,
+.kp-btn-agendar:hover,
 .kp-btn-editar:hover,
 .kp-btn-eliminar:hover {
 
@@ -180,6 +197,30 @@
   .kp-paciente-nombre {
 
     font-size: 24px;
+
+  }
+
+  .kp-paciente-botones {
+
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 6px;
+
+  }
+
+  .kp-btn-agendar,
+  .kp-btn-editar,
+  .kp-btn-eliminar {
+
+    min-width: 0;
+
+    width: 100%;
+
+    padding: 10px 4px;
+
+    font-size: 13px;
 
   }
 
@@ -361,19 +402,38 @@
 
   }
 
+  .kp-paciente-botones {
+
+  gap: 8px;
+
 }
 
- .kp-paciente-botones {
+.kp-btn-agendar,
+.kp-btn-editar,
+.kp-btn-eliminar {
+
+  min-width: 110px;
+  padding: 10px 16px;
+  width: auto;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 6px;
+
+}
+
+.kp-paciente-botones {
 
     justify-content: flex-end;
 
   }
 
-  .kp-btn-editar,
-  .kp-btn-eliminar {
 
-    min-width: 110px;
-    padding: 10px 16px;
-    width: auto;
+}
 
-  }
+ 
+  

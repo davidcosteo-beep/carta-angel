@@ -1,11 +1,11 @@
 import { tablaAngelSigno } from "./tablaAngelSigno";
 
 export function calcularAngelPorSigno(fechaString) {
-  const fecha = new Date(fechaString);
 
-  const dia = fecha.getDate();
-  const mes = fecha.getMonth() + 1;
+  const partes = fechaString.split("-");
 
+  const mes = Number(partes[1]);
+  const dia = Number(partes[2]);
   let signo = "";
 
   if ((mes === 3 && dia >= 21) || (mes === 4 && dia <= 19)) signo = "aries";
