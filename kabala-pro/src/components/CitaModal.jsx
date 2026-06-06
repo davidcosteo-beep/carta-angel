@@ -31,6 +31,12 @@ function CitaModal({
   const [motivo, setMotivo] =
     useState("");
 
+  const [observaciones, setObservaciones] =
+  useState("");
+
+  const [fechaSeguimiento, setFechaSeguimiento] =
+  useState("");  
+
   const cargarPacientes = async () => {
 
   try {
@@ -69,6 +75,10 @@ const limpiarFormulario = () => {
 
   setMotivo("");
 
+  setObservaciones("");
+
+  setFechaSeguimiento("");
+
 };
 
 const pacientesFiltrados =
@@ -94,6 +104,27 @@ const guardarCita = async () => {
 
   try {
 
+    const fechaHoraCita =
+      new Date(`${fecha}T${hora}`);
+
+    const ahora =
+      new Date();
+
+    if (
+      !cita &&
+      fechaHoraCita < ahora
+    ) {
+
+      setMensajeError(
+        "No se pueden agendar citas en una fecha u hora pasada."
+      );
+
+      setErrorAbierto(true);
+
+      return;
+
+    }
+
     const response = await fetch(
 
       cita
@@ -115,7 +146,9 @@ const guardarCita = async () => {
           idPaciente,
           fecha,
           hora,
-          motivo
+          motivo,
+          observaciones,
+          fechaSeguimiento
 
         })
 
@@ -193,6 +226,17 @@ useEffect(() => {
 
     setMotivo(
       cita.Motivo || ""
+    );
+
+    setObservaciones(
+      cita.Observaciones || ""
+    );
+
+    setFechaSeguimiento(
+      cita.FechaSeguimiento
+        ? cita.FechaSeguimiento
+            .substring(0, 10)
+        : ""
     );
 
   }
@@ -329,6 +373,40 @@ return (
           />
 
         </div>
+
+        <div className="kp-form-group">
+
+  <label>Observaciones</label>
+
+  <textarea
+    rows="4"
+    value={observaciones}
+    onChange={(e) =>
+      setObservaciones(
+        e.target.value
+      )
+    }
+  />
+
+</div>
+
+<div className="kp-form-group">
+
+  <label>
+    Fecha Seguimiento
+  </label>
+
+  <input
+    type="date"
+    value={fechaSeguimiento}
+    onChange={(e) =>
+      setFechaSeguimiento(
+        e.target.value
+      )
+    }
+  />
+
+</div>
 
         <div className="kp-modal-actions">
 

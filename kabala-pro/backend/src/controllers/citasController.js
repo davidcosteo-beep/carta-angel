@@ -10,6 +10,8 @@ const listarCitas = async (req, res) => {
         c.Fecha,
         c.Hora,
         c.Motivo,
+        c.Observaciones,
+        c.FechaSeguimiento,
         c.Estado,
         p.IdPaciente,
         p.Nombres,
@@ -46,7 +48,9 @@ const crearCita = async (req, res) => {
       idPaciente,
       fecha,
       hora,
-      motivo
+      motivo,
+      observaciones,
+      fechaSeguimiento
     } = req.body;
 
     const citaExistente = await sql.query`
@@ -83,6 +87,8 @@ const crearCita = async (req, res) => {
         Fecha,
         Hora,
         Motivo,
+        Observaciones,
+        FechaSeguimiento,
         Estado
       )
       VALUES
@@ -91,6 +97,8 @@ const crearCita = async (req, res) => {
         ${fecha},
         ${hora},
         ${motivo},
+        ${observaciones},
+        ${fechaSeguimiento},
         'PROGRAMADA'
       )
     `;
@@ -126,8 +134,21 @@ const actualizarCita = async (
       idPaciente,
       fecha,
       hora,
-      motivo
+      motivo,
+      observaciones,
+      fechaSeguimiento
     } = req.body;
+
+    let estado = null;
+
+      if (
+        observaciones &&
+        observaciones.trim() !== ""
+      ) {
+
+        estado = "REALIZADA";
+
+      }
 
     const citaExistente = await sql.query`
 
@@ -161,11 +182,21 @@ const actualizarCita = async (
     await sql.query`
       UPDATE Citas
       SET
-        IdPaciente = ${idPaciente},
-        Fecha = ${fecha},
-        Hora = ${hora},
-        Motivo = ${motivo},
-        fechaModificacion = GETDATE()
+      IdPaciente = ${idPaciente},
+      Fecha = ${fecha},
+      Hora = ${hora},
+      Motivo = ${motivo},
+      Observaciones = ${observaciones},
+      FechaSeguimiento = ${fechaSeguimiento},
+
+      Estado =
+        CASE
+          WHEN ${estado} IS NOT NULL
+          THEN ${estado}
+          ELSE Estado
+        END,
+
+      fechaModificacion = GETDATE()
       WHERE IdCita = ${id}
     `;
 
@@ -222,9 +253,46 @@ const cancelarCita = async (
 
 };
 
+const finalizarCita = async (
+  req,
+  res
+) => {
+
+  try {
+
+    const { id } = req.params;
+
+    await sql.query`
+      UPDATE Citas
+      SET
+        Estado = 'FINALIZADA',
+        fechaModificacion = GETDATE()
+      WHERE IdCita = ${id}
+    `;
+
+    res.json({
+      ok: true,
+      message: "Cita finalizada"
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      ok: false,
+      message:
+        "Error al finalizar cita"
+    });
+
+  }
+
+};
+
 module.exports = {
   listarCitas,
   crearCita,
   actualizarCita,
-  cancelarCita
+  cancelarCita,
+  finalizarCita
 };

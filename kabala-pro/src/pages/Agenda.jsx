@@ -109,6 +109,39 @@ useEffect(() => {
 
   };
 
+  const finalizarCita = async (
+  idCita
+) => {
+
+  try {
+
+    const response = await fetch(
+
+      `${API_URL}/api/citas/${idCita}/finalizar`,
+
+      {
+        method: "PUT"
+      }
+
+    );
+
+    const data =
+      await response.json();
+
+    if (data.ok) {
+
+      await cargarCitas();
+
+    }
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+};
+
   const [confirmAbierto, setConfirmAbierto] =
     useState(false);
 
@@ -726,91 +759,125 @@ for (
 
     ) : (
 
-      citasFiltradas.map((cita) => (
+      citasFiltradas.map((cita) => {
 
-        <div
-          key={cita.IdCita}
-          className={`kp-cita-card ${
-            cita.Estado?.trim().toUpperCase() === "CANCELADA"
-              ? "kp-cita-cancelada"
-              : ""
-          }`}
+  const cantidadBotones =
+    cita.Estado === "REALIZADA"
+      ? 3
+      : cita.Estado?.trim().toUpperCase() !== "CANCELADA"
+      ? 2
+      : 1;
+
+  return (
+
+    <div
+      key={cita.IdCita}
+      className={`kp-cita-card ${
+        cita.Estado?.trim().toUpperCase() === "CANCELADA"
+          ? "kp-cita-cancelada"
+          : ""
+      }`}
+    >
+
+      <h3>
+        {cita.Nombres} {cita.Apellidos}
+      </h3>
+
+      <p>
+        📅 {
+          cita.Fecha
+            ? cita.Fecha.substring(0, 10)
+                .split("-")
+                .reverse()
+                .join("/")
+            : ""
+        }
+      </p>
+
+      <p>
+        🕒 {
+          cita.Hora
+            ? formatearHora(cita.Hora)
+            : ""
+        }
+      </p>
+
+      <p>
+        ✧ {cita.Motivo}
+      </p>
+
+      <div
+        className={`kp-estado-badge ${
+          cita.Estado?.trim().toUpperCase() === "CANCELADA"
+            ? "estado-cancelada"
+            : cita.Estado?.trim().toUpperCase() === "REALIZADA"
+            ? "estado-realizada"
+            : cita.Estado?.trim().toUpperCase() === "FINALIZADA"
+            ? "estado-finalizada"
+            : "estado-programada"
+        }`}
+      >
+        {cita.Estado}
+      </div>
+
+      <div
+        className={`kp-cita-botones kp-botones-${cantidadBotones}`}
+      >
+
+        <button
+          className="kp-btn-editar"
+          onClick={() => {
+
+            setCitaEditar(cita);
+
+            setModalAbierto(true);
+
+          }}
         >
+          ✎ Editar
+        </button>
 
-          <h3>
-            {cita.Nombres} {cita.Apellidos}
-          </h3>
+        {cita.Estado === "REALIZADA" && (
 
-          <p>
-            📅 {
-              cita.Fecha
-                ? cita.Fecha.substring(0, 10)
-                    .split("-")
-                    .reverse()
-                    .join("/")
-                : ""
+          <button
+            className="kp-btn-finalizar"
+            onClick={() =>
+              finalizarCita(
+                cita.IdCita
+              )
             }
-          </p>
-
-          <p>
-            🕒 {
-              cita.Hora
-                ? formatearHora(cita.Hora)
-                : ""
-            }
-          </p>  
-
-          <p>
-            ✧ {cita.Motivo}
-          </p>
-
-          <div
-            className={`kp-estado-badge ${
-              cita.Estado?.trim().toUpperCase() === "CANCELADA"
-                ? "estado-cancelada"
-                : "estado-programada"
-            }`}
           >
-            {cita.Estado}
-          </div>
 
-          <div className="kp-cita-botones">
+            ✔ Finalizar
 
-            <button
-              className="kp-btn-editar"
-              onClick={() => {
+          </button>
 
-                setCitaEditar(cita);
+        )}
 
-                setModalAbierto(true);
+        {cita.Estado?.trim().toUpperCase() !== "CANCELADA" && (
 
-              }}
-            >
-              ✎ Editar
-            </button>
+          <button
+            className="kp-btn-cancelar"
+            onClick={() => {
 
-            {cita.Estado?.trim().toUpperCase() !== "CANCELADA" && (
+              setCitaSeleccionada(cita);
 
-              <button
-                className="kp-btn-cancelar"
-                onClick={() => {
+              setConfirmAbierto(true);
 
-                  setCitaSeleccionada(cita);
+            }}
+          >
+            ⊘ Cancelar
+          </button>
 
-                  setConfirmAbierto(true);
+        )}
 
-                }}
-              >
-                ⊘ Cancelar
-              </button>
+      </div>
 
-            )}
+    </div>
 
-          </div>
+  );
 
-        </div>
-
-      ))
+})
 
     )}
 
