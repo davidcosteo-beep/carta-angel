@@ -687,9 +687,11 @@
 
 .kp-dia-citas {
 
-  display: inline-block;
+  margin-top: auto;
 
-  margin-top: 8px;
+  align-self: center;
+
+  margin-bottom: 10px;
 
   padding: 4px 8px;
 
@@ -699,7 +701,7 @@
 
   color: #8d5b2f;
 
-  font-size: 12px;
+  font-size: 14px;
 
   font-weight: 600;
 
@@ -736,5 +738,21 @@
   color: #c0392b;
 
   font-weight: 700;
+
+}
+
+.kp-mes-dia {
+
+  display: flex;
+
+  flex-direction: column;
+
+}
+
+.kp-mes-dia:hover {
+
+  transform: translateY(-2px);
+
+  transition: .2s ease;
 
 }

@@ -920,7 +920,18 @@ for (
           ? "kp-mes-dia kp-mes-dia-hoy"
           : "kp-mes-dia"
         }
-      >
+
+        onClick={() => {
+
+  setFechaSeleccionada(
+    dia.toISOString()
+      .substring(0, 10)
+  );
+
+  setVistaAgenda("DIA");
+
+    }}
+  >
 
  <span
   className={
@@ -941,6 +952,10 @@ for (
       ===
       dia.toISOString()
         .substring(0, 10)
+
+        &&
+
+        cita.Estado === "PROGRAMADA"
 
     ).length;
 
