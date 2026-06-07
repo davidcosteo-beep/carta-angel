@@ -9,6 +9,7 @@ function CitaModal({
   abierto,
   cita,
   pacientePreseleccionado,
+  fechaPreseleccionada,
   onCerrar,
   onCitaGuardada
 }) {
@@ -202,7 +203,21 @@ useEffect(() => {
     !cita
   ) {
 
-    setIdPaciente(pacientePreseleccionado);
+    setIdPaciente(
+      pacientePreseleccionado
+    );
+
+  }
+
+  if (
+    abierto &&
+    fechaPreseleccionada &&
+    !cita
+  ) {
+
+    setFecha(
+      fechaPreseleccionada
+    );
 
   }
 
@@ -244,7 +259,8 @@ useEffect(() => {
 }, [
   abierto,
   cita,
-  pacientePreseleccionado
+  pacientePreseleccionado,
+  fechaPreseleccionada
 ]);
 
 if (!abierto) return null;

@@ -10,6 +10,33 @@ import { useLocation } from "react-router-dom";
 
 function Agenda() {
 
+  function fechaLocal(fecha) {
+
+  return (
+    fecha.getFullYear() +
+    "-" +
+    String(fecha.getMonth() + 1)
+      .padStart(2, "0") +
+    "-" +
+    String(fecha.getDate())
+      .padStart(2, "0")
+  );
+
+}
+
+function fechaDesdeTexto(texto) {
+
+  const [anio, mes, dia] =
+    texto.split("-").map(Number);
+
+  return new Date(
+    anio,
+    mes - 1,
+    dia
+  );
+
+}
+
   const location = useLocation();
 
   const [citas, setCitas] = useState([]);
@@ -27,10 +54,54 @@ function Agenda() {
 
   const [fechaSeleccionada, setFechaSeleccionada] =
   useState(
-    new Date()
-      .toISOString()
-      .substring(0, 10)
+    fechaLocal(new Date())
   );
+
+  const paisFestivos = "CO";
+
+const festivos = {
+
+  CO: {
+
+    "2026-01-01":"Año Nuevo",
+
+    "2026-01-12":"Reyes Magos",
+
+    "2026-03-23":"San José",
+
+    "2026-04-02":"Jueves Santo",
+
+    "2026-04-03":"Viernes Santo",
+
+    "2026-05-01":"Día del Trabajo",
+
+    "2026-05-18":"Ascensión",
+
+    "2026-06-08":"Corpus Christi",
+
+    "2026-06-15":"Sagrado Corazón",
+
+    "2026-06-29":"San Pedro y San Pablo",
+
+    "2026-07-20":"Independencia",
+
+    "2026-08-07":"Batalla de Boyacá",
+
+    "2026-08-17":"Asunción",
+
+    "2026-10-12":"Día de la Raza",
+
+    "2026-11-02":"Todos los Santos",
+
+    "2026-11-16":"Independencia Cartagena",
+
+    "2026-12-08":"Inmaculada Concepción",
+
+    "2026-12-25":"Navidad"
+
+  }
+
+};
 
   const [busqueda, setBusqueda] =
   useState("");
@@ -293,6 +364,26 @@ const ultimoDiaMes =
 
 const diasMes = [];
 
+const primerDiaMes =
+  new Date(anio, mes, 1);
+
+const diaSemanaInicio =
+  primerDiaMes.getDay();
+
+/* espacios vacíos */
+
+for (
+  let i = 0;
+  i < diaSemanaInicio;
+  i++
+) {
+
+  diasMes.push(null);
+
+}
+
+/* días reales */
+
 for (
   let i = 1;
   i <= ultimoDiaMes.getDate();
@@ -303,8 +394,7 @@ for (
     new Date(anio, mes, i)
   );
 
-}
-    
+}    
   return (
 
     <div className="page-transition">
@@ -317,24 +407,31 @@ for (
         }}
       >
 
-       <div className="kp-agenda-header">
+  <div className="kp-agenda-header">
 
-  <h1>Agenda</h1>
+    <h1>Agenda</h1>
+
+    {(
+  vistaAgenda === "LISTA" ||
+  vistaAgenda === "DIA"
+) && (
 
   <input
+    className="kp-buscar-header"
     type="text"
-    className="kp-buscador-pacientes"
-    placeholder="❈ Buscar paciente..."
+    placeholder="✳ Buscar paciente..."
     value={busqueda}
     onChange={(e) =>
       setBusqueda(e.target.value)
     }
   />
 
-</div>
+)}
 
-<div className="kp-agenda-toolbar">
-
+    {(
+  vistaAgenda === "LISTA" ||
+  vistaAgenda === "DIA"
+  ) && (
   <button
   className="kp-btn-nuevo"
   onClick={() => {
@@ -348,11 +445,12 @@ for (
   }}
 >
   ➕ Nueva Cita
-</button>
+  </button>
+  )}
 
-</div>
+  </div>  
 
-        <div className="kp-agenda-vistas">
+  <div className="kp-agenda-vistas">
 
   <button
     className={
@@ -393,7 +491,6 @@ for (
     Semana
   </button>
 
-  {esDesktop && (
   <button
     className={
       vistaAgenda === "MES"
@@ -406,9 +503,26 @@ for (
   >
     Mes
   </button>
-)}
 
-</div>
+
+        </div>
+
+  {(
+  vistaAgenda === "LISTA" ||
+  vistaAgenda === "DIA"
+  ) && (      
+  <input
+    type="text"
+    className="kp-buscador-normal"
+    placeholder="❈ Buscar paciente..."
+    value={busqueda}
+    onChange={(e) =>
+      setBusqueda(e.target.value)
+    }
+  />
+  )}
+
+        {vistaAgenda === "LISTA" && (
 
         <div className="kp-pacientes-tabs">
 
@@ -445,7 +559,9 @@ for (
     Canceladas
   </button>
 
-</div>
+        </div>
+
+  )}
 
    {vistaAgenda === "DIA" && (
 
@@ -457,16 +573,15 @@ for (
     onClick={() => {
 
       const fecha =
-        new Date(fechaSeleccionada);
+  fechaDesdeTexto(fechaSeleccionada);
 
       fecha.setDate(
         fecha.getDate() - 1
       );
 
       setFechaSeleccionada(
-        fecha
-          .toISOString()
-          .substring(0, 10)
+      fechaLocal(fecha)
+
       );
 
     }}
@@ -482,10 +597,8 @@ for (
   }}
   onClick={() =>
     setFechaSeleccionada(
-      new Date()
-        .toISOString()
-        .substring(0, 10)
-    )
+  fechaLocal(new Date())
+)
   }
 >
   Día
@@ -505,27 +618,27 @@ for (
   </div>
 
   <button
-    onClick={() => {
+  onClick={() => {
 
-      const fecha =
-        new Date(fechaSeleccionada);
-
-      fecha.setDate(
-        fecha.getDate() + 1
+    const fecha =
+      fechaDesdeTexto(
+        fechaSeleccionada
       );
 
-      setFechaSeleccionada(
-        fecha
-          .toISOString()
-          .substring(0, 10)
-      );
+    fecha.setDate(
+      fecha.getDate() + 1
+    );
 
-    }}
-  >
-    ▶
-  </button>
+    setFechaSeleccionada(
+      fechaLocal(fecha)
+    );
 
-</div>
+  }}
+>
+  ▶
+</button>
+
+    </div>
 
     {citasDelDia.length === 0 ? (
 
@@ -593,10 +706,8 @@ for (
       );
 
       setFechaSeleccionada(
-        fecha
-          .toISOString()
-          .substring(0, 10)
-      );
+  fechaLocal(fecha)
+)
 
     }}
   >
@@ -611,10 +722,8 @@ for (
   }}
   onClick={() =>
     setFechaSeleccionada(
-      new Date()
-        .toISOString()
-        .substring(0, 10)
-    )
+  fechaLocal(new Date())
+)
   }
 >
   Semana
@@ -642,17 +751,25 @@ for (
     onClick={() => {
 
       const fecha =
-        new Date(fechaSeleccionada);
+  new Date(fechaSeleccionada);
 
-      fecha.setDate(
-        fecha.getDate() + 7
-      );
+    fecha.setDate(
+      fecha.getDate() + 7
+    );
 
-      setFechaSeleccionada(
-        fecha
-          .toISOString()
-          .substring(0, 10)
-      );
+    setFechaSeleccionada(
+
+      fecha.getFullYear() +
+      "-" +
+      String(
+        fecha.getMonth() + 1
+      ).padStart(2, "0") +
+      "-" +
+      String(
+        fecha.getDate()
+      ).padStart(2, "0")
+
+    );
 
     }}
   >
@@ -664,8 +781,11 @@ for (
     {diasSemana.map((dia) => {
 
   const fechaTexto =
-    dia.toISOString()
-      .substring(0, 10);
+  dia.getFullYear() +
+  "-" +
+  String(dia.getMonth() + 1).padStart(2, "0") +
+  "-" +
+  String(dia.getDate()).padStart(2, "0");
 
   const citasDia =
     citasSemana.filter(
@@ -679,9 +799,19 @@ for (
   return (
 
     <div
-      key={fechaTexto}
-      className="kp-semana-dia"
-    >
+  key={fechaTexto}
+  className="kp-semana-dia"
+
+  onClick={() => {
+
+    setFechaSeleccionada(
+      fechaTexto
+    );
+
+    setVistaAgenda("DIA");
+
+  }}
+>
 
       <h4>
 
@@ -885,7 +1015,7 @@ for (
 
 )}
 
-{vistaAgenda === "MES" && (
+{vistaAgenda === "MES" && (  
 
   <div className="kp-mes-container">
 
@@ -902,10 +1032,8 @@ for (
           );
 
           setFechaSeleccionada(
-            fecha
-              .toISOString()
-              .substring(0, 10)
-          );
+  fechaLocal(fecha)
+)
 
         }}
       >
@@ -917,10 +1045,8 @@ for (
   onClick={() => {
 
     setFechaSeleccionada(
-      new Date()
-        .toISOString()
-        .substring(0, 10)
-    );
+  fechaLocal(new Date())
+)
 
   }}
 >
@@ -951,10 +1077,8 @@ for (
           );
 
           setFechaSeleccionada(
-            fecha
-              .toISOString()
-              .substring(0, 10)
-          );
+  fechaLocal(fecha)
+)
 
         }}
       >
@@ -963,90 +1087,163 @@ for (
 
     </div>
 
+     {/* REFERENCIAS */}
+
+    <div className="kp-mes-referencias">
+
+  <span className="kp-ref-item">
+    <span className="kp-ref-citas"></span>
+    Citas
+  </span>
+
+  <span className="kp-ref-item">
+    <span className="kp-ref-festivos"></span>
+    Festivos
+  </span>
+
+  <span className="kp-ref-item">
+    <span className="kp-ref-hoy"></span>
+    Hoy
+  </span>
+
+</div>
+
     <div className="kp-mes-dias-semana">
 
+  <div>D</div>
   <div>L</div>
   <div>M</div>
   <div>M</div>
   <div>J</div>
   <div>V</div>
   <div>S</div>
-  <div>D</div>
 
 </div>
 
     <div className="kp-mes-grid">
 
-      {diasMes.map((dia) => (
+      {diasMes.map((dia, index) => {
 
-        <div
-      key={dia.toISOString()}
-      className={
-        dia.toISOString().substring(0, 10) ===
-        new Date().toISOString().substring(0, 10)
-          ? "kp-mes-dia kp-mes-dia-hoy"
-          : "kp-mes-dia"
-        }
+  if (!dia) {
 
-        onClick={() => {
+    return (
+      <div
+        key={`vacio-${index}`}
+        className="kp-mes-dia-vacio"
+      />
+    );
 
-  setFechaSeleccionada(
-    dia.toISOString()
-      .substring(0, 10)
-  );
-
-  setVistaAgenda("DIA");
-
-    }}
-  >
-
- <span
-  className={
-    dia.getDay() === 0
-      ? "kp-dia-domingo"
-      : ""
   }
->
-  {dia.getDate()}
-</span>
 
-  {(() => {
+  const fechaDia =
+  dia.getFullYear() +
+  "-" +
+  String(dia.getMonth() + 1).padStart(2, "0") +
+  "-" +
+  String(dia.getDate()).padStart(2, "0");
 
-  const totalCitas =
-    citas.filter((cita) =>
+  const hoy =
+  new Date();
 
-      cita.Fecha?.substring(0, 10)
-      ===
-      dia.toISOString()
-        .substring(0, 10)
+const fechaHoy =
+  hoy.getFullYear() +
+  "-" +
+  String(hoy.getMonth() + 1).padStart(2, "0") +
+  "-" +
+  String(hoy.getDate()).padStart(2, "0");
 
-        &&
+const tieneCitas = citas.some(
+  (cita) =>
+    cita.Fecha?.substring(0, 10) === fechaDia &&
+    cita.Estado === "PROGRAMADA"
+);
 
-        cita.Estado === "PROGRAMADA"
+const nombreFestivo =
+  festivos[paisFestivos]?.[fechaDia];
 
-    ).length;
+const esFestivo =
+  Boolean(nombreFestivo);
 
-  return totalCitas > 0 ? (
+  return (
 
-    <div className="kp-dia-citas">
+    <div
+      key={dia.toISOString()}
+      className={`kp-mes-dia
+          ${fechaDia === fechaHoy
+            ? "kp-mes-dia-hoy"
+            : ""}
+          ${tieneCitas
+              ? "kp-mes-dia-con-citas"
+              : ""}
+          ${esFestivo
+              ? "kp-mes-dia-festivo"
+              : ""}    
 
-      • {totalCitas}
-      {" "}
-      cita
-      {totalCitas > 1
-        ? "s"
-        : ""
-      }
+        `}
+
+      onClick={() => {
+
+        setFechaSeleccionada(
+  fechaLocal(dia)
+);
+
+        setVistaAgenda("DIA");
+
+      }}
+    >
+
+      <span
+        className={
+          dia.getDay() === 0
+            ? "kp-dia-domingo"
+            : ""
+        }
+      >
+        {dia.getDate()}
+      </span>
+
+      {esFestivo && esDesktop && (
+
+  <div className="kp-festivo-nombre">
+
+    {nombreFestivo}
+
+  </div>
+
+)}
+
+      {(() => {
+
+        const totalCitas =
+          citas.filter((cita) =>
+
+            cita.Fecha?.substring(0, 10)
+            ===
+            fechaLocal(dia)
+
+            &&
+
+            cita.Estado === "PROGRAMADA"
+
+          ).length;
+
+        return totalCitas > 0 ? (
+
+          <div className="kp-dia-citas">
+
+            ❈ {totalCitas}
+
+          </div>
+
+        ) : null;
+
+      })()}
 
     </div>
 
-  ) : null;
+  );
 
-})()}
-
-</div>
-
-      ))}
+})}
 
     </div>
 
@@ -1059,6 +1256,9 @@ for (
   cita={citaEditar}
   pacientePreseleccionado={
     pacientePreseleccionado
+  }
+  fechaPreseleccionada={
+    fechaSeleccionada
   }
   onCerrar={() => {
 
