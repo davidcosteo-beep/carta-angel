@@ -284,15 +284,17 @@ const response = await fetch(
 
       setMensaje("");
       setTipoMensaje("");
-      limpiarFormulario();
-
-      onCerrar();
+      
 
       if (onPacienteGuardado) {
 
         await onPacienteGuardado();
 
       }
+
+      limpiarFormulario();
+
+      onCerrar();
 
     }
 

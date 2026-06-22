@@ -53,6 +53,12 @@ const crearCita = async (req, res) => {
       fechaSeguimiento
     } = req.body;
 
+  const fechaSeguimientoDB =
+  fechaSeguimiento &&
+  fechaSeguimiento.trim() !== ""
+    ? fechaSeguimiento
+    : null;
+
     const citaExistente = await sql.query`
 
         SELECT TOP 1 IdCita
@@ -98,7 +104,7 @@ const crearCita = async (req, res) => {
         ${hora},
         ${motivo},
         ${observaciones},
-        ${fechaSeguimiento},
+        ${fechaSeguimientoDB},
         'PROGRAMADA'
       )
     `;
@@ -139,16 +145,14 @@ const actualizarCita = async (
       fechaSeguimiento
     } = req.body;
 
+    const fechaSeguimientoDB =
+  fechaSeguimiento &&
+  fechaSeguimiento.trim() !== ""
+    ? fechaSeguimiento
+    : null;
+
+
     let estado = null;
-
-      if (
-        observaciones &&
-        observaciones.trim() !== ""
-      ) {
-
-        estado = "REALIZADA";
-
-      }
 
     const citaExistente = await sql.query`
 
@@ -187,7 +191,7 @@ const actualizarCita = async (
       Hora = ${hora},
       Motivo = ${motivo},
       Observaciones = ${observaciones},
-      FechaSeguimiento = ${fechaSeguimiento},
+      FechaSeguimiento = ${fechaSeguimientoDB},
 
       Estado =
         CASE
@@ -212,6 +216,70 @@ const actualizarCita = async (
     res.status(500).json({
       ok: false,
       message: "Error al actualizar cita"
+    });
+
+  }
+
+};
+
+const guardarSeguimiento = async (
+  req,
+  res
+) => {
+
+  try {
+
+    const { id } = req.params;
+
+    const {
+      nota,
+      fechaSeguimiento
+    } = req.body;
+
+    await sql.query`
+
+      INSERT INTO Seguimientos
+      (
+        IdCita,
+        Nota
+      )
+      VALUES
+      (
+        ${id},
+        ${nota}
+      )
+
+    `;
+
+    await sql.query`
+
+      UPDATE Citas
+
+      SET
+        FechaSeguimiento =
+          ${fechaSeguimiento || null},
+
+        fechaModificacion =
+          GETDATE()
+
+      WHERE IdCita = ${id}
+
+    `;
+
+    res.json({
+
+      ok: true
+
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+
+      ok: false
+
     });
 
   }
@@ -262,10 +330,36 @@ const finalizarCita = async (
 
     const { id } = req.params;
 
+    const resultado = await sql.query`
+      SELECT FechaSeguimiento, Estado
+      FROM Citas
+      WHERE IdCita = ${id}
+    `;
+
+    const fechaSeguimiento =
+  resultado.recordset[0]
+    ?.FechaSeguimiento;
+
+    const estadoActual =
+  resultado.recordset[0]
+    ?.Estado;
+
+    const estado =
+
+  estadoActual === "SEGUIMIENTO"
+
+    ? "FINALIZADA"
+
+    : fechaSeguimiento
+
+      ? "SEGUIMIENTO"
+
+      : "FINALIZADA";
+
     await sql.query`
       UPDATE Citas
       SET
-        Estado = 'FINALIZADA',
+        Estado = ${estado},
         fechaModificacion = GETDATE()
       WHERE IdCita = ${id}
     `;
@@ -289,10 +383,93 @@ const finalizarCita = async (
 
 };
 
+const confirmarCita = async (
+  req,
+  res
+) => {
+
+  try {
+
+    const { id } = req.params;
+
+    await sql.query`
+      UPDATE Citas
+      SET
+        Estado = 'CONFIRMADA',
+        fechaModificacion = GETDATE()
+      WHERE IdCita = ${id}
+    `;
+
+    res.json({
+      ok: true,
+      message: "Cita confirmada"
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+      ok: false,
+      message:
+        "Error al confirmar cita"
+    });
+
+  }
+
+};
+
+const obtenerSeguimientos = async (
+  req,
+  res
+) => {
+
+  try {
+
+    const { id } = req.params;
+
+    const result = await sql.query`
+
+      SELECT
+        IdSeguimiento,
+        Fecha,
+        Nota
+      FROM Seguimientos
+      WHERE IdCita = ${id}
+      ORDER BY Fecha DESC
+
+    `;
+
+    res.json({
+
+      ok: true,
+
+      seguimientos:
+        result.recordset
+
+    });
+
+  } catch (error) {
+
+    console.error(error);
+
+    res.status(500).json({
+
+      ok: false
+
+    });
+
+  }
+
+};
+
 module.exports = {
   listarCitas,
   crearCita,
   actualizarCita,
+  guardarSeguimiento,
   cancelarCita,
-  finalizarCita
+  confirmarCita,
+  finalizarCita,
+  obtenerSeguimientos
 };

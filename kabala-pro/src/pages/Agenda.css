@@ -30,35 +30,11 @@
 
   gap: 12px;
 
-  margin-top: 20px;
-
 }
 
-.kp-cita-botones button {
+.kp-cita-botones button:not(.kp-btn-accion) {
 
   width: auto;
-
-}
-
-.kp-btn-editar {
-
-  background: linear-gradient(
-    180deg,
-    #cba97a 0%,
-    #b98e5f 100%
-  );
-
-  color: #2f1c12;
-
-  border: 1px solid rgba(120,90,40,0.20);
-
-  border-radius: 10px;
-
-  padding: 12px 20px;
-
-  cursor: pointer;
-
-  font-weight: 600;
 
 }
 
@@ -66,59 +42,13 @@
 
   background: linear-gradient(
     180deg,
-    #d8b0a9 0%,
-    #c8968d 100%
-  )!important;
+    #f3d6d2 0%,
+    #e7c0bb 100%
+  ) !important;
 
-  color: #4d1f1f;
+  color: #6a2c2c;
 
-  border: 1px solid rgba(120,90,40,0.20);
-
-  border-radius: 10px;
-
-  padding: 12px 20px;
-
-  cursor: pointer;
-
-  font-weight: 600;
-
-}
-
-.kp-btn-finalizar {
-
-  background: linear-gradient(
-    180deg,
-    #7fc48a 0%,
-    #67ae73 100%
-  );
-
-  color: #173d1e;
-
-  border:
-    1px solid rgba(
-      50,
-      100,
-      50,
-      0.20
-    );
-
-  border-radius: 10px;
-
-  padding: 12px 20px;
-
-  cursor: pointer;
-
-  font-weight: 600;
-
-}
-
-.kp-btn-editar:hover,
-.kp-btn-cancelar:hover {
-
-  transform: translateY(-2px);
-
-  box-shadow:
-    0 6px 18px rgba(0,0,0,.18);
+  border: 1px solid rgba(160,80,80,.15);
 
 }
 
@@ -160,7 +90,7 @@
 
   letter-spacing: 0.5px;
 
-  margin-top: 10px;
+  margin-top: 5px;
 
 }
 
@@ -174,13 +104,21 @@
 
 }
 
-.estado-realizada {
+.estado-seguimiento {
 
   background:
     rgba(245,158,11,.12);
 
   color:
     #b7791f;
+
+}
+
+.estado-confirmada {
+
+  background: #dff4e5;
+
+  color: #22643b;
 
 }
 
@@ -331,7 +269,7 @@
 
   background: rgba(255,248,230,0.65);
 
-  font-size: 15px;
+  font-size: 16px;
 
   box-sizing: border-box;
 
@@ -595,6 +533,30 @@
 
 @media (max-width: 768px) {
 
+.kp-btn-accion {
+
+  width: 68px;
+
+  height: 54px;
+
+  padding: 4px;
+
+}
+
+.kp-btn-icon {
+
+  width: 20px;
+
+  height: 20px;
+
+}
+
+.kp-btn-accion span {
+
+  font-size: 9px;
+
+}  
+
 .kp-btn-nuevo {
 
   padding: 6px 10px;
@@ -663,16 +625,16 @@
 
 }
 
-  .kp-cita-botones {
+.kp-cita-botones {
 
-    display: grid;
+  display: grid;
 
-    grid-template-columns:
-      repeat(3, 1fr);
+  grid-template-columns:
+    repeat(4, 1fr);
 
-    gap: 8px;
+  gap: 6px;
 
-  }
+}
 
   .kp-dia-citas {
 
@@ -694,11 +656,20 @@
 
   /* 1 botón */
 
-  .kp-botones-1 button {
+.kp-botones-1 {
 
-    grid-column: 3;
+  display: grid;
 
-  }
+  grid-template-columns:
+    repeat(4, 1fr);
+
+}
+
+.kp-botones-1 button {
+
+  grid-column: 4;
+
+}
 
   /* 2 botones */
 
@@ -723,6 +694,24 @@
 }
 
 @media (min-width: 1024px) {
+
+.kp-btn-accion {
+
+    width: 92px;
+
+    height: 92px;
+
+    padding: 8px;
+
+  }
+
+  .kp-btn-icon {
+
+    width: 34px;
+
+    height: 34px;
+
+  }  
 
 .kp-buscador-normal {
 
@@ -767,23 +756,13 @@
 
   gap: 8px;
 
+  margin-top: -20px;
+
 }
 
 .kp-cita-botones button {
 
   flex: none;
-
-}
- 
-.kp-btn-editar,
-.kp-btn-cancelar,
-.kp-btn-finalizar {
-
-  min-width: 140px;
-
-  width: auto;
-
-  padding: 10px 16px;
 
 }
 
@@ -1083,5 +1062,145 @@
 .kp-semana-dia:hover {
 
   transform: translateY(-2px);
+
+}
+
+.kp-btn-icon {
+
+  width: 34px;
+
+  height: 34px;
+
+  display: block;
+
+  margin-bottom: 4px;
+
+}
+
+.kp-btn-accion {
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 2px;
+
+  border-radius: 18px;
+
+  border: 1px solid rgba(120,90,40,.12);
+
+  background: rgba(255,255,255,.18);
+
+  cursor: pointer;
+
+  transition: all .2s ease;
+
+}
+
+.kp-btn-accion:hover {
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 8px 18px rgba(0,0,0,.10);
+
+}
+
+.kp-btn-accion span {
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+  line-height: 1.1;
+
+}
+
+.kp-btn-detalle {
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255,252,245,.95),
+      rgba(245,235,220,.95)
+    );
+
+  color:
+    #5f4326;
+
+  border:
+    1px solid rgba(120,90,40,.15);
+
+  box-shadow:
+    0 8px 20px rgba(0,0,0,.08);
+
+}
+
+.kp-btn-cancelar .kp-btn-icon {
+
+  opacity: .9;
+
+}
+
+.kp-btn-editar {
+
+  background: linear-gradient(
+    180deg,
+    #ecd7b0 0%,
+    #d9bc8a 100%
+  );
+
+  color: #6a4a20;
+
+  border: 1px solid rgba(120,90,40,.15);
+
+}
+
+.kp-btn-finalizar {
+
+  background: linear-gradient(
+    180deg,
+    #dff3e0 0%,
+    #cde9cf 100%
+  );
+
+  color: #2d6a38;
+
+  border: 1px solid rgba(70,140,80,.15);
+
+}
+
+.kp-dia-cita {
+  cursor: pointer;
+}
+
+.kp-estado-confirmada {
+
+  background: rgba(59,130,246,.15);
+
+  color: #2563eb;
+
+  border: 1px solid rgba(59,130,246,.25);
+
+}
+
+.kp-btn-confirmar {
+
+  background:
+    rgba(59,130,246,.10);
+
+  border:
+    1px solid rgba(59,130,246,.25);
+
+}
+
+.kp-btn-confirmar:hover {
+
+  background:
+    rgba(59,130,246,.18);
 
 }

@@ -6,7 +6,11 @@ import PacienteModal
 import ConfirmModal
   from "../components/ConfirmModal";  
 import { useNavigate } from "react-router-dom";  
-
+import AgendarIcon from "../assets/icons/kp-icon-agendar.svg";
+import EditarIcon from "../assets/icons/kp-icon-editar.svg";
+import ArchivarIcon from "../assets/icons/kp-icon-archivar.svg";
+import ReactivarIcon
+  from "../assets/icons/kp-icon-reactivar.svg";
 
 function Pacientes() {
 
@@ -221,57 +225,96 @@ const reactivarPaciente = async (idPaciente) => {
 
     <>
 
-       <button
-        className="kp-btn-agendar"
-        onClick={() => {
+      <button
+  className="
+    kp-paciente-btn
+    kp-btn-agendar
+  "
+  onClick={() => {
 
-          navigate("/agenda", {
+    navigate("/agenda", {
 
-            state: {
+      state: {
 
-              pacienteId:
-                paciente.IdPaciente,
+        pacienteId:
+          paciente.IdPaciente,
 
-              pacienteNombre:
-                `${paciente.Nombres} ${paciente.Apellidos}`
+        pacienteNombre:
+          `${paciente.Nombres} ${paciente.Apellidos}`
 
-            }
+      }
 
-          });
+    });
 
-        }}
-      >
-        📅 Agendar
+  }}
+>
+
+  <img
+    src={AgendarIcon}
+    alt="Agendar"
+    className="kp-paciente-btn-icon"
+  />
+
+  <span>
+    Agendar
+  </span>
+
       </button>
 
       <button
-        className="kp-btn-editar"
-        onClick={() => {
+  className="
+    kp-paciente-btn
+    kp-btn-editar
+  "
+  onClick={() => {
 
-          setPacienteEditar(
-            paciente
-          );
+    setPacienteEditar(
+      paciente
+    );
 
-          setModalAbierto(true);
+    setModalAbierto(true);
 
-        }}
-      >
-        ✎ Editar
+  }}
+>
+
+  <img
+    src={EditarIcon}
+    alt="Editar"
+    className="kp-paciente-btn-icon"
+  />
+
+  <span>
+    Editar
+  </span>
+
       </button>
 
       <button
-        className="kp-btn-eliminar"
-        onClick={() => {
+  className="
+    kp-paciente-btn
+    kp-btn-archivar
+  "
+  onClick={() => {
 
-          setPacienteSeleccionado(
-            paciente
-          );
+    setPacienteSeleccionado(
+      paciente
+    );
 
-          setConfirmAbierto(true);
+    setConfirmAbierto(true);
 
-        }}
-      >
-        📦 Archivar
+  }}
+>
+
+  <img
+    src={ArchivarIcon}
+    alt="Archivar"
+    className="kp-paciente-btn-icon"
+  />
+
+  <span>
+    Archivar
+  </span>
+
       </button>
     </>
 
@@ -288,15 +331,28 @@ const reactivarPaciente = async (idPaciente) => {
   </button>
 
   <button
-    className="kp-btn-reactivar"
-    onClick={() =>
-      reactivarPaciente(
-        paciente.IdPaciente
-      )
-    }
-  >
-    ♻ Reactivar
-  </button>
+  className="
+    kp-paciente-btn
+    kp-btn-reactivar
+  "
+  onClick={() =>
+    reactivarPaciente(
+      paciente.IdPaciente
+    )
+  }
+>
+
+  <img
+    src={ReactivarIcon}
+    alt="Reactivar"
+    className="kp-paciente-btn-icon"
+  />
+
+  <span>
+    Reactivar
+  </span>
+
+</button>
 </>
 
   )}

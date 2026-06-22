@@ -6,6 +6,18 @@ import CitaModal
 import ConfirmModal
   from "../components/ConfirmModal";  
 import { useLocation } from "react-router-dom";  
+import DetalleCitaModal
+  from "../components/DetalleCitaModal";
+import OjoDetalle
+  from "../assets/icons/kp-icon-detalle.svg";
+import CancelarIcon
+  from "../assets/icons/kp-icon-cancelar.svg";
+import FinalizarIcon
+  from "../assets/icons/kp-icon-finalizar.svg";
+import CambiarIcon
+  from "../assets/icons/kp-icon-cambiar.svg"; 
+import ConfirmarIcon from "../assets/icons/kp-icon-confirmar.svg";     
+
 
 
 function Agenda() {
@@ -36,6 +48,14 @@ function fechaDesdeTexto(texto) {
   );
 
 }
+
+  const [detalleAbierto,
+    setDetalleAbierto] =
+    useState(false);
+
+  const [citaDetalle,
+    setCitaDetalle] =
+    useState(null); 
 
   const location = useLocation();
 
@@ -213,6 +233,39 @@ useEffect(() => {
 
 };
 
+const confirmarCita = async (
+  idCita
+) => {
+
+  try {
+
+    const response = await fetch(
+
+      `${API_URL}/api/citas/${idCita}/confirmar`,
+
+      {
+        method: "PUT"
+      }
+
+    );
+
+    const data =
+      await response.json();
+
+    if (data.ok) {
+
+      await cargarCitas();
+
+    }
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+};
+
   const [confirmAbierto, setConfirmAbierto] =
     useState(false);
 
@@ -248,26 +301,48 @@ useEffect(() => {
 
 };
 
-  const citasFiltradas = citas.filter((cita) => {
+  const citasFiltradas = citas
+  .filter((cita) => {
 
-  const coincideEstado =
-    filtroEstado === "TODAS"
-      ? true
-      : cita.Estado === filtroEstado;
+    const coincideEstado =
+      filtroEstado === "TODAS"
+        ? true
+        : cita.Estado === filtroEstado;
 
-  const nombreCompleto =
-    `${cita.Nombres} ${cita.Apellidos}`
-      .toLowerCase();
+    const nombreCompleto =
+      `${cita.Nombres} ${cita.Apellidos}`
+        .toLowerCase();
 
-  const coincideBusqueda =
-    nombreCompleto.includes(
-      busqueda.toLowerCase()
+    const coincideBusqueda =
+      nombreCompleto.includes(
+        busqueda.toLowerCase()
+      );
+
+    return (
+      coincideEstado &&
+      coincideBusqueda
     );
 
-  return (
-    coincideEstado &&
-    coincideBusqueda
-  );
+  })
+  .sort((a, b) => {
+
+  const prioridad = {
+    SEGUIMIENTO: 1,
+    PROGRAMADA: 2,
+    CONFIRMADA: 3,
+    FINALIZADA: 4,
+    CANCELADA: 5
+  };
+
+  const diferenciaEstado =
+  (prioridad[a.Estado?.trim().toUpperCase()] || 99) -
+  (prioridad[b.Estado?.trim().toUpperCase()] || 99);
+
+  if (diferenciaEstado !== 0) {
+    return diferenciaEstado;
+  }
+
+  return new Date(a.Fecha) - new Date(b.Fecha);
 
 });
 
@@ -277,7 +352,10 @@ const citasDelDia =
       (cita) =>
         cita.Fecha?.substring(0, 10) ===
         fechaSeleccionada &&
-        cita.Estado === "PROGRAMADA"
+        [
+          "PROGRAMADA",
+          "CONFIRMADA"
+        ].includes(cita.Estado)
     )
     .sort((a, b) =>
       a.Hora.localeCompare(b.Hora)
@@ -655,9 +733,16 @@ for (
   citasDelDia.map((cita) => (
 
     <div
-      key={cita.IdCita}
-      className="kp-dia-cita"
-    >
+  key={cita.IdCita}
+  className="kp-dia-cita"
+  onClick={() => {
+
+    setCitaDetalle(cita);
+
+    setDetalleAbierto(true);
+
+  }}
+>
 
       <div className="kp-dia-hora">
 
@@ -678,6 +763,150 @@ for (
         ✧ {cita.Motivo}
 
       </div>
+
+       <div className={`kp-estado-badge kp-estado-${cita.Estado?.toLowerCase()}`}>
+    {cita.Estado}
+  </div>
+
+      <div className="kp-cita-botones">
+
+  <button
+    className="
+      kp-btn-accion
+      kp-btn-editar
+    "
+    onClick={(e) => {
+
+      e.stopPropagation();
+
+      setCitaEditar(cita);
+
+      setModalAbierto(true);
+
+    }}
+  >
+
+    <img
+      src={CambiarIcon}
+      alt="Cambiar"
+      className="kp-btn-icon"
+    />
+
+    <span>
+      Cambiar
+    </span>
+
+  </button>
+
+  {cita.Estado === "PROGRAMADA" && (
+
+  <button
+    className="
+      kp-btn-accion
+      kp-btn-confirmar
+    "
+    onClick={() =>
+      confirmarCita(
+        cita.IdCita
+      )
+    }
+  >
+
+    <img
+      src={ConfirmarIcon}
+      alt="Confirmar"
+      className="kp-btn-icon"
+    />
+
+    <span>
+      Confirmar
+    </span>
+
+  </button>
+
+)}
+
+  {cita.Estado === "CONFIRMADA" && (
+
+    <button
+  className="
+    kp-btn-accion
+    kp-btn-finalizar
+  "
+  onClick={() =>
+    finalizarCita(
+      cita.IdCita
+    )
+  }
+>
+
+  <img
+    src={FinalizarIcon}
+    alt="Finalizar"
+    className="kp-btn-icon"
+  />
+
+  <span>
+    Finalizar
+  </span>
+
+</button>
+
+  )}
+
+<button
+    className="
+      kp-btn-accion
+      kp-btn-cancelar
+    "
+    onClick={() => {
+
+      setCitaSeleccionada(cita);
+
+      setConfirmAbierto(true);
+
+    }}
+  >
+
+    <img
+      src={CancelarIcon}
+      alt="Cancelar"
+      className="kp-btn-icon"
+    />
+
+    <span>
+      Cancelar
+    </span>
+
+  </button>
+
+  <button
+    className="
+      kp-btn-accion
+      kp-btn-detalle
+    "
+    onClick={() => {
+
+      setCitaDetalle(cita);
+
+      setDetalleAbierto(true);
+
+    }}
+  >
+
+    <img
+      src={OjoDetalle}
+      alt="Detalle"
+      className="kp-btn-icon"
+    />
+
+    <span>
+      Detalle
+    </span>
+
+  </button>
+
+</div>
 
     </div>
 
@@ -891,12 +1120,19 @@ for (
 
       citasFiltradas.map((cita) => {
 
-  const cantidadBotones =
-    cita.Estado === "REALIZADA"
-      ? 3
-      : cita.Estado?.trim().toUpperCase() !== "CANCELADA"
-      ? 2
-      : 1;
+  const estado =
+  cita.Estado
+    ?.trim()
+    .toUpperCase();
+
+const cantidadBotones =
+
+  estado === "CANCELADA" ||
+  estado === "FINALIZADA"
+
+    ? 1
+
+    : 4;      
 
   return (
 
@@ -936,72 +1172,174 @@ for (
         ✧ {cita.Motivo}
       </p>
 
-      <div
-        className={`kp-estado-badge ${
-          cita.Estado?.trim().toUpperCase() === "CANCELADA"
-            ? "estado-cancelada"
-            : cita.Estado?.trim().toUpperCase() === "REALIZADA"
-            ? "estado-realizada"
-            : cita.Estado?.trim().toUpperCase() === "FINALIZADA"
-            ? "estado-finalizada"
-            : "estado-programada"
-        }`}
-      >
-        {cita.Estado}
-      </div>
+     <div
+  className={`kp-estado-badge ${
+    cita.Estado?.trim().toUpperCase() === "CANCELADA"
+      ? "estado-cancelada"
+      : cita.Estado?.trim().toUpperCase() === "SEGUIMIENTO"
+      ? "estado-seguimiento"
+      : cita.Estado?.trim().toUpperCase() === "FINALIZADA"
+      ? "estado-finalizada"
+      : cita.Estado?.trim().toUpperCase() === "CONFIRMADA"
+      ? "estado-confirmada"
+      : "estado-programada"
+  }`}
+>
+  {cita.Estado}
+</div>
 
       <div
-        className={`kp-cita-botones kp-botones-${cantidadBotones}`}
-      >
+  className={`kp-cita-botones kp-botones-${cantidadBotones}`}
+>
 
-        <button
-          className="kp-btn-editar"
-          onClick={() => {
+  {estado !== "CANCELADA" &&
+   estado !== "FINALIZADA" && (
 
-            setCitaEditar(cita);
+    <button
+  className="
+    kp-btn-accion
+    kp-btn-editar
+  "
+  onClick={() => {
 
-            setModalAbierto(true);
+    setCitaEditar(cita);
 
-          }}
-        >
-          ✎ Editar
-        </button>
+    setModalAbierto(true);
 
-        {cita.Estado === "REALIZADA" && (
+  }}
+>
 
-          <button
-            className="kp-btn-finalizar"
-            onClick={() =>
-              finalizarCita(
-                cita.IdCita
-              )
-            }
-          >
+  <img
+    src={CambiarIcon}
+    alt="Cambiar"
+    className="kp-btn-icon"
+  />
 
-            ✔ Finalizar
+  <span>
+    Cambiar
+  </span>
 
-          </button>
+</button>
 
-        )}
+  )}
 
-        {cita.Estado?.trim().toUpperCase() !== "CANCELADA" && (
+  {cita.Estado === "PROGRAMADA" && (
 
-          <button
-            className="kp-btn-cancelar"
-            onClick={() => {
+  <button
+    className="
+      kp-btn-accion
+      kp-btn-confirmar
+    "
+    onClick={() =>
+      confirmarCita(
+        cita.IdCita
+      )
+    }
+  >
 
-              setCitaSeleccionada(cita);
+    <img
+      src={ConfirmarIcon}
+      alt="Confirmar"
+      className="kp-btn-icon"
+    />
 
-              setConfirmAbierto(true);
+    <span>
+      Confirmar
+    </span>
 
-            }}
-          >
-            ⊘ Cancelar
-          </button>
+  </button>
 
-        )}
+)}
 
-      </div>
+  {(
+  cita.Estado === "CONFIRMADA" ||
+  cita.Estado === "SEGUIMIENTO"
+) && (
+
+    <button
+  className="
+    kp-btn-accion
+    kp-btn-finalizar
+  "
+  onClick={() =>
+    finalizarCita(
+      cita.IdCita
+    )
+  }
+>
+
+  <img
+    src={FinalizarIcon}
+    alt="Finalizar"
+    className="kp-btn-icon"
+  />
+
+  <span>
+    Finalizar
+  </span>
+
+</button>
+
+  )}
+
+ {estado !== "CANCELADA" &&
+ estado !== "FINALIZADA" && (
+
+  <button
+    className="
+      kp-btn-accion
+      kp-btn-cancelar
+    "
+    onClick={() => {
+
+      setCitaSeleccionada(cita);
+
+      setConfirmAbierto(true);
+
+    }}
+  >
+
+    <img
+      src={CancelarIcon}
+      alt="Cancelar"
+      className="kp-btn-icon"
+    />
+
+    <span>
+      Cancelar
+    </span>
+
+  </button>
+
+)}
+
+  <button
+    className="
+      kp-btn-accion
+      kp-btn-detalle
+    "
+    onClick={() => {
+
+      setCitaDetalle(cita);
+
+      setDetalleAbierto(true);
+
+    }}
+  >
+
+    <img
+      src={OjoDetalle}
+      alt="Detalle"
+      className="kp-btn-icon"
+    />
+
+    <span>
+      Detalle
+    </span>
+
+  </button>
+
+</div>
 
     </div>
 
@@ -1284,6 +1622,19 @@ const esFestivo =
     setCitaSeleccionada(null);
 
   }}
+/>
+
+<DetalleCitaModal
+  abierto={detalleAbierto}
+  cita={citaDetalle}
+  onCerrar={() => {
+
+    setDetalleAbierto(false);
+
+    setCitaDetalle(null);
+
+  }}
+  onActualizado={cargarCitas}
 />
 
       </div>

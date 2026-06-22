@@ -84,28 +84,11 @@
 .kp-paciente-botones {
 
   display: flex;
-  gap: 12px;
+  gap: 6px;
   margin-top: 20px;
 
 }
 
-.kp-btn-agendar,
-.kp-btn-editar,
-.kp-btn-eliminar {
-
-  min-width: 140px;
-
-  border: none;
-
-  border-radius: 10px;
-
-  padding: 12px 20px;
-
-  cursor: pointer;
-
-  font-weight: 600;
-
-}
 
 .kp-btn-agendar {
 
@@ -117,7 +100,8 @@
 
   color: white;
 
-  border: 1px solid rgba(120,90,40,0.20);
+  border:
+    1px solid rgba(120,90,40,0.20);
 
 }
 
@@ -202,25 +186,11 @@
 
   .kp-paciente-botones {
 
-    display: grid;
+    display: flex;
 
-    grid-template-columns: repeat(3, 1fr);
+    justify-content: flex-end;
 
     gap: 6px;
-
-  }
-
-  .kp-btn-agendar,
-  .kp-btn-editar,
-  .kp-btn-eliminar {
-
-    min-width: 0;
-
-    width: 100%;
-
-    padding: 10px 4px;
-
-    font-size: 13px;
 
   }
 
@@ -278,43 +248,6 @@
   background: rgba(255,255,255,0.06);
 
   color: rgba(255,255,255,0.8);
-
-}
-
-.kp-btn-reactivar {
-
-  min-width: 140px;
-
-  border: none;
-
-  border-radius: 10px;
-
-  padding: 12px 20px;
-
-  cursor: pointer;
-
-  font-weight: 600;
-
-  color: white;
-
-  background: linear-gradient(
-    180deg,
-    #8abf98 0%,
-    #73ab82 100%
-  );
-
-  transition:
-    transform .25s ease,
-    box-shadow .25s ease;
-
-}
-
-.kp-btn-reactivar:hover {
-
-  transform: translateY(-1px);
-
-  box-shadow:
-    0 6px 18px rgba(0,0,0,.18);
 
 }
 
@@ -404,24 +337,6 @@
 
   .kp-paciente-botones {
 
-  gap: 8px;
-
-}
-
-.kp-btn-agendar,
-.kp-btn-editar,
-.kp-btn-eliminar {
-
-  min-width: 110px;
-  padding: 10px 16px;
-  width: auto;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
   gap: 6px;
 
 }
@@ -434,6 +349,111 @@
 
 
 }
-
- 
   
+
+.kp-btn-agendar {
+
+  background: linear-gradient(
+    180deg,
+    #9bc6a4 0%,
+    #7eb18b 100%
+  );
+
+  color: #2f1c12;
+
+  border:
+    1px solid rgba(90,130,95,.30);
+
+}
+
+.kp-btn-editar {
+
+  background: linear-gradient(
+    180deg,
+    #cba97a 0%,
+    #b98e5f 100%
+  );
+
+  color: #2f1c12;
+
+}
+.kp-btn-archivar {
+
+  background: linear-gradient(
+    180deg,
+    #d8b0a9 0%,
+    #c8968d 100%
+  );
+
+  color: #4d1f1f;
+
+}
+
+.kp-paciente-btn {
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 3px;
+
+  min-width: 60px;
+
+  min-height: 62px;
+
+  padding: 10px;
+
+  border-radius: 18px;
+
+  cursor: pointer;
+
+  border: none;
+
+  transition:
+    transform .25s ease,
+    box-shadow .25s ease;
+
+}
+
+.kp-paciente-btn-icon {
+
+  width: 26px;
+
+  height: 26px;
+
+}
+
+.kp-paciente-btn span {
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+  line-height: 1.1;
+
+}
+
+.kp-paciente-btn {
+
+  width: fit-content;
+
+}
+
+.kp-btn-reactivar {
+
+  background: linear-gradient(
+    180deg,
+    #9bc6a4 0%,
+    #7eb18b 100%
+  );
+
+  color: #2f1c12;
+
+  border:
+    1px solid rgba(90,130,95,.30);
+
+}

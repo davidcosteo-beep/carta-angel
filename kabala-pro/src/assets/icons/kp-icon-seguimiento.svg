@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+
+  <!-- pergamino -->
+
+  <path d="M7 5h8"></path>
+
+  <path d="M7 5a2 2 0 0 0 0 4"></path>
+
+  <path d="M7 9v8"></path>
+
+  <path d="M7 17a2 2 0 0 0 2 2h6"></path>
+
+  <path d="M15 5a2 2 0 0 1 2 2v8"></path>
+
+  <!-- líneas -->
+
+  <path d="M10 9h3"></path>
+
+  <path d="M10 12h3"></path>
+
+  <!-- pluma -->
+
+  <path d="M13 17l4-4"></path>
+
+  <path d="M16 13l2 2"></path>
+
+  <path d="M12.5 17.5l1.5-.5-.5-1.5z"></path>
+
+</svg>

@@ -3,7 +3,9 @@ import "./CitaModal.css";
 import { API_URL } from "../config/api";
 import ConfirmModal
   from "./ConfirmModal";
-  
+import PacienteModal
+  from "./PacienteModal";
+
 
 function CitaModal({
   abierto,
@@ -100,6 +102,10 @@ const [mensajeError, setMensajeError] =
 
 const [errorAbierto, setErrorAbierto] =
   useState(false);
+
+ const [modalPacienteAbierto,
+  setModalPacienteAbierto] =
+  useState(false); 
 
 const guardarCita = async () => {
 
@@ -330,7 +336,9 @@ return (
                 <button
                   className="kp-btn-crear-paciente"
                   onClick={() => {
-                    // aquí irá la lógica
+
+                    setModalPacienteAbierto(true);
+
                   }}
                 >
                   ➕ Crear paciente
@@ -451,6 +459,25 @@ return (
             </div>
 
     </div>
+
+   <PacienteModal
+      abierto={modalPacienteAbierto}
+      paciente={null}
+      onCerrar={() => {
+        setModalPacienteAbierto(false);
+      }}
+      onPacienteGuardado={async () => {
+
+        await cargarPacientes();
+
+        console.log("Pacientes recargados");
+
+        setBusquedaPaciente("");
+
+        setModalPacienteAbierto(false);
+
+      }}
+    /> 
 
     <ConfirmModal
       abierto={errorAbierto}
