@@ -693,6 +693,28 @@
 
 }
 
+@media (min-width: 769px) {
+
+.kp-festivo-nombre {
+
+  margin-top: 24px;
+
+  margin-bottom: auto;
+
+  font-size: 12px;
+
+  line-height: 1.2;
+
+  text-align: center;
+
+  color: #9b5a25;
+
+  font-weight: 600;
+
+}
+
+}
+
 @media (min-width: 1024px) {
 
 .kp-btn-accion {
@@ -718,24 +740,6 @@
   display: none;
 
 }  
-
-.kp-festivo-nombre {
-
-  margin-top: 24px;
-
-  margin-bottom: auto;
-
-  font-size: 12px;
-
-  line-height: 1.2;
-
-  text-align: center;
-
-  color: #9b5a25;
-
-  font-weight: 600;
-
-}
 
   .kp-buscador-pacientes {
 

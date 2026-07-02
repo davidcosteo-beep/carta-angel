@@ -1,7 +1,13 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useNavigate
+} from "react-router-dom";
 import { useState, useEffect } from "react";
 import SplashScreen from "./components/SplashScreen";
 import Login from "./pages/Login";
+import ConfigServerPage from "./pages/ConfigServerPage";
 import GenerarCarta from "./pages/GenerarCarta";
 import Configuracion from "./pages/Configuracion";
 import Historial from "./pages/Historial";
@@ -71,25 +77,89 @@ if(mostrarSplash){
   return <SplashScreen/>
 }
 
-  if(!logueado){
+  return(
+
+    <BrowserRouter>
+
+      {!logueado ? (
+        <PublicRoutes
+          setLogueado={setLogueado}
+        />
+      ) : (
+        <PrivateRoutes
+          setLogueado={setLogueado}
+          auraAnimation={auraAnimation}
+        />
+      )}
+
+    </BrowserRouter>
+
+  )
+
+}
+
+function PublicRoutes({
+  setLogueado
+}) {
+
+  const navigate = useNavigate();
 
   return (
 
-    <div className="page-transition">
+    <Routes>
 
-      <Login onLogin={setLogueado}/>
+      <Route
+        path="/configurar-servidor"
+        element={
+          <div className="page-transition">
 
-    </div>
+            <ConfigServerPage
+              onVolver={() =>
+                navigate("/")
+              }
+              onGuardado={() => {
+
+                navigate("/");
+
+                window.location.reload();
+
+              }}
+            />
+
+          </div>
+        }
+      />
+
+      <Route
+        path="*"
+        element={
+          <div className="page-transition">
+
+            <Login
+              onLogin={setLogueado}
+              onConfigServer={() =>
+                navigate("/configurar-servidor")
+              }
+            />
+
+          </div>
+        }
+      />
+
+    </Routes>
 
   );
 
 }
-  
+
+function PrivateRoutes({
+  setLogueado,
+  auraAnimation
+}) {
+
   return(
     <>
     <style>{auraAnimation}</style>
-
-    <BrowserRouter>
 
       <Menu
   onLogout={() => {
@@ -149,8 +219,6 @@ if(mostrarSplash){
 />
 
       </Routes>
-
-    </BrowserRouter>
 
     </>
   )

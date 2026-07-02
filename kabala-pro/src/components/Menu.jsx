@@ -6,6 +6,8 @@ function Menu({ onLogout }){
 
   const location = useLocation();
   const menuRef = useRef(null);
+  const menuButtonRef = useRef(null);
+  const menuLinksRef = useRef(null);
   const [style, setStyle] = useState({ left: 0, width: 0 });
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -22,6 +24,37 @@ function Menu({ onLogout }){
     }
   }, [location]);
 
+  useEffect(() => {
+    if(!menuOpen){
+      return;
+    }
+
+    const cerrarSiTocaFuera = (event) => {
+      const target = event.target;
+
+      if(
+        menuLinksRef.current?.contains(target) ||
+        menuButtonRef.current?.contains(target)
+      ){
+        return;
+      }
+
+      setMenuOpen(false);
+    };
+
+    document.addEventListener(
+      "pointerdown",
+      cerrarSiTocaFuera
+    );
+
+    return () => {
+      document.removeEventListener(
+        "pointerdown",
+        cerrarSiTocaFuera
+      );
+    };
+  }, [menuOpen]);
+
   return(
 
     <div className="menu">
@@ -29,6 +62,7 @@ function Menu({ onLogout }){
      <div className="menu-left" ref={menuRef}>
 
   <button
+    ref={menuButtonRef}
     className="menu-mobile-btn"
     onClick={() => setMenuOpen(!menuOpen)}
   >
@@ -40,7 +74,10 @@ function Menu({ onLogout }){
   <div className="menu-subtitle">Sistema Angelical</div>
 </div>
 
-  <div className={`menu-links ${menuOpen ? "open" : ""}`}>
+  <div
+    ref={menuLinksRef}
+    className={`menu-links ${menuOpen ? "open" : ""}`}
+  >
 
  <div
   onClick={() => {

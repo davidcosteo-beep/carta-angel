@@ -31,6 +31,17 @@ app.get('/', (req, res) => {
 
 });
 
+app.get('/health', (req, res) => {
+
+  res.json({
+    ok: true,
+    service: 'kabala-pro-api',
+    status: 'running',
+    timestamp: new Date().toISOString()
+  });
+
+});
+
 app.use('/api/auth', authRoutes);
 
 app.use('/api/pdf', pdfRoutes);

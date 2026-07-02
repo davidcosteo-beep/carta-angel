@@ -5,6 +5,7 @@ import {
 } from 'react';
 
 import { loginRequest } from '../services/authService';
+import { getApiUrl } from '../config/api';
 
 import './Login.css';
 
@@ -17,7 +18,10 @@ import {
   Shield
 } from 'lucide-react';
 
-export default function Login({ onLogin }) {
+export default function Login({
+  onLogin,
+  onConfigServer
+}) {
 
   const [mensaje, setMensaje] = useState("");
 
@@ -38,6 +42,9 @@ export default function Login({ onLogin }) {
   const passwordRef = useRef(null);
 
   const ingresarRef = useRef(null);
+
+  const servidorConfigurado =
+    Boolean(getApiUrl());
 
   const handleLogin = async (e) => {
 
@@ -89,7 +96,9 @@ setTimeout(() => {
 
     console.error(error);
 
-    setMensaje('Error de conexión');
+    setMensaje(
+      'Error de conexion. Revisa la configuracion del servidor.'
+    );
 
     setTipoMensaje('error');
 
@@ -272,6 +281,16 @@ setTimeout(() => {
         </button>
 
         {
+          !servidorConfigurado && (
+
+            <div className="login-message error">
+              Servidor API no configurado.
+            </div>
+
+          )
+        }
+
+        {
   mensaje && (
 
     <div
@@ -284,6 +303,22 @@ setTimeout(() => {
 
   )
 }
+
+        <button
+          type="button"
+          onClick={onConfigServer}
+          style={{
+            marginTop: "16px",
+            width: "100%",
+            background: "transparent",
+            border: "none",
+            color: "#9b7650",
+            fontSize: "13px",
+            cursor: "pointer"
+          }}
+        >
+          Configurar servidor
+        </button>
 
         {/* DIVIDER */}
 

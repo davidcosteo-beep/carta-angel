@@ -67,7 +67,7 @@ function fechaDesdeTexto(texto) {
   const [citaEditar, setCitaEditar] =
   useState(null);
 
-  const esDesktop = window.innerWidth >= 1024;
+  const esDesktop = window.innerWidth > 768;
 
   const [vistaAgenda, setVistaAgenda] =
   useState("LISTA");
