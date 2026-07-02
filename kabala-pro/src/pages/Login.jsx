@@ -54,8 +54,6 @@ export default function Login({ onLogin }) {
       password
     );
 
-    console.log(data);
-
     if (data.ok) {
 
       setMensaje('✦ Acceso concedido ✦');

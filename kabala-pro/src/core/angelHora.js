@@ -6,7 +6,7 @@ export function calcularAngelPorHora(angelBase, horaString) {
 
   if (!horaString) return null;
 
-  const [horaTexto, minutosTexto] =
+  const [horaTexto] =
   horaString.split(":");
 
 const hora =

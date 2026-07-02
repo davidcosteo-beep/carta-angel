@@ -17,7 +17,14 @@ const connectDB = async () => {
 
   try {
 
-    console.log(config);
+    if (process.env.NODE_ENV !== 'production') {
+
+      console.log({
+        server: config.server,
+        database: config.database
+      });
+
+    }
 
     await sql.connect(config);
 
@@ -35,3 +42,4 @@ module.exports = {
   sql,
   connectDB
 };
+

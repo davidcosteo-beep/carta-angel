@@ -2341,12 +2341,6 @@ page.drawText(tituloAngeologo, {
 }
 
 
-const nombreArchivo = `
-Pergamino_${carta.angel}_${nombreTexto || "PACIENTE"}
-`
-.replace(/[\\/:*?"<>|]/g, "_")
-.replace(/\s+/g, "_");
-
 const pdfBytes = await pdfDoc.save();
 
 return pdfBytes;}

@@ -20,7 +20,7 @@ export const isTokenValid = () => {
 
     return payload.exp > now;
 
-  } catch (error) {
+  } catch {
 
     return false;
 
