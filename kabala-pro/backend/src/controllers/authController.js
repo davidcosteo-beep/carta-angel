@@ -41,11 +41,28 @@ const login = async (req, res) => {
 
     }
 
+    const rolNormalizado =
+      String(usuario.rol || "")
+        .trim()
+        .toUpperCase();
+
+    const rolesPermitidos = [
+      "TECNICO",
+      "TERAPEUTA",
+      "AUXILIAR"
+    ];
+
+    const rolUsuario =
+      rolesPermitidos.includes(rolNormalizado)
+        ? rolNormalizado
+        : "TERAPEUTA";
+
     const token = jwt.sign(
       {
         id: usuario.id,
         correo: usuario.correo,
-        premium: usuario.premium
+        premium: usuario.premium,
+        rol: rolUsuario
       },
       process.env.JWT_SECRET,
       {
@@ -63,7 +80,8 @@ const login = async (req, res) => {
         id: usuario.id,
         nombre: usuario.nombre,
         correo: usuario.correo,
-        premium: usuario.premium
+        premium: usuario.premium,
+        rol: rolUsuario
       }
 
     });
