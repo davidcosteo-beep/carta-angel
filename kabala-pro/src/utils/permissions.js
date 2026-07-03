@@ -30,6 +30,29 @@ export const PRIVATE_ROUTE_PERMISSIONS = {
   ]
 };
 
+export const INTERNAL_ACTION_PERMISSIONS = {
+  FINALIZAR_CITA: [
+    TECNICO,
+    TERAPEUTA
+  ],
+  SEGUIMIENTO: [
+    TECNICO,
+    TERAPEUTA
+  ],
+  PACIENTES_ARCHIVADOS: [
+    TECNICO,
+    TERAPEUTA
+  ],
+  ARCHIVAR_PACIENTE: [
+    TECNICO,
+    TERAPEUTA
+  ],
+  REACTIVAR_PACIENTE: [
+    TECNICO,
+    TERAPEUTA
+  ]
+};
+
 export const canAccessRole = (
   rol,
   allowedRoles

@@ -17,10 +17,34 @@ import FinalizarIcon
 import CambiarIcon
   from "../assets/icons/kp-icon-cambiar.svg"; 
 import ConfirmarIcon from "../assets/icons/kp-icon-confirmar.svg";     
+import { getUserRole } from "../utils/auth";
+import { isAuxiliar } from "../utils/roles";
+import {
+  INTERNAL_ACTION_PERMISSIONS,
+  canAccessRole
+} from "../utils/permissions";
 
 
 
 function Agenda() {
+
+  const userRole = getUserRole();
+
+  const esAuxiliar = isAuxiliar(userRole);
+
+  const puedeGestionarSeguimiento =
+    !esAuxiliar &&
+    canAccessRole(
+      userRole,
+      INTERNAL_ACTION_PERMISSIONS.SEGUIMIENTO
+    );
+
+  const puedeFinalizarCita =
+    !esAuxiliar &&
+    canAccessRole(
+      userRole,
+      INTERNAL_ACTION_PERMISSIONS.FINALIZAR_CITA
+    );
 
   function fechaLocal(fecha) {
 
@@ -203,6 +227,12 @@ useEffect(() => {
   const finalizarCita = async (
   idCita
 ) => {
+
+  if (!puedeFinalizarCita) {
+
+    return;
+
+  }
 
   try {
 
@@ -826,7 +856,8 @@ for (
 
 )}
 
-  {cita.Estado === "CONFIRMADA" && (
+  {puedeFinalizarCita &&
+  cita.Estado === "CONFIRMADA" && (
 
     <button
   className="
@@ -1132,7 +1163,17 @@ const cantidadBotones =
 
     ? 1
 
-    : 4;      
+    : 2 +
+      (cita.Estado === "PROGRAMADA" ? 1 : 0) +
+      (
+        puedeFinalizarCita &&
+        (
+          cita.Estado === "CONFIRMADA" ||
+          cita.Estado === "SEGUIMIENTO"
+        )
+          ? 1
+          : 0
+      );      
 
   return (
 
@@ -1252,8 +1293,11 @@ const cantidadBotones =
 )}
 
   {(
+  puedeFinalizarCita &&
+  (
   cita.Estado === "CONFIRMADA" ||
   cita.Estado === "SEGUIMIENTO"
+  )
 ) && (
 
     <button
@@ -1608,6 +1652,9 @@ const esFestivo =
   onCitaGuardada={
     cargarCitas
   }
+  puedeGestionarSeguimiento={
+    puedeGestionarSeguimiento
+  }
 />
 
 <ConfirmModal
@@ -1635,6 +1682,9 @@ const esFestivo =
 
   }}
   onActualizado={cargarCitas}
+  puedeGestionarSeguimiento={
+    puedeGestionarSeguimiento
+  }
 />
 
       </div>

@@ -11,10 +11,36 @@ import EditarIcon from "../assets/icons/kp-icon-editar.svg";
 import ArchivarIcon from "../assets/icons/kp-icon-archivar.svg";
 import ReactivarIcon
   from "../assets/icons/kp-icon-reactivar.svg";
+import { getUserRole } from "../utils/auth";
+import { isAuxiliar } from "../utils/roles";
+import {
+  INTERNAL_ACTION_PERMISSIONS,
+  canAccessRole
+} from "../utils/permissions";
 
 function Pacientes() {
 
   const navigate = useNavigate();
+  const userRole = getUserRole();
+  const esAuxiliar = isAuxiliar(userRole);
+  const puedeVerArchivados =
+    !esAuxiliar &&
+    canAccessRole(
+      userRole,
+      INTERNAL_ACTION_PERMISSIONS.PACIENTES_ARCHIVADOS
+    );
+  const puedeArchivarPaciente =
+    !esAuxiliar &&
+    canAccessRole(
+      userRole,
+      INTERNAL_ACTION_PERMISSIONS.ARCHIVAR_PACIENTE
+    );
+  const puedeReactivarPaciente =
+    !esAuxiliar &&
+    canAccessRole(
+      userRole,
+      INTERNAL_ACTION_PERMISSIONS.REACTIVAR_PACIENTE
+    );
 
   const [modalAbierto, setModalAbierto] =
   useState(false);
@@ -45,7 +71,8 @@ function Pacientes() {
 
     try {
 
-      const url = verArchivados
+      const url = puedeVerArchivados &&
+      verArchivados
       ? `${API_URL}/api/pacientes/archivados`
       : `${API_URL}/api/pacientes`;
 
@@ -68,9 +95,18 @@ function Pacientes() {
 
     }
 
-  }, [verArchivados]);
+  }, [
+    verArchivados,
+    puedeVerArchivados
+  ]);
 
  const archivarPaciente = async (idPaciente) => {
+
+  if (!puedeArchivarPaciente) {
+
+    return;
+
+  }
 
   try {
 
@@ -99,6 +135,11 @@ function Pacientes() {
 
 const reactivarPaciente = async (idPaciente) => {
 
+  if (!puedeReactivarPaciente) {
+
+    return;
+
+  }
 
   try {
 
@@ -131,6 +172,27 @@ const reactivarPaciente = async (idPaciente) => {
 
 }, [cargarPacientes]);
 
+ useEffect(() => {
+
+  if (
+    !puedeVerArchivados &&
+    verArchivados
+  ) {
+
+    const animationFrameId = requestAnimationFrame(
+      () => setVerArchivados(false)
+    );
+
+    return () =>
+      cancelAnimationFrame(animationFrameId);
+
+  }
+
+}, [
+  puedeVerArchivados,
+  verArchivados
+]);
+
   return (
 
     <div className="page-transition">
@@ -161,12 +223,16 @@ const reactivarPaciente = async (idPaciente) => {
       Activos
     </button>
 
+    {puedeVerArchivados && (
+
     <button
       className={verArchivados ? "kp-tab-activa" : ""}
       onClick={() => setVerArchivados(true)}
     >
       Archivados
     </button>
+
+    )}
 
   </div>
 
@@ -289,6 +355,8 @@ const reactivarPaciente = async (idPaciente) => {
 
       </button>
 
+      {puedeArchivarPaciente && (
+
       <button
   className="
     kp-paciente-btn
@@ -316,6 +384,8 @@ const reactivarPaciente = async (idPaciente) => {
   </span>
 
       </button>
+
+      )}
     </>
 
   ) : (
@@ -329,6 +399,8 @@ const reactivarPaciente = async (idPaciente) => {
   >
     ✎ Editar
   </button>
+
+  {puedeReactivarPaciente && (
 
   <button
   className="
@@ -353,6 +425,8 @@ const reactivarPaciente = async (idPaciente) => {
   </span>
 
 </button>
+
+)}
 </>
 
   )}

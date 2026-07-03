@@ -13,7 +13,8 @@ function CitaModal({
   pacientePreseleccionado,
   fechaPreseleccionada,
   onCerrar,
-  onCitaGuardada
+  onCitaGuardada,
+  puedeGestionarSeguimiento = true
 }) {
 
   const [pacientes, setPacientes] =
@@ -132,6 +133,23 @@ const guardarCita = async () => {
 
     }
 
+    const citaPayload = {
+
+      idPaciente,
+      fecha,
+      hora,
+      motivo,
+      observaciones
+
+    };
+
+    if (puedeGestionarSeguimiento) {
+
+      citaPayload.fechaSeguimiento =
+        fechaSeguimiento;
+
+    }
+
     const response = await fetch(
 
       cita
@@ -148,16 +166,7 @@ const guardarCita = async () => {
           "Content-Type": "application/json"
         },
 
-        body: JSON.stringify({
-
-          idPaciente,
-          fecha,
-          hora,
-          motivo,
-          observaciones,
-          fechaSeguimiento
-
-        })
+        body: JSON.stringify(citaPayload)
 
       }
 
@@ -414,6 +423,8 @@ return (
 
 </div>
 
+{puedeGestionarSeguimiento && (
+
 <div className="kp-form-group">
 
   <label>
@@ -431,6 +442,8 @@ return (
   />
 
 </div>
+
+)}
 
         <div className="kp-modal-actions">
 

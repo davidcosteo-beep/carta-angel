@@ -1,4 +1,8 @@
-import { useState, useEffect } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback
+} from "react";
 import "./DetalleCitaModal.css";
 import { API_URL } from "../config/api";
 import ConfirmModal from "./ConfirmModal";
@@ -11,7 +15,8 @@ function DetalleCitaModal({
   abierto,
   cita,
   onCerrar,
-  onActualizado
+  onActualizado,
+  puedeGestionarSeguimiento = true
 }) {
 
 const [mensaje, setMensaje] =
@@ -54,6 +59,12 @@ const [
 );
 
   const guardarSeguimiento = async () => {
+
+  if (!puedeGestionarSeguimiento) {
+
+    return;
+
+  }
 
   try {
 
@@ -113,7 +124,23 @@ const [
 
 
 
-const cargarSeguimientos = async () => {
+const cargarSeguimientos = useCallback(async () => {
+
+    if (!puedeGestionarSeguimiento) {
+
+      setSeguimientos((actual) =>
+        actual.length ? [] : actual
+      );
+
+      return;
+
+    }
+
+    if (!cita?.IdCita) {
+
+      return;
+
+    }
 
     try {
 
@@ -141,13 +168,31 @@ const cargarSeguimientos = async () => {
 
     }
 
-};
+}, [
+  cita,
+  puedeGestionarSeguimiento
+]);
 
 useEffect(() => {
 
+  if (!puedeGestionarSeguimiento) {
+
+    const animationFrameId = requestAnimationFrame(
+      () =>
+        setSeguimientos((actual) =>
+          actual.length ? [] : actual
+        )
+    );
+
+    return () =>
+      cancelAnimationFrame(animationFrameId);
+
+  }
+
   if (
     abierto &&
-    cita?.IdCita
+    cita?.IdCita &&
+    puedeGestionarSeguimiento
   ) {
 
     cargarSeguimientos();
@@ -157,10 +202,17 @@ useEffect(() => {
 }, [
   abierto,
   cita?.IdCita,
+  puedeGestionarSeguimiento,
   cargarSeguimientos
 ]);
 
 const finalizarSeguimiento = async () => {
+
+  if (!puedeGestionarSeguimiento) {
+
+    return;
+
+  }
 
   try {
 
@@ -200,6 +252,12 @@ const finalizarSeguimiento = async () => {
 };
 
 const iniciarDictado = () => {
+
+  if (!puedeGestionarSeguimiento) {
+
+    return;
+
+  }
 
   const SpeechRecognition =
     window.SpeechRecognition ||
@@ -320,6 +378,8 @@ const iniciarDictado = () => {
           {cita.Motivo || "Sin información"}
         </div>
 
+        {puedeGestionarSeguimiento && (
+
         <p>
           <strong>Fecha seguimiento:</strong>{" "}
           {
@@ -332,6 +392,8 @@ const iniciarDictado = () => {
               : "No aplica"
           }
         </p>
+
+        )}
 
        {cita.Estado !== "SEGUIMIENTO" && (
 
@@ -351,6 +413,10 @@ const iniciarDictado = () => {
   </>
 
 )}
+
+{puedeGestionarSeguimiento && (
+
+<>
 
 <h3>
   📜 Historial de Seguimiento
@@ -458,9 +524,14 @@ const iniciarDictado = () => {
 
 </div>        
 
+</>
+
+)}
+
         
 
-        {cita.Estado === "SEGUIMIENTO" && (
+        {puedeGestionarSeguimiento &&
+        cita.Estado === "SEGUIMIENTO" && (
 
         <>
 
@@ -494,7 +565,8 @@ const iniciarDictado = () => {
 
         )}
 
-        {cita.Estado === "SEGUIMIENTO" && (
+        {puedeGestionarSeguimiento &&
+        cita.Estado === "SEGUIMIENTO" && (
 
         <div className="kp-seguimiento-actions">
 
@@ -541,7 +613,8 @@ const iniciarDictado = () => {
 
     </div>
 
-    {detalleAbierto &&
+    {puedeGestionarSeguimiento &&
+    detalleAbierto &&
   seguimientoDetalle && (
 
   <div className="kp-modal-overlay">
