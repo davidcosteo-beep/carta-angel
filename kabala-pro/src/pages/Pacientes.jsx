@@ -73,8 +73,8 @@ function Pacientes() {
 
       const url = puedeVerArchivados &&
       verArchivados
-      ? `${API_URL}/api/pacientes/archivados`
-      : `${API_URL}/api/pacientes`;
+      ? `${API_URL}/pacientes/archivados`
+      : `${API_URL}/pacientes`;
 
       const response = await fetch(url);
 
@@ -111,7 +111,7 @@ function Pacientes() {
   try {
 
     const response = await fetch(
-      `${API_URL}/api/pacientes/${idPaciente}/archivar`,
+      `${API_URL}/pacientes/${idPaciente}/archivar`,
       {
         method: "PUT"
       }
@@ -144,7 +144,7 @@ const reactivarPaciente = async (idPaciente) => {
   try {
 
     const response = await fetch(
-      `${API_URL}/api/pacientes/${idPaciente}/reactivar`,
+      `${API_URL}/pacientes/${idPaciente}/reactivar`,
       {
         method: "PUT"
       }

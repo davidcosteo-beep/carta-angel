@@ -1,4 +1,7 @@
-import { API_URL } from "../config/api";
+import {
+  API_URL,
+  construirUrlPublica
+} from "../config/api";
 
 export const generarPDFBackend =
   async (carta) => {
@@ -8,7 +11,7 @@ export const generarPDFBackend =
       const response =
         await fetch(
 
-          `${API_URL}/api/pdf/generar`,
+          `${API_URL}/pdf/generar`,
 
           {
             method:'POST',
@@ -26,7 +29,22 @@ export const generarPDFBackend =
 
         );
 
-      return response.json();
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || !data?.url) {
+
+        return {
+          ok:false,
+          status: response.status,
+          error: data?.error || "No se pudo generar el PDF en el servidor"
+        };
+
+      }
+
+      return {
+        ...data,
+        url: construirUrlPublica(data.url)
+      };
 
     }catch(error){
 
@@ -34,7 +52,8 @@ export const generarPDFBackend =
 
       return {
 
-        ok:false
+        ok:false,
+        error: error?.message || "No se pudo conectar con el servidor"
 
       };
 

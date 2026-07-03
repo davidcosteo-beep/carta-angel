@@ -238,9 +238,9 @@ if (
 
     const url = paciente
 
-  ? `${API_URL}/api/pacientes/${paciente.IdPaciente}`
+  ? `${API_URL}/pacientes/${paciente.IdPaciente}`
 
-  : `${API_URL}/api/pacientes`;
+  : `${API_URL}/pacientes`;
 
 const metodo = paciente
 

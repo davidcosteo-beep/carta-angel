@@ -15,6 +15,22 @@ export default defineConfig({
       devOptions: {
         enabled: false,
       },
+      includeAssets: [
+        "icon-192.png",
+        "icon-512.png",
+        "assets/**/*",
+        "fonts/**/*",
+        "angeles/**/*",
+        "mentores/**/*",
+        "signos/**/*"
+      ],
+      workbox: {
+        globPatterns: [
+          "**/*.{html,js,css,ico,png,jpg,jpeg,webp,svg,ttf,woff,woff2}"
+        ],
+        maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
+        navigateFallback: "/index.html"
+      },
       manifest: {
   id: "/",
 

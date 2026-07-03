@@ -4,19 +4,43 @@ import { tablaCartas } from "../core/tablaCartas";
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 import fontkit from "@pdf-lib/fontkit";
 import { useIsMobile } from "../hooks/useIsMobile";
+import { useOnlineStatus } from "../hooks/useOnlineStatus";
 import { useEffect, useState, useRef } from "react";
 import {
   generarPDFBackend
 } from '../services/pdfService';
+import { construirUrlPublica } from "../config/api";
 
 function CartaAngel({ carta }) {
 
 const isMobile = useIsMobile();  
+const isOnline = useOnlineStatus();
 const [pdfData, setPdfData] = useState(null);
+const [pdfUrl, setPdfUrl] = useState("");
 const pdfCacheRef = useRef(null);
 const ultimoURLRef = useRef(null);
-const [abriendoPDF, setAbriendoPDF] =useState(false);
 const [generando, setGenerando] = useState(false);  
+
+const esUrlLocalhost = (url) => {
+
+  try {
+
+    const parsedUrl = new URL(url);
+
+    return [
+      "localhost",
+      "127.0.0.1",
+      "::1",
+      "[::1]"
+    ].includes(parsedUrl.hostname);
+
+  } catch {
+
+    return false;
+
+  }
+
+};
 
 useEffect(() => {
 
@@ -28,12 +52,44 @@ useEffect(() => {
 
     setGenerando(true);
 
+    setPdfData(null);
+
+    setPdfUrl("");
+
     const inicio = Date.now();
 
-    const resultado =
-  await generarPDFBackend(
-    carta
-  );
+    let resultado = null;
+
+    if (isOnline) {
+
+      resultado =
+        await generarPDFBackend(
+          carta
+        );
+
+    }
+
+    if (resultado?.url && esUrlLocalhost(resultado.url)) {
+
+      resultado = {
+        ok: false,
+        error: "URL local no disponible desde movil"
+      };
+
+    }
+
+    if (!resultado?.ok || !resultado?.url) {
+
+      resultado =
+        await generarPDFNuevo();
+
+      resultado = {
+        ...resultado,
+        ok: true,
+        local: true
+      };
+
+    }
 
     const tiempo =
       Date.now() - inicio;
@@ -51,18 +107,29 @@ useEffect(() => {
 
     }
 
-    setPdfData(resultado);
+    const urlPublica = construirUrlPublica(resultado.url);
 
-    const preloadLink =
-    document.createElement("link");
+    setPdfData({
+      ...resultado,
+      url: urlPublica
+    });
 
-    preloadLink.rel = "preload";
+    setPdfUrl(urlPublica);
 
-    preloadLink.as = "document";
+    if (urlPublica) {
 
-    preloadLink.href = resultado.url;
+      const preloadLink =
+      document.createElement("link");
 
-    document.head.appendChild(preloadLink);
+      preloadLink.rel = "preload";
+
+      preloadLink.as = "document";
+
+      preloadLink.href = urlPublica;
+
+      document.head.appendChild(preloadLink);
+
+    }
 
   } catch (error) {
 
@@ -78,31 +145,8 @@ useEffect(() => {
 
   generar();
 
-}, [isMobile]);
-
-const abrirPDF = async () => {
-
-  if (!pdfData?.url) return;
-
-  setAbriendoPDF(true);
-
-
- const data =
-  await generarPDFBackend(carta);
-
-if(data.ok){
-
-  window.open(
-    data.url,
-    "_blank"
-  );
-
-}
-
-setAbriendoPDF(false);
-
-};
-
+// eslint-disable-next-line react-hooks/exhaustive-deps
+}, [isMobile, isOnline, carta]);
 
 async function generarPDFNuevo() {
 
@@ -158,38 +202,78 @@ pdfDoc.registerFontkit(fontkit);
 
 const page = pdfDoc.addPage([600, 910]);
 
-const fondoBytes = await fetch("/assets/pdf/fondo.jpg").then(res => res.arrayBuffer());
-const fondoImage = await pdfDoc.embedJpg(fondoBytes);
+const fetchArrayBuffer = async (url) => {
+  const response = await fetch(url);
 
-page.drawImage(fondoImage, {
+  if (!response.ok) {
+    throw new Error(`No se pudo cargar ${url}`);
+  }
+
+  return response.arrayBuffer();
+};
+
+const embedPdfImage = async (url, type = "png") => {
+  try {
+    const bytes = await fetchArrayBuffer(url);
+
+    return type === "jpg"
+      ? await pdfDoc.embedJpg(bytes)
+      : await pdfDoc.embedPng(bytes);
+  } catch (error) {
+    console.warn(error?.message || `No se pudo cargar ${url}`);
+    return null;
+  }
+};
+
+const embedPdfFont = async (url, fallbackFont) => {
+  try {
+    const bytes = await fetchArrayBuffer(url);
+
+    return await pdfDoc.embedFont(bytes);
+  } catch (error) {
+    console.warn(error?.message || `No se pudo cargar ${url}`);
+    return pdfDoc.embedFont(fallbackFont);
+  }
+};
+
+const fondoImage = await embedPdfImage("/assets/pdf/fondo.jpg", "jpg");
+
+if (fondoImage) {
+
+  page.drawImage(fondoImage, {
   x: 0,
   y: 0,
   width: page.getWidth(),
   height: page.getHeight(),
   opacity: 0.90,
-});
+  });
+
+} else {
+
+  page.drawRectangle({
+    x: 0,
+    y: 0,
+    width: page.getWidth(),
+    height: page.getHeight(),
+    color: rgb(0.93, 0.86, 0.72),
+  });
+
+}
 
  
-const fontTituloBytes = await fetch("/fonts/Cinzel-Bold.ttf")
-  .then(res => res.arrayBuffer());
-
-const fontTituloDecorativoBytes = await fetch("/fonts/CinzelDecorative-Bold.ttf")
-  .then(res => res.arrayBuffer());
-
-const fontRegularBytes = await fetch("/fonts/Cardo-Regular.ttf")
-  .then(res => res.arrayBuffer());
-
-const fontBoldBytes = await fetch("/fonts/Cardo-Bold.ttf")
-  .then(res => res.arrayBuffer());
-
-const cardoItalicBytes = await fetch("/fonts/UnifrakturCook-Bold.ttf")
-  .then(res => res.arrayBuffer());
-
-const fontTitulo = await pdfDoc.embedFont(fontTituloBytes);
-const fontTituloDecorativo = await pdfDoc.embedFont(fontTituloDecorativoBytes);
-const font = await pdfDoc.embedFont(fontRegularBytes);
-const fontBold = await pdfDoc.embedFont(fontBoldBytes);
-const cardoItalicFont = await pdfDoc.embedFont(cardoItalicBytes);
+const [
+  fontTitulo,
+  fontTituloDecorativo,
+  font,
+  fontBold,
+  cardoItalicFont
+] = await Promise.all([
+  embedPdfFont("/fonts/Cinzel-Bold.ttf", StandardFonts.TimesRomanBold),
+  embedPdfFont("/fonts/CinzelDecorative-Bold.ttf", StandardFonts.TimesRomanBold),
+  embedPdfFont("/fonts/Cardo-Regular.ttf", StandardFonts.TimesRoman),
+  embedPdfFont("/fonts/Cardo-Bold.ttf", StandardFonts.TimesRomanBold),
+  embedPdfFont("/fonts/UnifrakturCook-Bold.ttf", StandardFonts.TimesRomanBoldItalic)
+]);
 
 
 const hexToRgb = (hex) => {
@@ -408,33 +492,56 @@ page.drawText(text, {
   color: colorTextoGuarda,
 });
 
-const angelBytes = await fetch(`/assets/pdf/angeles/${carta.angel.toLowerCase()}.png`)
-  .then(r => r.arrayBuffer());
+const angelImg = await embedPdfImage(
+  `/assets/pdf/angeles/${(carta.angel || "").toLowerCase()}.png`
+);
 
-const angelImg = await pdfDoc.embedPng(angelBytes);
+if (angelImg) {
 
-page.drawImage(angelImg, {
+  page.drawImage(angelImg, {
   x: imagenPrincipalX - 24,
   y: inicioY - 232,
   width: 163,
   height: 242,
   opacity: 0.08,
-});
+  });
 
-page.drawImage(angelImg, {
+  page.drawImage(angelImg, {
   x: imagenPrincipalX - 10,
   y: inicioY - 215,
   width: 135,
   height: 205,
   opacity: 0.20,
-});
+  });
 
-page.drawImage(angelImg, {
+  page.drawImage(angelImg, {
   x: imagenPrincipalX,
   y: inicioY - 205,
   width: 115,
   height: 188,
-});
+  });
+
+} else {
+
+  page.drawEllipse({
+    x: imagenPrincipalX + 58,
+    y: inicioY - 112,
+    xScale: 48,
+    yScale: 72,
+    color: rgb(0.72, 0.56, 0.34),
+    opacity: 0.18,
+  });
+
+  page.drawText((carta.angel || "?").charAt(0).toUpperCase(), {
+    x: imagenPrincipalX + 42,
+    y: inicioY - 126,
+    size: 44,
+    font: fontTituloDecorativo,
+    color: rgb(0.42, 0.25, 0.12),
+    opacity: 0.72,
+  });
+
+}
 
 let y = 685;
 
@@ -2337,6 +2444,15 @@ const botonStyle = {
   boxShadow: "0 8px 20px rgba(139,92,246,0.35)"
 };
 
+const enlacePDFStyle = {
+  ...botonStyle,
+  display: "block",
+  textAlign: "center",
+  textDecoration: "none",
+  boxSizing: "border-box"
+};
+
+
 if (isMobile) {
 
     if (generando) {
@@ -2435,8 +2551,7 @@ if (isMobile) {
         transition:
         "opacity 0.45s ease, filter 0.45s ease",
 
-        opacity:
-          abriendoPDF ? 0.82 : 1,
+        opacity: 1,
 
         color: "white",
 
@@ -2548,7 +2663,9 @@ if (isMobile) {
           lineHeight: "1.6"
         }}
       >
-        Consultando Kabala Angelical...
+        {isOnline
+          ? "Consultando Kabala Angelical..."
+          : "Generando PDF local sin conexion..."}
       </div>
 
     </div>
@@ -2559,45 +2676,27 @@ if (isMobile) {
 
         {/* BOTONES */}
 
-        {!generando && pdfData && (
+        {!generando && pdfData && pdfUrl && (
 
           <div
             style={{
               width: "100%",
               maxWidth: "290px",
-              margin: "25px auto 0 auto"
+              margin: "25px auto 0 auto",
+              display: "flex",
+              flexDirection: "column",
+              gap: "12px"
             }}
           >
 
-            <button
-
-  onClick={abrirPDF}
-
-  onPointerDown={(e) => {
-
-    e.currentTarget.style.transform =
-      "scale(0.97)";
-
-  }}
-
-  onPointerUp={(e) => {
-
-    e.currentTarget.style.transform =
-      "scale(1)";
-
-  }}
-
-  style={botonStyle}
-
-  disabled={abriendoPDF}
-
->
-
-  {abriendoPDF
-    ? "Generando Carta..."
-    : "Ver Carta"}
-
-</button>
+            <a
+              href={pdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={enlacePDFStyle}
+            >
+              Ver carta
+            </a>
 
             
 

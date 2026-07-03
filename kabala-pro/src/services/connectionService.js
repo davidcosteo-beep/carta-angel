@@ -1,13 +1,13 @@
-import { getApiUrl } from "../config/api";
+import { HEALTH_URL } from "../config/api";
 import { normalizeServerUrl } from "../utils/serverConfig";
 
 export const testServerConnection = async (url) => {
 
-  const apiUrl = normalizeServerUrl(
-    url || getApiUrl()
-  );
+  const healthUrl = url
+    ? `${normalizeServerUrl(url)}/health`
+    : HEALTH_URL;
 
-  if (!apiUrl) {
+  if (!healthUrl) {
 
     return {
       ok: false,
@@ -19,7 +19,7 @@ export const testServerConnection = async (url) => {
   try {
 
     const response = await fetch(
-      `${apiUrl}/health`
+      healthUrl
     );
 
     if (!response.ok) {

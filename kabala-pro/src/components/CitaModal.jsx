@@ -46,7 +46,7 @@ function CitaModal({
   try {
 
     const response = await fetch(
-      `${API_URL}/api/pacientes`
+      `${API_URL}/pacientes`
     );
 
     const data = await response.json();
@@ -153,8 +153,8 @@ const guardarCita = async () => {
     const response = await fetch(
 
       cita
-        ? `${API_URL}/api/citas/${cita.IdCita}`
-        : `${API_URL}/api/citas`,
+        ? `${API_URL}/citas/${cita.IdCita}`
+        : `${API_URL}/citas`,
 
       {
 

@@ -13,6 +13,7 @@ import { calcularAngelPorSigno } from "../core/angelSigno";
 import { tablaMentor } from "../core/tablaMentor";
 import { tablaEsenciaMes } from "../core/tablaEsenciaMes";
 import { tablaEsenciaDia } from "../core/tablaEsenciaDia";
+import { useOnlineStatus } from "../hooks/useOnlineStatus";
 
 import "./GenerarCarta.css";
 import florVida from "../assets/flor-vida.png";
@@ -38,6 +39,7 @@ const [fechaPartes, setFechaPartes] = useState({
   mes: "",
   anio: ""
 });
+const isOnline = useOnlineStatus();
 
 const diasMes = (() => {
 
@@ -417,6 +419,15 @@ return(
 
   <div className="generar-carta-divider-line"></div>
 </div>
+
+{!isOnline && (
+  <div
+    className="generar-carta-offline-aviso"
+    role="status"
+  >
+    Modo offline activo. La carta se generara localmente en este dispositivo.
+  </div>
+)}
 
 <div
 className="generar-carta-label">

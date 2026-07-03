@@ -55,7 +55,9 @@ const generarPDF = async (req, res) => {
       ok:true,
 
       url:
-`http://100.95.42.29:4000/pdfs/${nombreArchivo}`
+        `/pdfs/${encodeURIComponent(nombreArchivo)}`,
+
+      nombreArchivo
 
     });
 

@@ -70,7 +70,7 @@ const [
 
     const response = await fetch(
 
-      `${API_URL}/api/citas/${cita.IdCita}/seguimiento`,
+      `${API_URL}/citas/${cita.IdCita}/seguimiento`,
 
       {
 
@@ -147,7 +147,7 @@ const cargarSeguimientos = useCallback(async () => {
       const response =
         await fetch(
 
-          `${API_URL}/api/citas/${cita.IdCita}/seguimientos`
+          `${API_URL}/citas/${cita.IdCita}/seguimientos`
 
         );
 
@@ -218,7 +218,7 @@ const finalizarSeguimiento = async () => {
 
     const response = await fetch(
 
-      `${API_URL}/api/citas/${cita.IdCita}/finalizar`,
+      `${API_URL}/citas/${cita.IdCita}/finalizar`,
 
       {
         method: "PUT"

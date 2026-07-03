@@ -156,7 +156,7 @@ const festivos = {
   try {
 
     const response = await fetch(
-      `${API_URL}/api/citas`
+      `${API_URL}/citas`
     );
 
     const data = await response.json();
@@ -198,7 +198,7 @@ useEffect(() => {
     try {
 
       const response = await fetch(
-        `${API_URL}/api/citas/${citaSeleccionada.IdCita}/cancelar`,
+        `${API_URL}/citas/${citaSeleccionada.IdCita}/cancelar`,
         {
           method: "PUT"
         }
@@ -238,7 +238,7 @@ useEffect(() => {
 
     const response = await fetch(
 
-      `${API_URL}/api/citas/${idCita}/finalizar`,
+      `${API_URL}/citas/${idCita}/finalizar`,
 
       {
         method: "PUT"
@@ -271,7 +271,7 @@ const confirmarCita = async (
 
     const response = await fetch(
 
-      `${API_URL}/api/citas/${idCita}/confirmar`,
+      `${API_URL}/citas/${idCita}/confirmar`,
 
       {
         method: "PUT"

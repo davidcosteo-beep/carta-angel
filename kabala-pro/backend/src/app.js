@@ -28,12 +28,19 @@ const frontendIndexPath = path.join(
   'index.html'
 );
 
+const pdfStoragePath = path.resolve(
+  __dirname,
+  '..',
+  'storage',
+  'pdfs'
+);
+
 app.use(cors());
 app.use(express.json());
 
 app.use(
   '/pdfs',
-  express.static('storage/pdfs')
+  express.static(pdfStoragePath)
 );
 
 app.get('/health', (req, res) => {
