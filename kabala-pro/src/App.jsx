@@ -18,6 +18,41 @@ import Pacientes from "./pages/Pacientes";
 import Agenda from "./pages/Agenda";
 import { PRIVATE_ROUTE_PERMISSIONS } from "./utils/permissions";
 
+const SPLASH_SEEN_KEY = "kabala_splash_seen";
+
+const hasSeenSplashInSession = () => {
+
+  try {
+
+    return sessionStorage.getItem(
+      SPLASH_SEEN_KEY
+    ) === "true";
+
+  } catch {
+
+    return false;
+
+  }
+
+};
+
+const markSplashAsSeen = () => {
+
+  try {
+
+    sessionStorage.setItem(
+      SPLASH_SEEN_KEY,
+      "true"
+    );
+
+  } catch {
+
+    // La app debe continuar aunque sessionStorage no esté disponible.
+
+  }
+
+};
+
 
 
 function App(){
@@ -26,7 +61,9 @@ function App(){
   isTokenValid()
 );
 
-  const [mostrarSplash, setMostrarSplash] = useState(true);
+  const [mostrarSplash, setMostrarSplash] = useState(
+  () => !hasSeenSplashInSession()
+);
 
   // 🌙 CARGAR TEMA GLOBAL
   useEffect(() => {
@@ -41,7 +78,15 @@ function App(){
 
   useEffect(() => {
 
+  if (!mostrarSplash) {
+
+    return;
+
+  }
+
   const timer = setTimeout(() => {
+
+    markSplashAsSeen();
 
     setMostrarSplash(false);
 
@@ -49,7 +94,7 @@ function App(){
 
   return () => clearTimeout(timer);
 
-}, []);
+}, [mostrarSplash]);
 
   const auraAnimation = `
 @keyframes auraGlow {
