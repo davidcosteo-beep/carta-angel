@@ -6,7 +6,28 @@ export const normalizeServerUrl = (url) =>
     .replace(/\/+$/, "");
 
 const getFallbackServerUrl = () =>
-  normalizeServerUrl(import.meta.env.VITE_API_URL);
+  normalizeServerUrl(import.meta.env.VITE_API_URL) ||
+  getSameOriginServerUrl();
+
+const getSameOriginServerUrl = () => {
+
+  if (!import.meta.env.PROD) {
+
+    return "";
+
+  }
+
+  if (typeof window === "undefined") {
+
+    return "";
+
+  }
+
+  return normalizeServerUrl(
+    window.location.origin
+  );
+
+};
 
 const getStoredServerUrl = () => {
 
