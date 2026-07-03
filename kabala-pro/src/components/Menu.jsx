@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import "./menu.css";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { getUserRole } from "../utils/auth";
+import {
+  PRIVATE_ROUTE_PERMISSIONS,
+  canAccessRole
+} from "../utils/permissions";
 
 function Menu({ onLogout }){
 
@@ -11,18 +16,61 @@ function Menu({ onLogout }){
   const [style, setStyle] = useState({ left: 0, width: 0 });
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
- 
+  const userRole = getUserRole();
+  const menuItems = [
+    {
+      key: "generar-carta",
+      label: "Generar Carta",
+      path: "/",
+      allowedRoles: PRIVATE_ROUTE_PERMISSIONS.GENERAR_CARTA,
+      resetGenerarCarta: true
+    },
+    {
+      key: "pacientes",
+      label: "Pacientes",
+      path: "/pacientes",
+      allowedRoles: PRIVATE_ROUTE_PERMISSIONS.PACIENTES
+    },
+    {
+      key: "agenda",
+      label: "Agenda",
+      path: "/agenda",
+      allowedRoles: PRIVATE_ROUTE_PERMISSIONS.AGENDA
+    },
+    {
+      key: "historial",
+      label: "Historial",
+      path: "/historial",
+      allowedRoles: PRIVATE_ROUTE_PERMISSIONS.HISTORIAL
+    },
+    {
+      key: "configuracion",
+      label: "Configuración",
+      path: "/configuracion",
+      allowedRoles: PRIVATE_ROUTE_PERMISSIONS.CONFIGURACION
+    }
+  ];
 
   useEffect(() => {
-    const active = menuRef.current.querySelector(".active");
+    const animationFrameId = requestAnimationFrame(() => {
+      const active = menuRef.current?.querySelector(".active");
 
-    if(active){
-      setStyle({
-        left: active.offsetLeft,
-        width: active.offsetWidth
-      });
-    }
-  }, [location]);
+      if(active){
+        setStyle({
+          left: active.offsetLeft,
+          width: active.offsetWidth
+        });
+      } else {
+        setStyle({
+          left: 0,
+          width: 0
+        });
+      }
+    });
+
+    return () =>
+      cancelAnimationFrame(animationFrameId);
+  }, [location, userRole]);
 
   useEffect(() => {
     if(!menuOpen){
@@ -79,59 +127,53 @@ function Menu({ onLogout }){
     className={`menu-links ${menuOpen ? "open" : ""}`}
   >
 
- <div
-  onClick={() => {
+ {
+  menuItems
+    .filter((item) =>
+      canAccessRole(
+        userRole,
+        item.allowedRoles
+      )
+    )
+    .map((item) => (
+      item.resetGenerarCarta ? (
+        <div
+          key={item.key}
+          onClick={() => {
 
-  window.dispatchEvent(
-    new Event("reset-generar-carta")
-  );
+            window.dispatchEvent(
+              new Event("reset-generar-carta")
+            );
 
-  navigate("/");
+            navigate(item.path);
 
-  setMenuOpen(false);
+            setMenuOpen(false);
 
-}}
-
-  className={
-    location.pathname === "/"
-      ? "menu-link active"
-      : "menu-link"
-  }
-
-  style={{
-    cursor:"pointer"
-  }}
->
-  Generar Carta
-</div>
-
-    <NavLink
-      to="/pacientes"
-      onClick={() => setMenuOpen(false)}  
-      className={({ isActive }) =>
-        isActive ? "menu-link active" : "menu-link"}>
-      Pacientes
-    </NavLink>
-
-    <NavLink
-      to="/agenda"
-      onClick={() => setMenuOpen(false)} 
-      className={({ isActive }) =>
-        isActive ? "menu-link active" : "menu-link"}>
-      Agenda
-    </NavLink>
-
-    <NavLink to="/historial"
-      onClick={() => setMenuOpen(false)}
-      className={({ isActive }) => isActive ? "menu-link active" : "menu-link"}>
-      Historial
-    </NavLink>
-
-    <NavLink to="/configuracion"
-      onClick={() => setMenuOpen(false)}
-      className={({ isActive }) => isActive ? "menu-link active" : "menu-link"}>
-      Configuración
-    </NavLink>
+          }}
+          className={
+            location.pathname === item.path
+              ? "menu-link active"
+              : "menu-link"
+          }
+          style={{
+            cursor:"pointer"
+          }}
+        >
+          {item.label}
+        </div>
+      ) : (
+        <NavLink
+          key={item.key}
+          to={item.path}
+          onClick={() => setMenuOpen(false)}
+          className={({ isActive }) =>
+            isActive ? "menu-link active" : "menu-link"}
+        >
+          {item.label}
+        </NavLink>
+      )
+    ))
+ }
 
     <div
   className="menu-link"

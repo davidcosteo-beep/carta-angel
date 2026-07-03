@@ -16,6 +16,7 @@ import Menu from "./components/Menu";
 import { isTokenValid } from "./utils/auth";
 import Pacientes from "./pages/Pacientes";
 import Agenda from "./pages/Agenda";
+import { PRIVATE_ROUTE_PERMISSIONS } from "./utils/permissions";
 
 
 
@@ -176,7 +177,11 @@ function PrivateRoutes({
         <Route
   path="/"
   element={
-    <ProtectedRoute>
+    <ProtectedRoute
+      allowedRoles={
+        PRIVATE_ROUTE_PERMISSIONS.GENERAR_CARTA
+      }
+    >
       <GenerarCarta />
     </ProtectedRoute>
   }
@@ -185,7 +190,11 @@ function PrivateRoutes({
 <Route
   path="/configuracion"
   element={
-    <ProtectedRoute>
+    <ProtectedRoute
+      allowedRoles={
+        PRIVATE_ROUTE_PERMISSIONS.CONFIGURACION
+      }
+    >
       <Configuracion />
     </ProtectedRoute>
   }
@@ -194,7 +203,11 @@ function PrivateRoutes({
 <Route
   path="/historial"
   element={
-    <ProtectedRoute>
+    <ProtectedRoute
+      allowedRoles={
+        PRIVATE_ROUTE_PERMISSIONS.HISTORIAL
+      }
+    >
       <Historial />
     </ProtectedRoute>
   }
@@ -203,7 +216,11 @@ function PrivateRoutes({
 <Route
   path="/pacientes"
   element={
-    <ProtectedRoute>
+    <ProtectedRoute
+      allowedRoles={
+        PRIVATE_ROUTE_PERMISSIONS.PACIENTES
+      }
+    >
       <Pacientes />
     </ProtectedRoute>
   }
@@ -212,7 +229,11 @@ function PrivateRoutes({
 <Route
   path="/agenda"
   element={
-    <ProtectedRoute>
+    <ProtectedRoute
+      allowedRoles={
+        PRIVATE_ROUTE_PERMISSIONS.AGENDA
+      }
+    >
       <Agenda />
     </ProtectedRoute>
   }
