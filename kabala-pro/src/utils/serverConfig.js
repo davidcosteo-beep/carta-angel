@@ -11,12 +11,6 @@ const getFallbackServerUrl = () =>
 
 const getSameOriginServerUrl = () => {
 
-  if (!import.meta.env.PROD) {
-
-    return "";
-
-  }
-
   if (typeof window === "undefined") {
 
     return "";
@@ -29,13 +23,63 @@ const getSameOriginServerUrl = () => {
 
 };
 
+const isLocalServerUrl = (url) => {
+
+  try {
+
+    const parsedUrl = new URL(url);
+
+    return [
+      "localhost",
+      "127.0.0.1",
+      "::1",
+      "[::1]"
+    ].includes(parsedUrl.hostname);
+
+  } catch {
+
+    return false;
+
+  }
+
+};
+
+const isCurrentHostLocal = () => {
+
+  if (typeof window === "undefined") {
+
+    return false;
+
+  }
+
+  return [
+    "localhost",
+    "127.0.0.1",
+    "::1",
+    "[::1]"
+  ].includes(window.location.hostname);
+
+};
+
 const getStoredServerUrl = () => {
 
   try {
 
-    return normalizeServerUrl(
+    const savedUrl = normalizeServerUrl(
       localStorage.getItem(SERVER_URL_KEY)
     );
+
+    if (
+      savedUrl &&
+      isLocalServerUrl(savedUrl) &&
+      !isCurrentHostLocal()
+    ) {
+
+      return "";
+
+    }
+
+    return savedUrl;
 
   } catch {
 

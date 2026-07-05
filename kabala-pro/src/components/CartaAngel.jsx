@@ -7,9 +7,12 @@ import { useIsMobile } from "../hooks/useIsMobile";
 import { useOnlineStatus } from "../hooks/useOnlineStatus";
 import { useEffect, useState, useRef } from "react";
 import {
-  generarPDFBackend
-} from '../services/pdfService';
-import { construirUrlPublica } from "../config/api";
+  PDF_ASSET_BASE,
+  PDF_FONT_URLS,
+  crearCandidatosAsset,
+  loadPdfResource,
+  normalizarNombreAsset
+} from "../utils/pdfResources";
 
 function CartaAngel({ carta }) {
 
@@ -17,34 +20,14 @@ const isMobile = useIsMobile();
 const isOnline = useOnlineStatus();
 const [pdfData, setPdfData] = useState(null);
 const [pdfUrl, setPdfUrl] = useState("");
+const [visorPdfAbierto, setVisorPdfAbierto] = useState(false);
 const pdfCacheRef = useRef(null);
 const ultimoURLRef = useRef(null);
 const [generando, setGenerando] = useState(false);  
 
-const esUrlLocalhost = (url) => {
-
-  try {
-
-    const parsedUrl = new URL(url);
-
-    return [
-      "localhost",
-      "127.0.0.1",
-      "::1",
-      "[::1]"
-    ].includes(parsedUrl.hostname);
-
-  } catch {
-
-    return false;
-
-  }
-
-};
-
 useEffect(() => {
 
-  if (!isMobile) return;
+  if (!isMobile || !carta) return;
 
   const generar = async () => {
 
@@ -56,40 +39,17 @@ useEffect(() => {
 
     setPdfUrl("");
 
+    setVisorPdfAbierto(false);
+
     const inicio = Date.now();
 
-    let resultado = null;
+    console.info("Generando PDF local con assets publicos PWA");
 
-    if (isOnline) {
-
-      resultado =
-        await generarPDFBackend(
-          carta
-        );
-
-    }
-
-    if (resultado?.url && esUrlLocalhost(resultado.url)) {
-
-      resultado = {
-        ok: false,
-        error: "URL local no disponible desde movil"
-      };
-
-    }
-
-    if (!resultado?.ok || !resultado?.url) {
-
-      resultado =
-        await generarPDFNuevo();
-
-      resultado = {
-        ...resultado,
-        ok: true,
-        local: true
-      };
-
-    }
+    const resultado = {
+      ...(await generarPDFNuevo()),
+      ok: true,
+      local: true
+    };
 
     const tiempo =
       Date.now() - inicio;
@@ -107,7 +67,7 @@ useEffect(() => {
 
     }
 
-    const urlPublica = construirUrlPublica(resultado.url);
+    const urlPublica = resultado.url;
 
     setPdfData({
       ...resultado,
@@ -203,16 +163,10 @@ pdfDoc.registerFontkit(fontkit);
 const page = pdfDoc.addPage([600, 910]);
 
 const fetchArrayBuffer = async (url) => {
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error(`No se pudo cargar ${url}`);
-  }
-
-  return response.arrayBuffer();
+  return loadPdfResource(url);
 };
 
-const embedPdfImage = async (url, type = "png") => {
+const embedPdfImage = async (url, type = "png", options = {}) => {
   try {
     const bytes = await fetchArrayBuffer(url);
 
@@ -220,9 +174,39 @@ const embedPdfImage = async (url, type = "png") => {
       ? await pdfDoc.embedJpg(bytes)
       : await pdfDoc.embedPng(bytes);
   } catch (error) {
-    console.warn(error?.message || `No se pudo cargar ${url}`);
+    if (!options.silent) {
+      console.warn(
+        `No se pudo cargar imagen PDF local: ${url}`,
+        error
+      );
+    }
     return null;
   }
+};
+
+const embedPdfImageDesdeAssets = async ({
+  basePath,
+  nombre,
+  tipo,
+  extensiones = ["png"]
+}) => {
+  const rutas = crearCandidatosAsset(basePath, nombre, extensiones);
+
+  for (const ruta of rutas) {
+    const extension = ruta.toLowerCase().endsWith(".jpg") ||
+      ruta.toLowerCase().endsWith(".jpeg")
+      ? "jpg"
+      : "png";
+    const imagen = await embedPdfImage(ruta, extension, { silent: true });
+
+    if (imagen) return imagen;
+  }
+
+  rutas.forEach((ruta) => {
+    console.warn(`No se encontro imagen PDF local (${tipo}): ${ruta}`);
+  });
+
+  return null;
 };
 
 const embedPdfFont = async (url, fallbackFont) => {
@@ -236,7 +220,7 @@ const embedPdfFont = async (url, fallbackFont) => {
   }
 };
 
-const fondoImage = await embedPdfImage("/assets/pdf/fondo.jpg", "jpg");
+const fondoImage = await embedPdfImage(`${PDF_ASSET_BASE}/fondo.jpg`, "jpg");
 
 if (fondoImage) {
 
@@ -268,11 +252,11 @@ const [
   fontBold,
   cardoItalicFont
 ] = await Promise.all([
-  embedPdfFont("/fonts/Cinzel-Bold.ttf", StandardFonts.TimesRomanBold),
-  embedPdfFont("/fonts/CinzelDecorative-Bold.ttf", StandardFonts.TimesRomanBold),
-  embedPdfFont("/fonts/Cardo-Regular.ttf", StandardFonts.TimesRoman),
-  embedPdfFont("/fonts/Cardo-Bold.ttf", StandardFonts.TimesRomanBold),
-  embedPdfFont("/fonts/UnifrakturCook-Bold.ttf", StandardFonts.TimesRomanBoldItalic)
+  embedPdfFont(PDF_FONT_URLS[0], StandardFonts.TimesRomanBold),
+  embedPdfFont(PDF_FONT_URLS[1], StandardFonts.TimesRomanBold),
+  embedPdfFont(PDF_FONT_URLS[2], StandardFonts.TimesRoman),
+  embedPdfFont(PDF_FONT_URLS[3], StandardFonts.TimesRomanBold),
+  embedPdfFont(PDF_FONT_URLS[4], StandardFonts.TimesRomanBoldItalic)
 ]);
 
 
@@ -492,9 +476,11 @@ page.drawText(text, {
   color: colorTextoGuarda,
 });
 
-const angelImg = await embedPdfImage(
-  `/assets/pdf/angeles/${(carta.angel || "").toLowerCase()}.png`
-);
+const angelImg = await embedPdfImageDesdeAssets({
+  basePath: `${PDF_ASSET_BASE}/angeles`,
+  nombre: carta.angel,
+  tipo: "ángel"
+});
 
 if (angelImg) {
 
@@ -919,7 +905,7 @@ if(y <120) {
 
 // BUSCAR MENTOR
 const normalizar = (t) =>
-  t?.toLowerCase().trim().replace(/\s+/g, "");
+  normalizarNombreAsset(t).replace(/-/g, "");
 
 const mentorData = Object.values(tablaMentor).find(
   m => normalizar(m.mentor) === normalizar(carta.mentor)
@@ -928,7 +914,6 @@ const mentorData = Object.values(tablaMentor).find(
 //  FUNCIÓN AQUÍ ADENTRO 
   async function dibujarMentor({
     page,
-    pdfDoc,
     font,
     rgb,
     mentorData,
@@ -1374,11 +1359,13 @@ yDetalle -= 20;
 y = yDetalle - 6;
 
     // IMAGEN
-    try {
-      const mentorBytes = await fetch(`/assets/pdf/mentores/${mentorData.mentor.toLowerCase()}.png`)
-        .then(r => r.arrayBuffer());
+    const mentorImg = await embedPdfImageDesdeAssets({
+      basePath: `${PDF_ASSET_BASE}/mentores`,
+      nombre: mentorData.mentor,
+      tipo: "mentor"
+    });
 
-      const mentorImg = await pdfDoc.embedPng(mentorBytes);
+    if (mentorImg) {
 
 page.drawEllipse({
   x: imgX + 90,
@@ -1396,8 +1383,6 @@ page.drawImage(mentorImg, {
   height: 135,
 });
 
-} catch {
-  console.warn("No se encontró imagen mentor");
 }
 
     return y;
@@ -1406,7 +1391,6 @@ page.drawImage(mentorImg, {
 //  LLAMAR FUNCIÓN
 y = await dibujarMentor({
   page,
-  pdfDoc,
   font,
   rgb,
   hexToRgb,
@@ -1835,7 +1819,6 @@ y = await dibujarInfluencias({
 
 async function dibujarSigno({
   page,
-  pdfDoc,
   font,
   rgb,
   carta,
@@ -2023,12 +2006,14 @@ page.drawText(tituloEsencia, {
 y -= 20;
 
   //  IMAGEN SIGNO
-  try {
-    const signoBytes = await fetch(`/assets/pdf/signos/${carta.signo.toLowerCase()}.png`)
-      .then(r => r.arrayBuffer());
+  const signoImg = await embedPdfImageDesdeAssets({
+    basePath: `${PDF_ASSET_BASE}/signos`,
+    nombre: carta.signo,
+    tipo: "signo",
+    extensiones: ["png", "jpg", "jpeg"]
+  });
 
-    const signoImg = await pdfDoc.embedPng(signoBytes);
-
+  if (signoImg) {
     
 
    page.drawCircle({
@@ -2062,9 +2047,6 @@ y -= 20;
       height: 82,
       opacity:0.85,
     });
-
-  } catch {
-    console.warn("No se encontró imagen signo");
   }
 
   // TEXTO EN COLUMNAS
@@ -2137,7 +2119,6 @@ return y;
 
 y = await dibujarSigno({
   page,
-  pdfDoc,
   font,
   rgb,
   hexToRgb,
@@ -2311,11 +2292,10 @@ page.drawText(tituloAngeologo, {
 
 } else {
 
-  try {
-    const florBytes = await fetch("/assets/pdf/flor-vida.png")
-      .then(r => r.arrayBuffer());
+  const florPath = `${PDF_ASSET_BASE}/flor-vida.png`;
+  const florImg = await embedPdfImage(florPath, "png", { silent: true });
 
-    const florImg = await pdfDoc.embedPng(florBytes);
+  if (florImg) {
 
     page.drawImage(florImg, {
   x: inicioX + (anchoUtil / 2) - 32,
@@ -2323,9 +2303,8 @@ page.drawText(tituloAngeologo, {
   width: 64,
   height: 44,
   });
-
-  } catch {
-    console.warn("No se encontró imagen flor de vida");
+  } else {
+    console.warn(`No se encontró firma/flor de vida: ${florPath}`);
   }
 }
 
@@ -2454,6 +2433,130 @@ const enlacePDFStyle = {
 
 
 if (isMobile) {
+
+    if (visorPdfAbierto && pdfUrl) {
+
+  return (
+
+    <div
+      style={{
+        width: "100vw",
+        minHeight: "100vh",
+        background: "#070B16",
+        color: "white",
+        display: "flex",
+        flexDirection: "column"
+      }}
+    >
+
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "12px",
+          padding: "14px 14px 12px 14px",
+          background: "linear-gradient(180deg, #111827 0%, #070B16 100%)",
+          borderBottom: "1px solid rgba(255,255,255,0.12)",
+          boxSizing: "border-box"
+        }}
+      >
+
+        <button
+          type="button"
+          onClick={() => setVisorPdfAbierto(false)}
+          style={{
+            ...botonStyle,
+            width: "auto",
+            minWidth: "190px",
+            padding: "12px 14px",
+            borderRadius: "10px",
+            background: "#7b5532",
+            boxShadow: "0 6px 18px rgba(0,0,0,0.26)"
+          }}
+        >
+          ← Volver a Kabala Pro
+        </button>
+
+        <div
+          style={{
+            minWidth: 0,
+            textAlign: "right"
+          }}
+        >
+          <div
+            style={{
+              fontSize: "15px",
+              fontWeight: "700",
+              lineHeight: "1.2"
+            }}
+          >
+            Carta Angelical
+          </div>
+          <div
+            style={{
+              fontSize: "12px",
+              opacity: 0.72,
+              marginTop: "2px",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              maxWidth: "130px"
+            }}
+          >
+            {carta.nombre}
+          </div>
+        </div>
+
+      </div>
+
+      <div
+        style={{
+          flex: 1,
+          minHeight: 0,
+          position: "relative",
+          background: "#111827"
+        }}
+      >
+        <iframe
+          title="Carta Angelical PDF"
+          src={pdfUrl}
+          style={{
+            width: "100%",
+            height: "100%",
+            border: "0",
+            display: "block",
+            background: "#FFFFFF"
+          }}
+        />
+      </div>
+
+      <div
+        style={{
+          padding: "10px 14px 14px 14px",
+          background: "#070B16",
+          borderTop: "1px solid rgba(255,255,255,0.1)"
+        }}
+      >
+        <a
+          href={pdfUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            color: "#f6d28b",
+            fontSize: "13px",
+            textDecoration: "underline"
+          }}
+        >
+          Abrir en navegador
+        </a>
+      </div>
+
+    </div>
+
+  );
+
+}
 
     if (generando) {
 
@@ -2689,14 +2792,13 @@ if (isMobile) {
             }}
           >
 
-            <a
-              href={pdfUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              type="button"
+              onClick={() => setVisorPdfAbierto(true)}
               style={enlacePDFStyle}
             >
               Ver carta
-            </a>
+            </button>
 
             
 

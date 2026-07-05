@@ -1,16 +1,14 @@
-const hostname =
+const origin =
   typeof window !== "undefined"
-    ? window.location.hostname
-    : "localhost";
+    ? window.location.origin
+    : "";
 
 export const SERVER_URL =
-  hostname === "localhost" || hostname === "127.0.0.1"
-    ? "http://localhost:4000"
-    : window.location.origin;
+  origin;
 
-export const API_URL = `${SERVER_URL}/api`;
+export const API_URL = "/api";
 
-export const HEALTH_URL = `${SERVER_URL}/health`;
+export const HEALTH_URL = "/health";
 
 export const construirUrlPublica = (url) => {
   if (!url) return "";
@@ -29,14 +27,14 @@ export const construirUrlPublica = (url) => {
     url.startsWith("https://127.0.0.1")
   ) {
     const parsedUrl = new URL(url);
-    return `${SERVER_URL}${parsedUrl.pathname}`;
+    return `${origin}${parsedUrl.pathname}`;
   }
 
   if (url.startsWith("http")) {
     return url;
   }
 
-  return `${SERVER_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+  return `${origin}${url.startsWith("/") ? "" : "/"}${url}`;
 };
 
 export const getApiUrl = () => SERVER_URL;

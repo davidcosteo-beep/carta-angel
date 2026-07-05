@@ -14,11 +14,13 @@ import { tablaMentor } from "../core/tablaMentor";
 import { tablaEsenciaMes } from "../core/tablaEsenciaMes";
 import { tablaEsenciaDia } from "../core/tablaEsenciaDia";
 import { useOnlineStatus } from "../hooks/useOnlineStatus";
+import { preloadAllPdfResources } from "../utils/pdfResources";
 
 import "./GenerarCarta.css";
-import florVida from "../assets/flor-vida.png";
+
 function GenerarCarta() {
 
+const FLOR_VIDA_SRC = "/assets/pdf/flor-vida.png";  
 const nombreRef = useRef(null);
 const fechaRef = useRef(null);
 const horaRef = useRef(null);
@@ -155,6 +157,17 @@ useEffect(() => {
     nombreRef.current.focus();
     nombreRef.current.select();
   }
+}, []);
+
+useEffect(() => {
+
+  preloadAllPdfResources().catch((error) => {
+    console.warn(
+      "Could not preload PDF offline resources",
+      error
+    );
+  });
+
 }, []);
 
 
@@ -399,7 +412,7 @@ return(
 <div className="generar-carta-panel">
 
 <img
-  src={florVida}
+  src={FLOR_VIDA_SRC}
   alt="Flor de la Vida"
   className="generar-carta-simbolo"
 />

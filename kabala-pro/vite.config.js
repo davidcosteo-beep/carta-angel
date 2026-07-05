@@ -5,8 +5,21 @@ import { VitePWA } from "vite-plugin-pwa";
 export default defineConfig({
 
    server: {
-    host: "0.0.0.0",
-  },
+  host: "0.0.0.0",
+  allowedHosts: [
+    "desktop-sbd4jj7.taila368f5.ts.net"
+  ],
+  proxy: {
+    "/api": {
+      target: "http://127.0.0.1:4000",
+      changeOrigin: true
+    },
+    "/health": {
+      target: "http://127.0.0.1:4000",
+      changeOrigin: true
+    }
+  }
+},
   
   plugins: [
     react(),
@@ -18,6 +31,8 @@ export default defineConfig({
       includeAssets: [
         "icon-192.png",
         "icon-512.png",
+        "maskable-icon-192.png",
+        "maskable-icon-512.png",
         "assets/**/*",
         "fonts/**/*",
         "angeles/**/*",
@@ -28,7 +43,7 @@ export default defineConfig({
         globPatterns: [
           "**/*.{html,js,css,ico,png,jpg,jpeg,webp,svg,ttf,woff,woff2}"
         ],
-        maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
+        maximumFileSizeToCacheInBytes: 30 * 1024 * 1024,
         navigateFallback: "/index.html"
       },
       manifest: {
@@ -50,18 +65,32 @@ export default defineConfig({
 
   start_url: "/",
 
-  icons: [
-    {
-      src: "/icon-192.png",
-      sizes: "192x192",
-      type: "image/png",
-    },
-    {
-      src: "/icon-512.png",
-      sizes: "512x512",
-      type: "image/png",
-    }
-  ]
+ icons: [
+  {
+    src: "/icon-192.png",
+    sizes: "192x192",
+    type: "image/png",
+    purpose: "any",
+  },
+  {
+    src: "/icon-512.png",
+    sizes: "512x512",
+    type: "image/png",
+    purpose: "any",
+  },
+  {
+    src: "/maskable-icon-192.png",
+    sizes: "192x192",
+    type: "image/png",
+    purpose: "maskable",
+  },
+  {
+    src: "/maskable-icon-512.png",
+    sizes: "512x512",
+    type: "image/png",
+    purpose: "maskable",
+  },
+]
 }
     }),
   ],
