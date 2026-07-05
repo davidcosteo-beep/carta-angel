@@ -179,6 +179,48 @@ body{
 
 }
 
+.kp-offline-modal-overlay,
+.online-only-modal-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  width: 100vw !important;
+  min-height: 100dvh !important;
+  height: 100dvh !important;
+  padding:
+    max(20px, env(safe-area-inset-top))
+    20px
+    max(20px, env(safe-area-inset-bottom)) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+}
+
+.kp-offline-modal-content,
+.online-only-modal-content {
+  width: min(92vw, 430px) !important;
+  max-height: calc(100dvh - 48px) !important;
+  overflow-y: auto !important;
+  box-sizing: border-box !important;
+  margin: auto !important;
+}
+
+@supports not (height: 100dvh) {
+  .kp-offline-modal-overlay,
+  .online-only-modal-overlay {
+    min-height: 100vh !important;
+    height: 100vh !important;
+  }
+
+  .kp-offline-modal-content,
+  .online-only-modal-content {
+    max-height: calc(100vh - 48px) !important;
+  }
+}
+
 /* ==========================
    COMPONENTES REUTILIZABLES
 ========================== */

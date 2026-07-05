@@ -25,6 +25,12 @@ const pdfCacheRef = useRef(null);
 const ultimoURLRef = useRef(null);
 const [generando, setGenerando] = useState(false);  
 
+const isAndroidDevice = () =>
+  /Android/i.test(navigator.userAgent || "");
+
+const canShowEmbeddedPdfPreview = () =>
+  !isAndroidDevice();
+
 useEffect(() => {
 
   if (!isMobile || !carta) return;
@@ -107,6 +113,24 @@ useEffect(() => {
 
 // eslint-disable-next-line react-hooks/exhaustive-deps
 }, [isMobile, isOnline, carta]);
+
+useEffect(() => {
+
+  return () => {
+
+    if (ultimoURLRef.current) {
+
+      URL.revokeObjectURL(
+        ultimoURLRef.current
+      );
+
+      ultimoURLRef.current = null;
+
+    }
+
+  };
+
+}, []);
 
 async function generarPDFNuevo() {
 
@@ -2431,10 +2455,208 @@ const enlacePDFStyle = {
   boxSizing: "border-box"
 };
 
+const botonSecundarioStyle = {
+  ...enlacePDFStyle,
+  background: "#7b5532",
+  boxShadow: "0 8px 20px rgba(70,40,20,0.28)"
+};
+
+const botonTerciarioStyle = {
+  ...enlacePDFStyle,
+  background: "transparent",
+  border: "1px solid rgba(246,210,139,0.42)",
+  color: "#f6d28b",
+  boxShadow: "none"
+};
+
+const abrirPdfEnNavegador = async () => {
+
+  const resultado =
+    pdfData || await generarPDFNuevo();
+
+  if (!resultado?.url) return;
+
+  window.open(
+    resultado.url,
+    "_blank",
+    "noopener,noreferrer"
+  );
+
+};
+
+const descargarPdf = async () => {
+
+  const resultado =
+    pdfData || await generarPDFNuevo();
+
+  if (!resultado?.url) return;
+
+  const a = document.createElement("a");
+
+  a.href = resultado.url;
+
+  a.download = `${resultado.nombreArchivo}.pdf`;
+
+  document.body.appendChild(a);
+
+  a.click();
+
+  document.body.removeChild(a);
+
+};
+
+const puedeCompartirPdf = () =>
+  typeof navigator !== "undefined" &&
+  typeof navigator.share === "function" &&
+  typeof navigator.canShare === "function" &&
+  pdfData?.blob;
+
+const compartirPdf = async () => {
+
+  if (!puedeCompartirPdf()) return;
+
+  const archivo = new File(
+    [pdfData.blob],
+    `${pdfData.nombreArchivo}.pdf`,
+    {
+      type: "application/pdf"
+    }
+  );
+
+  if (!navigator.canShare({ files: [archivo] })) {
+
+    return;
+
+  }
+
+  await navigator.share({
+    title: "Carta Angelical",
+    text: "Carta PDF generada en Kabala Pro",
+    files: [archivo]
+  });
+
+};
+
 
 if (isMobile) {
 
     if (visorPdfAbierto && pdfUrl) {
+
+  if (!canShowEmbeddedPdfPreview()) {
+
+    return (
+
+      <div
+        style={{
+          width: "100vw",
+          minHeight: "100vh",
+          background: `
+            radial-gradient(
+              circle at top,
+              rgba(139,92,246,0.18),
+              transparent 35%
+            ),
+            linear-gradient(
+              180deg,
+              #070B16 0%,
+              #0B1020 45%,
+              #111827 100%
+            )
+          `,
+          color: "white",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "24px",
+          boxSizing: "border-box"
+        }}
+      >
+
+        <div
+          style={{
+            width: "100%",
+            maxWidth: "390px",
+            background: "rgba(255,255,255,0.05)",
+            border: "1px solid rgba(255,255,255,0.10)",
+            borderRadius: "24px",
+            padding: "30px 24px",
+            boxShadow: "0 10px 40px rgba(0,0,0,0.42)",
+            textAlign: "center"
+          }}
+        >
+
+          <div
+            style={{
+              fontSize: "26px",
+              fontWeight: "700",
+              marginBottom: "12px"
+            }}
+          >
+            Carta PDF generada
+          </div>
+
+          <p
+            style={{
+              opacity: 0.76,
+              fontSize: "15px",
+              lineHeight: "1.55",
+              margin: "0 0 24px"
+            }}
+          >
+            En este dispositivo la vista previa integrada puede no mostrarse correctamente. Puedes abrir la carta en el navegador o descargarla.
+          </p>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "12px"
+            }}
+          >
+
+            <button
+              type="button"
+              onClick={abrirPdfEnNavegador}
+              style={enlacePDFStyle}
+            >
+              Abrir en navegador
+            </button>
+
+            <button
+              type="button"
+              onClick={descargarPdf}
+              style={botonSecundarioStyle}
+            >
+              Descargar PDF
+            </button>
+
+            {puedeCompartirPdf() && (
+              <button
+                type="button"
+                onClick={compartirPdf}
+                style={botonTerciarioStyle}
+              >
+                Compartir
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={() => setVisorPdfAbierto(false)}
+              style={botonTerciarioStyle}
+            >
+              Volver a Kabala Pro
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    );
+
+  }
 
   return (
 
@@ -2550,6 +2772,23 @@ if (isMobile) {
         >
           Abrir en navegador
         </a>
+
+        <button
+          type="button"
+          onClick={descargarPdf}
+          style={{
+            marginLeft: "18px",
+            padding: 0,
+            border: "none",
+            background: "transparent",
+            color: "#f6d28b",
+            fontSize: "13px",
+            textDecoration: "underline",
+            cursor: "pointer"
+          }}
+        >
+          Descargar PDF
+        </button>
       </div>
 
     </div>
@@ -2797,10 +3036,36 @@ if (isMobile) {
               onClick={() => setVisorPdfAbierto(true)}
               style={enlacePDFStyle}
             >
-              Ver carta
+              {canShowEmbeddedPdfPreview()
+                ? "Ver carta"
+                : "Opciones del PDF"}
             </button>
 
-            
+            <button
+              type="button"
+              onClick={abrirPdfEnNavegador}
+              style={botonSecundarioStyle}
+            >
+              Abrir en navegador
+            </button>
+
+            <button
+              type="button"
+              onClick={descargarPdf}
+              style={botonTerciarioStyle}
+            >
+              Descargar PDF
+            </button>
+
+            {puedeCompartirPdf() && (
+              <button
+                type="button"
+                onClick={compartirPdf}
+                style={botonTerciarioStyle}
+              >
+                Compartir
+              </button>
+            )}
 
           </div>
 

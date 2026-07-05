@@ -14,13 +14,16 @@ import { tablaMentor } from "../core/tablaMentor";
 import { tablaEsenciaMes } from "../core/tablaEsenciaMes";
 import { tablaEsenciaDia } from "../core/tablaEsenciaDia";
 import { useOnlineStatus } from "../hooks/useOnlineStatus";
-import { preloadAllPdfResources } from "../utils/pdfResources";
+import {
+  preloadAllPdfResources,
+  verifyOfflinePdfResources
+} from "../utils/pdfResources";
 
 import "./GenerarCarta.css";
 
 function GenerarCarta() {
 
-const FLOR_VIDA_SRC = "/assets/pdf/flor-vida.png";  
+const FLOR_VIDA_SRC = "/assets/flor-vida.png";
 const nombreRef = useRef(null);
 const fechaRef = useRef(null);
 const horaRef = useRef(null);
@@ -41,6 +44,13 @@ const [fechaPartes, setFechaPartes] = useState({
   mes: "",
   anio: ""
 });
+const [offlinePdfStatus, setOfflinePdfStatus] =
+  useState({
+    estado: "preparando",
+    resumen: null
+  });
+const [mostrarAvisoOffline, setMostrarAvisoOffline] =
+  useState(true);
 const isOnline = useOnlineStatus();
 
 const diasMes = (() => {
@@ -161,14 +171,122 @@ useEffect(() => {
 
 useEffect(() => {
 
-  preloadAllPdfResources().catch((error) => {
-    console.warn(
-      "Could not preload PDF offline resources",
-      error
-    );
-  });
+  let activo = true;
+
+  const prepararRecursosOffline = async () => {
+
+    setOfflinePdfStatus({
+      estado: "preparando",
+      resumen: null
+    });
+
+    try {
+
+      const verificacion =
+        await verifyOfflinePdfResources();
+
+      if (
+        activo &&
+        verificacion.ok
+      ) {
+
+        setOfflinePdfStatus({
+          estado: "listos",
+          resumen: verificacion
+        });
+
+        return;
+
+      }
+
+      const resumen =
+        await preloadAllPdfResources();
+
+      if (!activo) {
+
+        return;
+
+      }
+
+      setOfflinePdfStatus({
+        estado: resumen.ok
+          ? "listos"
+          : "incompletos",
+        resumen
+      });
+
+    } catch (error) {
+
+      console.warn(
+        "Could not preload PDF offline resources",
+        error
+      );
+
+      if (activo) {
+
+        setOfflinePdfStatus({
+          estado: "incompletos",
+          resumen: null
+        });
+
+      }
+
+    }
+
+  };
+
+  prepararRecursosOffline();
+
+  return () => {
+
+    activo = false;
+
+  };
 
 }, []);
+
+const mensajeRecursosOffline = (() => {
+
+  if (offlinePdfStatus.estado === "listos") {
+
+    return "Recursos offline listos.";
+
+  }
+
+  if (offlinePdfStatus.estado === "incompletos") {
+
+    const failed =
+      offlinePdfStatus.resumen?.failed;
+
+    return failed
+      ? `Algunos recursos no estan disponibles (${failed}); la carta puede generarse con recursos incompletos.`
+      : "Algunos recursos no estan disponibles; la carta puede generarse con recursos incompletos.";
+
+  }
+
+  return "Preparando recursos offline...";
+
+})();
+
+useEffect(() => {
+
+  setMostrarAvisoOffline(true);
+
+  if (offlinePdfStatus.estado !== "listos") {
+
+    return;
+
+  }
+
+  const timer = setTimeout(() => {
+
+    setMostrarAvisoOffline(false);
+
+  }, 4000);
+
+  return () => clearTimeout(timer);
+
+}, [offlinePdfStatus.estado]);
 
 
 const guardarHistorial = (data) => {
@@ -439,6 +557,15 @@ return(
     role="status"
   >
     Modo offline activo. La carta se generara localmente en este dispositivo.
+  </div>
+)}
+
+{mostrarAvisoOffline && (
+  <div
+    className="generar-carta-offline-aviso"
+    role="status"
+  >
+    {mensajeRecursosOffline}
   </div>
 )}
 

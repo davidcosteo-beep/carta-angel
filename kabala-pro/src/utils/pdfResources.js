@@ -11,7 +11,7 @@ export const PDF_FONT_URLS = [
   "/assets/fonts/UnifrakturCook-Bold.ttf"
 ];
 
-const PDF_RESOURCE_CACHE_NAME = "kabala-pro-pdf-resources-v1";
+const PDF_RESOURCE_CACHE_NAME = "kabala-pdf-resources-v1";
 
 const PDF_SIGNOS = [
   "aries",
@@ -66,146 +66,298 @@ export const crearCandidatosAsset = (
   )];
 };
 
-export async function loadPdfResource(url) {
-  const recursoMemoria = pdfResourceCache.get(url);
-
-  if (recursoMemoria) {
-    return recursoMemoria.slice(0);
+const getAssetUrl = (url) => {
+  if (typeof window === "undefined") {
+    return String(url || "");
   }
 
   try {
-    if (typeof caches !== "undefined") {
-      const respuestaCache = await caches.match(url);
+    return new URL(url, window.location.origin).toString();
+  } catch {
+    return String(url || "");
+  }
+};
 
-      if (respuestaCache?.ok) {
-        const bytesCache = await respuestaCache.arrayBuffer();
-        pdfResourceCache.set(url, bytesCache.slice(0));
+const getAssetCacheKeys = (url) => {
+  const rawUrl = String(url || "");
+  const absoluteUrl = getAssetUrl(rawUrl);
 
-        return bytesCache.slice(0);
-      }
+  if (typeof window === "undefined") {
+    return [rawUrl].filter(Boolean);
+  }
+
+  try {
+    const parsedUrl = new URL(absoluteUrl);
+    const pathnameUrl =
+      `${parsedUrl.pathname}${parsedUrl.search}`;
+
+    return [...new Set([
+      rawUrl,
+      absoluteUrl,
+      pathnameUrl
+    ].filter(Boolean))];
+  } catch {
+    return [rawUrl, absoluteUrl].filter(Boolean);
+  }
+};
+
+const cloneBytes = (bytes) =>
+  bytes.slice(0);
+
+const readCacheBytes = async (url) => {
+  if (typeof caches === "undefined") {
+    return null;
+  }
+
+  const keys = getAssetCacheKeys(url);
+  const namedCache = await caches.open(PDF_RESOURCE_CACHE_NAME);
+
+  for (const key of keys) {
+    const response = await namedCache.match(key);
+
+    if (response?.ok) {
+      return response.arrayBuffer();
     }
+  }
 
-    const response = await fetch(url, { cache: "force-cache" });
+  for (const key of keys) {
+    const response = await caches.match(key);
+
+    if (response?.ok) {
+      return response.arrayBuffer();
+    }
+  }
+
+  return null;
+};
+
+const writeCacheResponse = async (url, response) => {
+  if (
+    typeof caches === "undefined" ||
+    !response?.ok
+  ) {
+    return;
+  }
+
+  const cache = await caches.open(PDF_RESOURCE_CACHE_NAME);
+  await cache.put(
+    getAssetUrl(url),
+    response.clone()
+  );
+};
+
+export async function loadResourceAsBytes(url) {
+  const cacheKey = getAssetUrl(url);
+  const recursoMemoria = pdfResourceCache.get(cacheKey);
+
+  if (recursoMemoria) {
+    return cloneBytes(recursoMemoria);
+  }
+
+  const bytesCache = await readCacheBytes(url);
+
+  if (bytesCache) {
+    pdfResourceCache.set(
+      cacheKey,
+      cloneBytes(bytesCache)
+    );
+
+    return cloneBytes(bytesCache);
+  }
+
+  try {
+    const response = await fetch(
+      getAssetUrl(url),
+      { cache: "force-cache" }
+    );
 
     if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
+      return null;
     }
 
-    if (typeof caches !== "undefined") {
-      const cache = await caches.open(PDF_RESOURCE_CACHE_NAME);
-      await cache.put(url, response.clone());
-    }
+    await writeCacheResponse(url, response);
 
     const bytes = await response.arrayBuffer();
-    pdfResourceCache.set(url, bytes.slice(0));
 
-    return bytes.slice(0);
+    pdfResourceCache.set(
+      cacheKey,
+      cloneBytes(bytes)
+    );
+
+    return cloneBytes(bytes);
   } catch (error) {
     console.warn(
-      `Could not load PDF resource offline/local: ${url}`,
+      `No se pudo cargar recurso PDF offline/local: ${url}`,
       error
     );
 
-    throw new Error(
-      `Could not load PDF resource offline/local: ${url}`,
-      { cause: error }
-    );
+    return null;
   }
 }
 
-const preloadFirstAvailable = async (urls) => {
-  let lastError = null;
+export const loadAssetBytes = loadResourceAsBytes;
 
-  for (const url of urls) {
-    try {
-      await loadPdfResource(url);
-      return {
-        loaded: 1,
-        failed: 0
-      };
-    } catch (error) {
-      lastError = error;
-    }
+export async function loadPdfResource(url) {
+  const bytes = await loadResourceAsBytes(url);
+
+  if (bytes) {
+    return bytes;
   }
 
-  console.warn(
-    `Could not preload PDF offline resource: ${urls.join(", ")}`,
-    lastError
+  throw new Error(
+    `No se pudo cargar recurso PDF offline/local: ${url}`
   );
+}
 
-  return {
-    loaded: 0,
-    failed: 1
-  };
-};
-
-export async function preloadAllPdfResources() {
-  console.info("Preloading PDF offline resources...");
-
+const getPdfResourceGroups = () => {
   const recursosDirectos = [
     `${PDF_ASSET_BASE}/fondo.jpg`,
     `${PDF_ASSET_BASE}/flor-vida.png`,
     ...PDF_FONT_URLS,
-    ...PDF_SIGNOS.map(signo => `${PDF_ASSET_BASE}/signos/${signo}.png`)
+    ...PDF_SIGNOS.map(signo =>
+      `${PDF_ASSET_BASE}/signos/${signo}.png`
+    )
+  ].map(url => ({
+    label: url,
+    urls: [url]
+  }));
+
+  const gruposAngeles = Object.values(tablaCartas)
+    .map(carta => carta?.angel)
+    .filter(Boolean)
+    .map(angel => {
+      const urls = crearCandidatosAsset(
+        `${PDF_ASSET_BASE}/angeles`,
+        angel
+      );
+
+      return {
+        label: `angel:${angel}`,
+        urls
+      };
+    });
+
+  const gruposMentores = Object.values(tablaMentor)
+    .map(mentor => mentor?.mentor)
+    .filter(Boolean)
+    .map(mentor => {
+      const urls = crearCandidatosAsset(
+        `${PDF_ASSET_BASE}/mentores`,
+        mentor
+      );
+
+      return {
+        label: `mentor:${mentor}`,
+        urls
+      };
+    });
+
+  return [
+    ...recursosDirectos,
+    ...gruposAngeles,
+    ...gruposMentores
   ];
+};
 
-  const gruposCandidatos = [
-    ...Object.values(tablaCartas)
-      .map(carta => carta?.angel)
-      .filter(Boolean)
-      .map(angel =>
-        crearCandidatosAsset(`${PDF_ASSET_BASE}/angeles`, angel)
-      ),
-    ...Object.values(tablaMentor)
-      .map(mentor => mentor?.mentor)
-      .filter(Boolean)
-      .map(mentor =>
-        crearCandidatosAsset(`${PDF_ASSET_BASE}/mentores`, mentor)
-      )
-  ];
+const uniqueResourceGroups = (groups) => [
+  ...new Map(
+    groups.map(group => [
+      group.urls.join("|"),
+      group
+    ])
+  ).values()
+];
 
-  let loaded = 0;
-  let failed = 0;
+const loadFirstAvailable = async (group) => {
+  for (const url of group.urls) {
+    const bytes = await loadResourceAsBytes(url);
 
-  await Promise.all(
-    [...new Set(recursosDirectos)].map(async (url) => {
-      try {
-        await loadPdfResource(url);
-        loaded += 1;
-      } catch (error) {
-        failed += 1;
-        console.warn(
-          `Could not preload PDF offline resource: ${url}`,
-          error
-        );
+    if (bytes) {
+      return {
+        ok: true,
+        resource: group.label,
+        url
+      };
+    }
+  }
+
+  return {
+    ok: false,
+    resource: group.label,
+    urls: group.urls
+  };
+};
+
+const summarizeResults = (results) => {
+  const failedResources = results
+    .filter(result => !result.ok)
+    .map(result => ({
+      resource: result.resource,
+      urls: result.urls
+    }));
+
+  return {
+    ok: failedResources.length === 0,
+    total: results.length,
+    loaded: results.length - failedResources.length,
+    failed: failedResources.length,
+    failedResources
+  };
+};
+
+export async function preloadAllPdfResources() {
+  console.info("Preparando recursos PDF offline...");
+
+  const groups = uniqueResourceGroups(
+    getPdfResourceGroups()
+  );
+
+  const results = await Promise.all(
+    groups.map(loadFirstAvailable)
+  );
+
+  const summary = summarizeResults(results);
+
+  if (summary.ok) {
+    console.info(
+      `Recursos PDF offline listos. Total: ${summary.loaded}.`
+    );
+  } else {
+    console.warn(
+      `Recursos PDF offline incompletos. Loaded: ${summary.loaded}. Failed: ${summary.failed}.`,
+      summary.failedResources
+    );
+  }
+
+  return summary;
+}
+
+export async function verifyOfflinePdfResources() {
+  const groups = uniqueResourceGroups(
+    getPdfResourceGroups()
+  );
+
+  const results = await Promise.all(
+    groups.map(async (group) => {
+      for (const url of group.urls) {
+        const bytes = await readCacheBytes(url);
+
+        if (bytes) {
+          return {
+            ok: true,
+            resource: group.label,
+            url
+          };
+        }
       }
+
+      return {
+        ok: false,
+        resource: group.label,
+        urls: group.urls
+      };
     })
   );
 
-  const gruposUnicos = [
-    ...new Map(
-      gruposCandidatos.map(candidatos => [
-        candidatos.join("|"),
-        candidatos
-      ])
-    ).values()
-  ];
-
-  const resultados = await Promise.all(
-    gruposUnicos.map(preloadFirstAvailable)
-  );
-
-  resultados.forEach((resultado) => {
-    loaded += resultado.loaded;
-    failed += resultado.failed;
-  });
-
-  console.info(
-    `PDF offline resources preloaded. Loaded: ${loaded}. Failed: ${failed}.`
-  );
-
-  return {
-    loaded,
-    failed
-  };
+  return summarizeResults(results);
 }

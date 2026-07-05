@@ -12,11 +12,13 @@ import GenerarCarta from "./pages/GenerarCarta";
 import Configuracion from "./pages/Configuracion";
 import Historial from "./pages/Historial";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import OnlineOnlyRoute from "./routes/OnlineOnlyRoute";
 import Menu from "./components/Menu";
 import { isTokenValid } from "./utils/auth";
 import Pacientes from "./pages/Pacientes";
 import Agenda from "./pages/Agenda";
 import { PRIVATE_ROUTE_PERMISSIONS } from "./utils/permissions";
+import { preloadAllPdfResources } from "./utils/pdfResources";
 
 const SPLASH_SEEN_KEY = "kabala_splash_seen";
 
@@ -75,6 +77,25 @@ function App(){
       document.body.classList.remove("dark");
     }
   }, []);
+
+  useEffect(() => {
+
+    if (!logueado) {
+
+      return;
+
+    }
+
+    preloadAllPdfResources().catch((error) => {
+
+      console.warn(
+        "No se pudieron preparar todos los recursos PDF offline",
+        error
+      );
+
+    });
+
+  }, [logueado]);
 
   useEffect(() => {
 
@@ -266,7 +287,9 @@ function PrivateRoutes({
         PRIVATE_ROUTE_PERMISSIONS.PACIENTES
       }
     >
-      <Pacientes />
+      <OnlineOnlyRoute>
+        <Pacientes />
+      </OnlineOnlyRoute>
     </ProtectedRoute>
   }
 />
@@ -279,7 +302,9 @@ function PrivateRoutes({
         PRIVATE_ROUTE_PERMISSIONS.AGENDA
       }
     >
-      <Agenda />
+      <OnlineOnlyRoute>
+        <Agenda />
+      </OnlineOnlyRoute>
     </ProtectedRoute>
   }
 />

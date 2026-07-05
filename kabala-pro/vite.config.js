@@ -24,7 +24,7 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: "prompt",
+      registerType: "autoUpdate",
       devOptions: {
         enabled: false,
       },
@@ -32,16 +32,16 @@ export default defineConfig({
         "icon-192.png",
         "icon-512.png",
         "maskable-icon-192.png",
-        "maskable-icon-512.png",
-        "assets/**/*",
-        "fonts/**/*",
-        "angeles/**/*",
-        "mentores/**/*",
-        "signos/**/*"
+        "maskable-icon-512.png"
       ],
       workbox: {
         globPatterns: [
-          "**/*.{html,js,css,ico,png,jpg,jpeg,webp,svg,ttf,woff,woff2}"
+          "**/*.{html,js,css,ico,webmanifest}",
+          "icon-*.png",
+          "maskable-icon-*.png",
+          "assets/flor-vida*.png",
+          "assets/pergamino.png",
+          "assets/texturaPapel.png"
         ],
         maximumFileSizeToCacheInBytes: 30 * 1024 * 1024,
         navigateFallback: "/index.html"

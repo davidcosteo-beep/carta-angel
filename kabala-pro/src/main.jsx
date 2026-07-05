@@ -5,10 +5,7 @@ import App from './App.jsx'
 import "./styles.css"
 
 registerSW({
-  immediate: false,
-  onNeedRefresh() {
-    window.dispatchEvent(new Event('kabala-pwa-update-available'))
-  },
+  immediate: true,
 })
 
 createRoot(document.getElementById('root')).render(

@@ -1,6 +1,49 @@
 import { HEALTH_URL } from "../config/api";
 import { normalizeServerUrl } from "../utils/serverConfig";
 
+export const checkServerAvailable = async () => {
+
+  if (
+    typeof navigator !== "undefined" &&
+    !navigator.onLine
+  ) {
+
+    return false;
+
+  }
+
+  const controller = new AbortController();
+
+  const timer = setTimeout(() => {
+
+    controller.abort();
+
+  }, 2500);
+
+  try {
+
+    const response = await fetch(
+      HEALTH_URL,
+      {
+        cache: "no-store",
+        signal: controller.signal
+      }
+    );
+
+    return response.ok;
+
+  } catch {
+
+    return false;
+
+  } finally {
+
+    clearTimeout(timer);
+
+  }
+
+};
+
 export const testServerConnection = async (url) => {
 
   const healthUrl = url
