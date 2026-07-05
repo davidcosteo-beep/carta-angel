@@ -1,3 +1,4 @@
+export const MAESTRO = "MAESTRO";
 export const TECNICO = "TECNICO";
 export const TERAPEUTA = "TERAPEUTA";
 export const AUXILIAR = "AUXILIAR";
@@ -5,6 +6,7 @@ export const AUXILIAR = "AUXILIAR";
 export const DEFAULT_ROLE = TERAPEUTA;
 
 export const ROLES = {
+  MAESTRO,
   TECNICO,
   TERAPEUTA,
   AUXILIAR
@@ -25,6 +27,9 @@ export const normalizeRole = (
     : fallback;
 
 };
+
+export const isMaestro = (rol) =>
+  normalizeRole(rol, "") === MAESTRO;
 
 export const isTecnico = (rol) =>
   normalizeRole(rol, "") === TECNICO;

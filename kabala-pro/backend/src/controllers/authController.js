@@ -47,6 +47,7 @@ const login = async (req, res) => {
         .toUpperCase();
 
     const rolesPermitidos = [
+      "MAESTRO",
       "TECNICO",
       "TERAPEUTA",
       "AUXILIAR"

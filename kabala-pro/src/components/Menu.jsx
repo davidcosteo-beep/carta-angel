@@ -7,6 +7,7 @@ import {
   canAccessRole
 } from "../utils/permissions";
 import { checkServerAvailable } from "../services/connectionService";
+import { APP_VERSION } from "../config/appVersion";
 
 function Menu({ onLogout }){
 
@@ -167,7 +168,10 @@ function Menu({ onLogout }){
   </button>
 
   <div className="menu-brand">
-  <div className="menu-title">✦ Kabala Pro ✦</div>
+  <div className="menu-title-row">
+    <div className="menu-title">✦ Kabala Pro ✦</div>
+    <span className="menu-version">v{APP_VERSION}</span>
+  </div>
   <div className="menu-subtitle">Sistema Angelical</div>
 </div>
 
