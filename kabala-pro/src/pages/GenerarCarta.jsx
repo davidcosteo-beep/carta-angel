@@ -18,6 +18,7 @@ import {
   preloadAllPdfResources,
   verifyOfflinePdfResources
 } from "../utils/pdfResources";
+import { buildCartaPdfFileName } from "../utils/cartaPdfFileName";
 
 import "./GenerarCarta.css";
 
@@ -371,6 +372,12 @@ nombre:nombre,
 
 fecha,
 hora,
+
+nombreArchivoPdf:
+  buildCartaPdfFileName(
+    nombre,
+    fecha
+  ),
 
 diaNacimiento,
 

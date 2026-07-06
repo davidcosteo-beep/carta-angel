@@ -6,6 +6,10 @@ const {
   generarPDFNuevo
 } = require('../services/pdfGenerator');
 
+const {
+  buildCartaPdfFileName
+} = require('../utils/cartaPdfFileName');
+
 const generarPDF = async (req, res) => {
 
   try {
@@ -19,15 +23,11 @@ const generarPDF = async (req, res) => {
         carta
       );
 
-    const nombrePaciente =
-  (carta.nombre || "PACIENTE")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[\\/:*?"<>|]/g, "_")
-    .replace(/\s+/g, "_");
-
     const nombreArchivo =
-      `${nombrePaciente}.pdf`;
+      buildCartaPdfFileName(
+        carta.nombre,
+        carta.fecha
+      );
 
     const rutaPDF = path.join(
 

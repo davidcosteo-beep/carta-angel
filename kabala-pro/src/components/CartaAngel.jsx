@@ -13,6 +13,7 @@ import {
   loadPdfResource,
   normalizarNombreAsset
 } from "../utils/pdfResources";
+import { buildCartaPdfFileName } from "../utils/cartaPdfFileName";
 
 function CartaAngel({ carta }) {
 
@@ -2333,11 +2334,12 @@ page.drawText(tituloAngeologo, {
 }
 
 
-const nombreArchivo = `
-Pergamino_${carta.angel}_${nombreTexto || "PACIENTE"}
-`
-.replace(/[\\/:*?"<>|]/g, "_")
-.replace(/\s+/g, "_");
+const nombreArchivo =
+  carta.nombreArchivoPdf ||
+  buildCartaPdfFileName(
+    carta.nombre,
+    carta.fecha
+  );
 
 const pdfBytes = await pdfDoc.save();
 
@@ -2495,7 +2497,7 @@ const descargarPdf = async () => {
 
   a.href = resultado.url;
 
-  a.download = `${resultado.nombreArchivo}.pdf`;
+  a.download = resultado.nombreArchivo;
 
   document.body.appendChild(a);
 
@@ -2517,7 +2519,7 @@ const compartirPdf = async () => {
 
   const archivo = new File(
     [pdfData.blob],
-    `${pdfData.nombreArchivo}.pdf`,
+    pdfData.nombreArchivo,
     {
       type: "application/pdf"
     }
@@ -4281,7 +4283,7 @@ marginRight:"auto"
 
   a.href = resultado.url;
 
-  a.download = `${resultado.nombreArchivo}.pdf`;
+  a.download = resultado.nombreArchivo;
 
   document.body.appendChild(a);
 
