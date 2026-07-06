@@ -27,3 +27,4 @@ dist-ssr
 # PDFs generados por Kabala Pro
 backend/storage/pdfs/*.pdf
 !backend/storage/pdfs/.gitkeep
+kabala-carta-app/
