@@ -28,3 +28,10 @@ dist-ssr
 backend/storage/pdfs/*.pdf
 !backend/storage/pdfs/.gitkeep
 kabala-carta-app/
+
+# Artefactos generados / empaquetado
+release/
+dev-dist/
+/nssm.exe
+/node
+backend-server*.log
