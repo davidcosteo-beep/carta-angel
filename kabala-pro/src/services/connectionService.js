@@ -1,13 +1,22 @@
 import { HEALTH_URL } from "../config/api";
 
-export const checkServerAvailable = async () => {
+const isHealthyResponse = (response, payload) =>
+  response.ok === true &&
+  payload?.ok === true &&
+  payload?.service === "kabala-pro-api" &&
+  payload?.status === "running";
+
+const checkServerHealth = async () => {
 
   if (
     typeof navigator !== "undefined" &&
     !navigator.onLine
   ) {
 
-    return false;
+    return {
+      available: false,
+      status: null
+    };
 
   }
 
@@ -22,18 +31,29 @@ export const checkServerAvailable = async () => {
   try {
 
     const response = await fetch(
-      HEALTH_URL,
+      `${HEALTH_URL}?_=${Date.now()}`,
       {
         cache: "no-store",
         signal: controller.signal
       }
     );
 
-    return response.ok;
+    const payload = await response.json();
+
+    return {
+      available: isHealthyResponse(
+        response,
+        payload
+      ),
+      status: response.status
+    };
 
   } catch {
 
-    return false;
+    return {
+      available: false,
+      status: null
+    };
 
   } finally {
 
@@ -43,38 +63,32 @@ export const checkServerAvailable = async () => {
 
 };
 
+export const checkServerAvailable = async () => {
+
+  const result = await checkServerHealth();
+
+  return result.available;
+
+};
+
 export const testServerConnection = async () => {
 
-  try {
+  const result = await checkServerHealth();
 
-    const response = await fetch(
-      HEALTH_URL,
-      {
-        cache: "no-store"
-      }
-    );
-
-    if (!response.ok) {
-
-      return {
-        ok: false,
-        message: `El servidor respondio con estado ${response.status}.`
-      };
-
-    }
-
-    return {
-      ok: true,
-      message: "Conexion exitosa."
-    };
-
-  } catch {
+  if (!result.available) {
 
     return {
       ok: false,
-      message: "No fue posible conectar con el servidor."
+      message: result.status === null
+        ? "No fue posible conectar con el servidor."
+        : `El servidor respondio con estado ${result.status}.`
     };
 
   }
+
+  return {
+    ok: true,
+    message: "Conexion exitosa."
+  };
 
 };

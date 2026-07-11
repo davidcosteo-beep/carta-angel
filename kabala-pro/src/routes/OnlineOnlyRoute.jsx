@@ -1,16 +1,29 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useOnlineStatus } from "../hooks/useOnlineStatus";
 import { checkServerAvailable } from "../services/connectionService";
 
 export default function OnlineOnlyRoute({
   children
 }) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isOnline = useOnlineStatus();
   const [status, setStatus] =
     useState("checking");
 
   useEffect(() => {
     let active = true;
+
+    if (!isOnline) {
+      setStatus("blocked");
+
+      return () => {
+        active = false;
+      };
+    }
+
+    setStatus("checking");
 
     const check = async () => {
       const available =
@@ -30,7 +43,7 @@ export default function OnlineOnlyRoute({
     return () => {
       active = false;
     };
-  }, []);
+  }, [isOnline, location.pathname]);
 
   if (status === "allowed") {
     return children;
