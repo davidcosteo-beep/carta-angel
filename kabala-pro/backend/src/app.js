@@ -4,6 +4,12 @@ const path = require('path');
 const fs = require('fs');
 
 const authRoutes = require('./routes/authRoutes');
+const usuariosRoutes = require('./routes/usuariosRoutes');
+const verifyToken = require('./middleware/verifyToken');
+const requireRole = require('./middleware/requireRole');
+const {
+  ROLES
+} = require('./utils/roles');
 
 const pdfRoutes =
   require('./routes/pdfRoutes');
@@ -56,11 +62,28 @@ app.get('/health', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 
-app.use('/api/pdf', pdfRoutes);
+app.use('/api/usuarios', usuariosRoutes);
 
-app.use('/api/pacientes', pacientesRoutes);
+app.use(
+  '/api/pdf',
+  verifyToken,
+  requireRole(ROLES.TERAPEUTA),
+  pdfRoutes
+);
 
-app.use('/api/citas', citasRoutes);
+app.use(
+  '/api/pacientes',
+  verifyToken,
+  requireRole(ROLES.TERAPEUTA, ROLES.AUXILIAR),
+  pacientesRoutes
+);
+
+app.use(
+  '/api/citas',
+  verifyToken,
+  requireRole(ROLES.TERAPEUTA, ROLES.AUXILIAR),
+  citasRoutes
+);
 
 if (fs.existsSync(frontendDistPath)) {
 

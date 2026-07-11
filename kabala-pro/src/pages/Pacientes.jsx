@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import "./pacientes.css";
 import { API_URL } from "../config/api";
+import { apiFetch } from "../services/apiFetch";
 import PacienteModal
   from "../components/PacienteModal";
 import ConfirmModal
@@ -76,7 +77,7 @@ function Pacientes() {
       ? `${API_URL}/pacientes/archivados`
       : `${API_URL}/pacientes`;
 
-      const response = await fetch(url);
+      const response = await apiFetch(url);
 
       const data = await response.json();
 
@@ -110,7 +111,7 @@ function Pacientes() {
 
   try {
 
-    const response = await fetch(
+    const response = await apiFetch(
       `${API_URL}/pacientes/${idPaciente}/archivar`,
       {
         method: "PUT"
@@ -143,7 +144,7 @@ const reactivarPaciente = async (idPaciente) => {
 
   try {
 
-    const response = await fetch(
+    const response = await apiFetch(
       `${API_URL}/pacientes/${idPaciente}/reactivar`,
       {
         method: "PUT"

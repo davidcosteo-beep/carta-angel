@@ -1,6 +1,5 @@
 import {
   AUXILIAR,
-  MAESTRO,
   TECNICO,
   TERAPEUTA,
   normalizeRole
@@ -8,58 +7,44 @@ import {
 
 export const PRIVATE_ROUTE_PERMISSIONS = {
   GENERAR_CARTA: [
-    MAESTRO,
-    TECNICO,
     TERAPEUTA
   ],
   PACIENTES: [
-    MAESTRO,
-    TECNICO,
     TERAPEUTA,
     AUXILIAR
   ],
   AGENDA: [
-    MAESTRO,
-    TECNICO,
     TERAPEUTA,
     AUXILIAR
   ],
   HISTORIAL: [
-    MAESTRO,
-    TECNICO,
     TERAPEUTA
   ],
   CONFIGURACION: [
-    MAESTRO,
-    TECNICO,
     TERAPEUTA
+  ],
+  USUARIOS: [
+    TERAPEUTA
+  ],
+  TECNICO: [
+    TECNICO
   ]
 };
 
 export const INTERNAL_ACTION_PERMISSIONS = {
   FINALIZAR_CITA: [
-    MAESTRO,
-    TECNICO,
     TERAPEUTA
   ],
   SEGUIMIENTO: [
-    MAESTRO,
-    TECNICO,
     TERAPEUTA
   ],
   PACIENTES_ARCHIVADOS: [
-    MAESTRO,
-    TECNICO,
     TERAPEUTA
   ],
   ARCHIVAR_PACIENTE: [
-    MAESTRO,
-    TECNICO,
     TERAPEUTA
   ],
   REACTIVAR_PACIENTE: [
-    MAESTRO,
-    TECNICO,
     TERAPEUTA
   ]
 };
@@ -76,7 +61,7 @@ export const canAccessRole = (
   }
 
   return allowedRoles.includes(
-    normalizeRole(rol)
+    normalizeRole(rol, "")
   );
 
 };
@@ -91,6 +76,12 @@ export const getSafeRouteForRole = (rol) => {
 
   }
 
-  return "/";
+  if (normalizedRole === TECNICO) {
+
+    return "/tecnico";
+
+  }
+
+  return "/generar-carta";
 
 };

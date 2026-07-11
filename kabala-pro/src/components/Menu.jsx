@@ -9,6 +9,17 @@ import {
 import { checkServerAvailable } from "../services/connectionService";
 import { APP_VERSION } from "../config/appVersion";
 
+const buildInfoModules = import.meta.glob(
+  "../config/buildInfo.js",
+  {
+    eager: true
+  }
+);
+
+const BUILD_DATE_TIME =
+  buildInfoModules["../config/buildInfo.js"]
+    ?.BUILD_DATE_TIME || "desarrollo";
+
 function Menu({ onLogout }){
 
   const location = useLocation();
@@ -27,9 +38,15 @@ function Menu({ onLogout }){
   const userRole = getUserRole();
   const menuItems = [
     {
+      key: "tecnico",
+      label: "Panel Técnico",
+      path: "/tecnico",
+      allowedRoles: PRIVATE_ROUTE_PERMISSIONS.TECNICO
+    },
+    {
       key: "generar-carta",
-      label: "Generar Carta",
-      path: "/",
+      label: "Carta",
+      path: "/generar-carta",
       allowedRoles: PRIVATE_ROUTE_PERMISSIONS.GENERAR_CARTA,
       resetGenerarCarta: true
     },
@@ -56,6 +73,12 @@ function Menu({ onLogout }){
       label: "Configuración",
       path: "/configuracion",
       allowedRoles: PRIVATE_ROUTE_PERMISSIONS.CONFIGURACION
+    },
+    {
+      key: "usuarios",
+      label: "Usuarios",
+      path: "/usuarios",
+      allowedRoles: PRIVATE_ROUTE_PERMISSIONS.USUARIOS
     }
   ];
 
@@ -238,7 +261,7 @@ function Menu({ onLogout }){
     opacity: verificandoLogout ? 0.72 : 1
   }}
 >
-  {verificandoLogout ? "Verificando..." : "Salir"}
+  {verificandoLogout ? "Verificando..." : "Cerrar sesión"}
 </div>
 
   </div>
@@ -251,6 +274,10 @@ function Menu({ onLogout }){
     }}
   />
 
+</div>
+
+<div className="menu-build-info">
+  Versión {APP_VERSION} · Compilado: {BUILD_DATE_TIME}
 </div>
 
 {mostrarAdvertenciaLogoutOffline && (

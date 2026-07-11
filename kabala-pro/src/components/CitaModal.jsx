@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./CitaModal.css";
 import { API_URL } from "../config/api";
+import { apiFetch } from "../services/apiFetch";
 import ConfirmModal
   from "./ConfirmModal";
 import PacienteModal
@@ -45,7 +46,7 @@ function CitaModal({
 
   try {
 
-    const response = await fetch(
+    const response = await apiFetch(
       `${API_URL}/pacientes`
     );
 
@@ -150,7 +151,7 @@ const guardarCita = async () => {
 
     }
 
-    const response = await fetch(
+    const response = await apiFetch(
 
       cita
         ? `${API_URL}/citas/${cita.IdCita}`

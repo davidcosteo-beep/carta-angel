@@ -2,6 +2,7 @@ import {
   API_URL,
   construirUrlPublica
 } from "../config/api";
+import { apiFetch } from "./apiFetch";
 
 export const generarPDFBackend =
   async (carta) => {
@@ -9,7 +10,7 @@ export const generarPDFBackend =
     try{
 
       const response =
-        await fetch(
+        await apiFetch(
 
           `${API_URL}/pdf/generar`,
 

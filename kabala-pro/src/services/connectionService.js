@@ -1,5 +1,4 @@
 import { HEALTH_URL } from "../config/api";
-import { normalizeServerUrl } from "../utils/serverConfig";
 
 export const checkServerAvailable = async () => {
 
@@ -44,25 +43,15 @@ export const checkServerAvailable = async () => {
 
 };
 
-export const testServerConnection = async (url) => {
-
-  const healthUrl = url
-    ? `${normalizeServerUrl(url)}/health`
-    : HEALTH_URL;
-
-  if (!healthUrl) {
-
-    return {
-      ok: false,
-      message: "Debes ingresar la URL del servidor."
-    };
-
-  }
+export const testServerConnection = async () => {
 
   try {
 
     const response = await fetch(
-      healthUrl
+      HEALTH_URL,
+      {
+        cache: "no-store"
+      }
     );
 
     if (!response.ok) {

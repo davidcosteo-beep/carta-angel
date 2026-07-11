@@ -5,6 +5,7 @@ import {
 } from "react";
 import "./DetalleCitaModal.css";
 import { API_URL } from "../config/api";
+import { apiFetch } from "../services/apiFetch";
 import ConfirmModal from "./ConfirmModal";
 import OjoDetalle
   from "../assets/icons/kp-icon-detalle.svg";
@@ -68,7 +69,7 @@ const [
 
   try {
 
-    const response = await fetch(
+    const response = await apiFetch(
 
       `${API_URL}/citas/${cita.IdCita}/seguimiento`,
 
@@ -145,7 +146,7 @@ const cargarSeguimientos = useCallback(async () => {
     try {
 
       const response =
-        await fetch(
+        await apiFetch(
 
           `${API_URL}/citas/${cita.IdCita}/seguimientos`
 
@@ -216,7 +217,7 @@ const finalizarSeguimiento = async () => {
 
   try {
 
-    const response = await fetch(
+    const response = await apiFetch(
 
       `${API_URL}/citas/${cita.IdCita}/finalizar`,
 

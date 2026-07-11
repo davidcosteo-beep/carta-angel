@@ -1,0 +1,261 @@
+.tecnico-page {
+  min-height: calc(100vh - 110px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+.tecnico-panel {
+  width: 100%;
+  max-width: 980px;
+  border: 1px solid rgba(126, 81, 32, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 248, 230, 0.96);
+  box-shadow: 0 16px 42px rgba(20, 10, 4, 0.16);
+  padding: 30px;
+  color: #3a1f12;
+}
+
+.tecnico-eyebrow {
+  margin: 0 0 8px;
+  font-family: Cinzel, serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: #7a5634;
+}
+
+.tecnico-panel h1,
+.tecnico-panel h2 {
+  margin: 0;
+  font-family: Cinzel, serif;
+}
+
+.tecnico-panel h1 {
+  font-size: 30px;
+}
+
+.tecnico-panel h2 {
+  font-size: 21px;
+}
+
+.tecnico-text {
+  margin: 16px 0 22px;
+  line-height: 1.5;
+  color: #5c3b23;
+}
+
+.tecnico-text.compact {
+  margin: 0;
+}
+
+.tecnico-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.tecnico-section {
+  border: 1px solid rgba(126, 81, 32, 0.18);
+  border-radius: 8px;
+  padding: 20px;
+  background: rgba(255, 252, 242, 0.72);
+}
+
+.tecnico-section-wide {
+  grid-column: 1 / -1;
+}
+
+.tecnico-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.tecnico-status {
+  margin: 0 0 18px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  background: rgba(126, 81, 32, 0.10);
+  font-weight: 700;
+}
+
+.tecnico-status.success {
+  display: grid;
+  gap: 4px;
+  background: rgba(56, 124, 79, 0.12);
+  color: #315f3e;
+}
+
+.tecnico-status.error {
+  display: grid;
+  gap: 4px;
+  background: rgba(130, 54, 42, 0.12);
+  color: #793222;
+}
+
+.tecnico-status span {
+  font-weight: 500;
+}
+
+.tecnico-meta {
+  display: grid;
+  gap: 5px;
+  margin-bottom: 14px;
+}
+
+.tecnico-meta span {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #7a5634;
+}
+
+.tecnico-meta strong {
+  overflow-wrap: anywhere;
+  font-family: "IM Fell English", serif;
+  font-size: 16px;
+  color: #3a1f12;
+}
+
+.tecnico-form {
+  display: grid;
+  gap: 12px;
+}
+
+.tecnico-form label {
+  font-weight: 700;
+}
+
+.tecnico-form input,
+.tecnico-form select {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid rgba(126, 81, 32, 0.28);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 15px;
+  background: #fffaf0;
+  color: #3a1f12;
+}
+
+.tecnico-form button,
+.tecnico-secondary-btn {
+  margin-top: 8px;
+  border: none;
+  border-radius: 8px;
+  padding: 13px 16px;
+  background: linear-gradient(180deg, #8b5e34 0%, #6f4727 100%);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tecnico-secondary-btn {
+  width: 100%;
+}
+
+.tecnico-form button:disabled,
+.tecnico-secondary-btn:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.tecnico-recovery-form {
+  margin-top: 16px;
+}
+
+.tecnico-code-box {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid rgba(126, 81, 32, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 250, 240, 0.84);
+}
+
+.tecnico-code-box strong {
+  font-family: Cinzel, serif;
+  font-size: 22px;
+  color: #5a341d;
+}
+
+.tecnico-code-box span {
+  font-weight: 700;
+  color: #6f4727;
+}
+
+.tecnico-code-box p {
+  margin: 0;
+  color: #793222;
+  line-height: 1.45;
+}
+
+.usuarios-pendientes-list {
+  display: grid;
+  gap: 12px;
+}
+
+.usuario-pendiente-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid rgba(126, 81, 32, 0.18);
+  border-radius: 8px;
+  background: rgba(255, 252, 242, 0.72);
+}
+
+.usuario-pendiente-item strong,
+.usuario-pendiente-item span,
+.usuario-pendiente-item small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.usuario-pendiente-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.usuario-pendiente-actions button {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #7a5634;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 760px) {
+  .tecnico-panel {
+    padding: 24px;
+  }
+
+  .tecnico-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .usuario-pendiente-item {
+    grid-template-columns: 1fr;
+  }
+
+  .usuario-pendiente-actions {
+    justify-content: stretch;
+  }
+
+  .usuario-pendiente-actions button {
+    flex: 1 1 160px;
+  }
+}

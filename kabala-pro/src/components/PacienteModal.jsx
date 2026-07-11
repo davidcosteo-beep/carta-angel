@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import "./PacienteModal.css";
 import { API_URL } from "../config/api";
+import { apiFetch } from "../services/apiFetch";
 
 function PacienteModal({
 
@@ -248,7 +249,7 @@ const metodo = paciente
 
   : "POST";
 
-const response = await fetch(
+const response = await apiFetch(
   url,
   {
     method: metodo,

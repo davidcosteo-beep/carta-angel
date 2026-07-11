@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { API_URL } from "../config/api";
+import { apiFetch } from "../services/apiFetch";
 import "./agenda.css";
 import CitaModal
   from "../components/CitaModal";
@@ -155,7 +156,7 @@ const festivos = {
 
   try {
 
-    const response = await fetch(
+    const response = await apiFetch(
       `${API_URL}/citas`
     );
 
@@ -197,7 +198,7 @@ useEffect(() => {
 
     try {
 
-      const response = await fetch(
+      const response = await apiFetch(
         `${API_URL}/citas/${citaSeleccionada.IdCita}/cancelar`,
         {
           method: "PUT"
@@ -236,7 +237,7 @@ useEffect(() => {
 
   try {
 
-    const response = await fetch(
+    const response = await apiFetch(
 
       `${API_URL}/citas/${idCita}/finalizar`,
 
@@ -269,7 +270,7 @@ const confirmarCita = async (
 
   try {
 
-    const response = await fetch(
+    const response = await apiFetch(
 
       `${API_URL}/citas/${idCita}/confirmar`,
 

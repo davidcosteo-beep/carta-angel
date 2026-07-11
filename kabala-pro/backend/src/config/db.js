@@ -6,6 +6,7 @@ const config = {
   password: process.env.DB_PASSWORD,
   server: process.env.DB_SERVER,
   database: process.env.DB_DATABASE,
+  port: Number(process.env.DB_PORT || 1433),
 
   options: {
     trustServerCertificate: true,
@@ -33,6 +34,7 @@ const connectDB = async () => {
   } catch (error) {
 
     console.error('Error SQL Server:', error);
+    throw error;
 
   }
 

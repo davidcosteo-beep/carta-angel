@@ -395,6 +395,28 @@
   scale(0.995);
 }
 
+.login-link-btn {
+  width:100%;
+  margin-top:16px;
+  border:none;
+  background:transparent;
+  color:#8b5e34;
+  font-size:14px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.login-link-btn:hover {
+  color:#5a341d;
+}
+
+.recovery-code-input {
+  padding-left:22px;
+  text-align:center;
+  letter-spacing:8px;
+  font-weight:700;
+}
+
 /* =========================
    FACE ID
 ========================= */

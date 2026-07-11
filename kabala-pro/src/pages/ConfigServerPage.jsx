@@ -1,19 +1,11 @@
 import { useState } from "react";
-import { getServerConfig, saveServerConfig } from "../utils/serverConfig";
+import { HEALTH_URL } from "../config/api";
 import { testServerConnection } from "../services/connectionService";
 import "./Login.css";
 
 export default function ConfigServerPage({
-  onVolver,
-  onGuardado
+  onVolver
 }) {
-
-  const config = getServerConfig();
-
-  const [url, setUrl] = useState(
-    config.apiUrl
-  );
-
   const [mensaje, setMensaje] =
     useState("");
 
@@ -23,77 +15,38 @@ export default function ConfigServerPage({
   const [probando, setProbando] =
     useState(false);
 
+  const currentOrigin =
+    typeof window !== "undefined"
+      ? window.location.origin
+      : "";
+
   const probarConexion = async () => {
-
     setProbando(true);
-
     setMensaje("");
 
     const resultado =
-      await testServerConnection(url);
+      await testServerConnection();
 
     setMensaje(resultado.message);
-
     setTipoMensaje(
       resultado.ok ? "success" : "error"
     );
-
     setProbando(false);
-
-  };
-
-  const guardarConfiguracion = () => {
-
-    try {
-
-      saveServerConfig(url);
-
-      setMensaje(
-        "Servidor guardado correctamente."
-      );
-
-      setTipoMensaje("success");
-
-      setTimeout(() => {
-
-        if (onGuardado) {
-
-          onGuardado();
-
-        }
-
-      }, 500);
-
-    } catch (error) {
-
-      setMensaje(error.message);
-
-      setTipoMensaje("error");
-
-    }
-
   };
 
   return (
-
     <div className="login-container login-enter">
-
       <div className="login-card">
-
         <h1 className="login-title">
           Kabala Pro
         </h1>
 
         <div className="title-divider">
-
           <div className="divider-line" />
-
           <div className="divider-ornament">
             *
           </div>
-
           <div className="divider-line" />
-
         </div>
 
         <p className="login-subtitle">
@@ -101,24 +54,35 @@ export default function ConfigServerPage({
         </p>
 
         <label className="login-label">
-          URL del servidor
+          Origen actual
         </label>
 
         <div className="input-group">
-
           <input
-            type="url"
-            value={url}
-            onChange={(e) =>
-              setUrl(e.target.value)
-            }
-            placeholder="http://100.95.42.29:4000"
+            type="text"
+            value={currentOrigin || "No disponible"}
+            readOnly
             className="login-input"
             style={{
               paddingLeft: "22px"
             }}
           />
+        </div>
 
+        <label className="login-label">
+          Ruta de prueba
+        </label>
+
+        <div className="input-group">
+          <input
+            type="text"
+            value={HEALTH_URL}
+            readOnly
+            className="login-input"
+            style={{
+              paddingLeft: "22px"
+            }}
+          />
         </div>
 
         <button
@@ -134,54 +98,38 @@ export default function ConfigServerPage({
           }
         </button>
 
-        <button
-          type="button"
-          className="faceid-btn"
-          onClick={guardarConfiguracion}
-        >
-          <span>
-            Guardar servidor
-          </span>
-        </button>
-
         {
           mensaje && (
-
             <div
               className={`login-message ${tipoMensaje}`}
             >
               {mensaje}
             </div>
-
           )
         }
 
-        <div className="face-divider">
+        {onVolver && (
+          <>
+            <div className="face-divider">
+              <div className="line" />
+              <div className="flower">
+                *
+              </div>
+              <div className="line" />
+            </div>
 
-          <div className="line" />
-
-          <div className="flower">
-            *
-          </div>
-
-          <div className="line" />
-
-        </div>
-
-        <button
-          type="button"
-          className="faceid-btn"
-          onClick={onVolver}
-        >
-          <span>
-            Volver al login
-          </span>
-        </button>
-
+            <button
+              type="button"
+              className="faceid-btn"
+              onClick={onVolver}
+            >
+              <span>
+                Volver
+              </span>
+            </button>
+          </>
+        )}
       </div>
-
     </div>
-
   );
-
 }

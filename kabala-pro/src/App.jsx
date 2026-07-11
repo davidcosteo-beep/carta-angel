@@ -2,22 +2,30 @@ import {
   BrowserRouter,
   Routes,
   Route,
-  useNavigate
+  Navigate
 } from "react-router-dom";
 import { useState, useEffect } from "react";
 import SplashScreen from "./components/SplashScreen";
 import Login from "./pages/Login";
-import ConfigServerPage from "./pages/ConfigServerPage";
 import GenerarCarta from "./pages/GenerarCarta";
 import Configuracion from "./pages/Configuracion";
 import Historial from "./pages/Historial";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import OnlineOnlyRoute from "./routes/OnlineOnlyRoute";
 import Menu from "./components/Menu";
-import { isTokenValid } from "./utils/auth";
+import {
+  getUserRole,
+  isTokenValid
+} from "./utils/auth";
 import Pacientes from "./pages/Pacientes";
 import Agenda from "./pages/Agenda";
-import { PRIVATE_ROUTE_PERMISSIONS } from "./utils/permissions";
+import Tecnico from "./pages/Tecnico";
+import Usuarios from "./pages/Usuarios";
+import {
+  PRIVATE_ROUTE_PERMISSIONS,
+  getSafeRouteForRole
+} from "./utils/permissions";
+import { isTecnico } from "./utils/roles";
 import { preloadAllPdfResources } from "./utils/pdfResources";
 
 const SPLASH_SEEN_KEY = "kabala_splash_seen";
@@ -80,7 +88,10 @@ function App(){
 
   useEffect(() => {
 
-    if (!logueado) {
+    if (
+      !logueado ||
+      isTecnico(getUserRole())
+    ) {
 
       return;
 
@@ -169,33 +180,9 @@ function PublicRoutes({
   setLogueado
 }) {
 
-  const navigate = useNavigate();
-
   return (
 
     <Routes>
-
-      <Route
-        path="/configurar-servidor"
-        element={
-          <div className="page-transition">
-
-            <ConfigServerPage
-              onVolver={() =>
-                navigate("/")
-              }
-              onGuardado={() => {
-
-                navigate("/");
-
-                window.location.reload();
-
-              }}
-            />
-
-          </div>
-        }
-      />
 
       <Route
         path="*"
@@ -204,9 +191,6 @@ function PublicRoutes({
 
             <Login
               onLogin={setLogueado}
-              onConfigServer={() =>
-                navigate("/configurar-servidor")
-              }
             />
 
           </div>
@@ -242,6 +226,16 @@ function PrivateRoutes({
 
         <Route
   path="/"
+  element={
+    <Navigate
+      to={getSafeRouteForRole(getUserRole())}
+      replace
+    />
+  }
+/>
+
+<Route
+  path="/generar-carta"
   element={
     <ProtectedRoute
       allowedRoles={
@@ -295,6 +289,24 @@ function PrivateRoutes({
 />
 
 <Route
+  path="/tecnico"
+  element={
+    <ProtectedRoute
+      allowedRoles={
+        PRIVATE_ROUTE_PERMISSIONS.TECNICO
+      }
+    >
+      <Tecnico
+        onLogout={() => {
+          localStorage.removeItem('token');
+          setLogueado(false);
+        }}
+      />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
   path="/agenda"
   element={
     <ProtectedRoute
@@ -306,6 +318,31 @@ function PrivateRoutes({
         <Agenda />
       </OnlineOnlyRoute>
     </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/usuarios"
+  element={
+    <ProtectedRoute
+      allowedRoles={
+        PRIVATE_ROUTE_PERMISSIONS.USUARIOS
+      }
+    >
+      <OnlineOnlyRoute>
+        <Usuarios />
+      </OnlineOnlyRoute>
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="*"
+  element={
+    <Navigate
+      to={getSafeRouteForRole(getUserRole())}
+      replace
+    />
   }
 />
 
