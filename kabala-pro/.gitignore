@@ -35,3 +35,4 @@ dev-dist/
 /nssm.exe
 /node
 backend-server*.log
+installer/dependencies/
