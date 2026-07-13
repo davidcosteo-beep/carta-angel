@@ -1,11 +1,13 @@
 # NSSM
 
-Place `nssm.exe` in this folder before building the production package if the target PC should not depend on NSSM being available in `PATH`.
+Kabala Pro uses one installed NSSM location: `<app>\tools\nssm\nssm.exe`.
 
-Recommended installed path:
+Required compiler dependency source:
 
 ```bat
-D:\KabalaPro\tools\nssm\nssm.exe
+installer\dependencies\nssm.exe
 ```
 
-The Windows service scripts first look for this local executable. If it is not present, they fall back to `nssm.exe` from `PATH`.
+Place the real binary at that installer dependency path before compiling. It is
+not downloaded or generated. The Windows scripts require the installed local
+copy and do not fall back to `PATH`.

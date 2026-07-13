@@ -1,5 +1,13 @@
 # Kabala Pro 1.0 - Windows local production service
 
+> Installer policy: the only official service is `KabalaPro`; NSSM is installed
+> at `<app>\tools\nssm\nssm.exe`. Upgrades preserve `backend\.env` and `logs`,
+> remove the legacy `KabalaProBackend` service, run idempotent database
+> initialization, and validate `http://127.0.0.1:4000/health`. The install
+> folder is selectable; SQL Server and Tailscale remain manual prerequisites.
+> Configure Tailscale Serve manually only after health succeeds. Server updates
+> normally propagate to installed PWAs without reinstalling them.
+
 Kabala Pro 1.0 runs as a local Windows product with one Windows service:
 
 - Service: `KabalaPro`
@@ -51,8 +59,8 @@ http://TAILSCALE_IP:4000
 
 ## Requirements
 
-- Node.js installed and available in `PATH`
-- NSSM available at `tools\nssm\nssm.exe` or installed in `PATH`
+- Node.js LTS included by the installer, or an existing usable Node installation
+- NSSM included at `tools\nssm\nssm.exe`
 - SQL Server reachable from the PC running the service
 - Backend environment configured in `backend\.env`
 - Windows Firewall allowing inbound TCP port `4000` when mobile/Tailscale access is needed
@@ -115,8 +123,8 @@ nssm start KabalaPro
 Logs are written to:
 
 ```bat
-backend\logs\kabala-pro.out.log
-backend\logs\kabala-pro.err.log
+logs\backend-out.log
+logs\backend-error.log
 ```
 
 ## Start service
