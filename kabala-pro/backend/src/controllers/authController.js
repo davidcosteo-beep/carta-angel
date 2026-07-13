@@ -15,7 +15,14 @@ const {
   markCodeUsed,
   normalizeEmail
 } = require('../services/userCodeService');
-const { normalizeRole } = require('../utils/roles');
+const {
+  ROLES,
+  normalizeRole
+} = require('../utils/roles');
+const {
+  DeviceError,
+  registerOrValidateDevice
+} = require('../services/deviceService');
 
 const isValidEmail = (correo) =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
@@ -24,7 +31,15 @@ const login = async (req, res) => {
   try {
     const correoNormalizado = normalizeEmail(req.body?.correo);
 
-    const { password } = req.body;
+    const {
+      password,
+      deviceId,
+      deviceSecret,
+      nombre,
+      plataforma,
+      navegador,
+      esPwa
+    } = req.body;
 
     if (!correoNormalizado || !password) {
       return res.status(401).json({
@@ -82,14 +97,37 @@ const login = async (req, res) => {
     }
 
     const rolUsuario = normalizeRole(usuario.rol);
+    let normalizedDeviceId;
+
+    if (
+      rolUsuario === ROLES.TERAPEUTA ||
+      rolUsuario === ROLES.AUXILIAR
+    ) {
+      normalizedDeviceId = await registerOrValidateDevice({
+        deviceId,
+        deviceSecret,
+        nombre,
+        plataforma,
+        navegador,
+        esPwa,
+        usuarioId: usuario.id,
+        usuarioCorreo: usuario.correo
+      });
+    }
+
+    const tokenPayload = {
+      id: usuario.id,
+      correo: usuario.correo,
+      premium: usuario.premium,
+      rol: rolUsuario
+    };
+
+    if (normalizedDeviceId) {
+      tokenPayload.deviceId = normalizedDeviceId;
+    }
 
     const token = jwt.sign(
-      {
-        id: usuario.id,
-        correo: usuario.correo,
-        premium: usuario.premium,
-        rol: rolUsuario
-      },
+      tokenPayload,
       process.env.JWT_SECRET,
       {
         expiresIn: '30d'
@@ -108,6 +146,14 @@ const login = async (req, res) => {
       }
     });
   } catch (error) {
+    if (error instanceof DeviceError) {
+      return res.status(error.status).json({
+        ok: false,
+        code: error.code,
+        message: error.message
+      });
+    }
+
     console.error(error);
 
     return res.status(500).json({

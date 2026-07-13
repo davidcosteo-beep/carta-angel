@@ -1,4 +1,20 @@
+import { getOrCreateDeviceIdentity } from "../utils/deviceIdentity";
+
 export const loginRequest = async (correo, password) => {
+
+  let deviceIdentity;
+
+  try {
+    deviceIdentity = getOrCreateDeviceIdentity();
+  } catch (error) {
+    return {
+      ok: false,
+      code: "DEVICE_IDENTITY_UNAVAILABLE",
+      message:
+        error?.message ||
+        "No fue posible preparar la identidad del dispositivo."
+    };
+  }
 
   let response;
 
@@ -14,7 +30,8 @@ export const loginRequest = async (correo, password) => {
 
       body: JSON.stringify({
         correo,
-        password
+        password,
+        ...deviceIdentity
       })
 
     });

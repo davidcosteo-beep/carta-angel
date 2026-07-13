@@ -6,6 +6,7 @@ const {
   TECH_PASSWORD
 } = require('../config/technicalUser');
 const { ROLES } = require('../utils/roles');
+const { DEVICE_SCHEMA_SQL } = require('./deviceSchema');
 
 const ensureUserSchema = async () => {
   await sql.query`
@@ -62,7 +63,10 @@ const ensureUserSchema = async () => {
       CREATE INDEX IX_tblUsuarioCodigos_usuario_proposito_activo
       ON dbo.tblUsuarioCodigos(usuarioId, proposito, activo);
     END
+
   `;
+
+  await sql.query(DEVICE_SCHEMA_SQL);
 };
 
 const normalizeLegacyRoles = async () => {

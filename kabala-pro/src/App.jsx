@@ -21,6 +21,7 @@ import Pacientes from "./pages/Pacientes";
 import Agenda from "./pages/Agenda";
 import Tecnico from "./pages/Tecnico";
 import Usuarios from "./pages/Usuarios";
+import Dispositivos from "./pages/Dispositivos";
 import {
   PRIVATE_ROUTE_PERMISSIONS,
   getSafeRouteForRole
@@ -316,6 +317,26 @@ function PrivateRoutes({
     >
       <OnlineOnlyRoute>
         <Agenda />
+      </OnlineOnlyRoute>
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/dispositivos"
+  element={
+    <ProtectedRoute
+      allowedRoles={
+        PRIVATE_ROUTE_PERMISSIONS.DISPOSITIVOS
+      }
+    >
+      <OnlineOnlyRoute>
+        <Dispositivos
+          onLogout={() => {
+            localStorage.removeItem("token");
+            setLogueado(false);
+          }}
+        />
       </OnlineOnlyRoute>
     </ProtectedRoute>
   }

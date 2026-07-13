@@ -75,6 +75,13 @@ function Menu({ onLogout }){
       allowedRoles: PRIVATE_ROUTE_PERMISSIONS.CONFIGURACION
     },
     {
+      key: "dispositivos",
+      label: "Dispositivos",
+      path: "/dispositivos",
+      allowedRoles:
+        PRIVATE_ROUTE_PERMISSIONS.DISPOSITIVOS
+    },
+    {
       key: "usuarios",
       label: "Usuarios",
       path: "/usuarios",

@@ -5,6 +5,7 @@ const fs = require('fs');
 
 const authRoutes = require('./routes/authRoutes');
 const usuariosRoutes = require('./routes/usuariosRoutes');
+const dispositivosRoutes = require('./routes/dispositivosRoutes');
 const verifyToken = require('./middleware/verifyToken');
 const requireRole = require('./middleware/requireRole');
 const {
@@ -63,6 +64,8 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 
 app.use('/api/usuarios', usuariosRoutes);
+
+app.use('/api/dispositivos', dispositivosRoutes);
 
 app.use(
   '/api/pdf',

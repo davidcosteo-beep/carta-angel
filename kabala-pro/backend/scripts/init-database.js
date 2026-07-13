@@ -3,6 +3,9 @@ const dotenv = require('dotenv');
 const path = require('path');
 const readline = require('readline');
 const sql = require('mssql');
+const {
+  DEVICE_SCHEMA_SQL
+} = require('../src/services/deviceSchema');
 
 dotenv.config({
   path: path.resolve(__dirname, '..', '.env')
@@ -267,6 +270,7 @@ const ensureSchema = async () => {
         ON dbo.tblUsuarioCodigos(usuarioId, proposito, activo);
       END
       `,
+      DEVICE_SCHEMA_SQL,
       `
       IF OBJECT_ID('dbo.Pacientes', 'U') IS NULL
       BEGIN
